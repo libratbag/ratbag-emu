@@ -1,0 +1,120 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://localhost:8080'
+
+info:
+  version: 0.0.1
+  title: ratbag-emu
+  license:
+    name: MIT
+    url: 'https://raw.githubusercontent.com/libratbag/ratbag-emu/master/LICENSE'
+
+tags:
+  - name: device
+    description: Control interface for the simulated device
+
+paths:
+  /device:
+    get:
+      tags:
+        - device
+      summary: List of simulated devices
+      description: 'Provides the list of devices that are being currently simulated by ratbag-emu'
+      operationId: list_devices
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  '/device/{device_id}':
+    get:
+      tags:
+        - device
+      summary: Returns a simulated device
+      description: 'Returns one the of devices currently simulated by ratbag-emu'
+      operationId: get_device
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of the device to return
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Device not found
+  '/device/{device_id}/move':
+    post:
+      tags:
+        - device
+      summary: Moves a simulated device
+      operationId: device_move
+      description: 'Send movement data to the target device'
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of the device to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Movement data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementData'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Error moving the device
+        '404':
+          description: Device not found
+
+components:
+  requestBodies:
+    Device:
+      description: Simulated device
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Device'
+  schemas:
+    Device:
+      title: Device
+      description: Simulated device
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    MovementData:
+      title: Movement data
+      description: X and Y values in milimeters to move
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
