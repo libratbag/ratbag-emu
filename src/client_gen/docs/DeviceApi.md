@@ -4,17 +4,17 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**device_move**](DeviceApi.md#device_move) | **POST** /device/{device_id}/move | Moves a simulated device
-[**get_device**](DeviceApi.md#get_device) | **GET** /device/{device_id} | Returns a simulated device
-[**list_devices**](DeviceApi.md#list_devices) | **GET** /device | List of simulated devices
+[**device_event**](DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
+[**get_device**](DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
+[**list_devices**](DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices
 
 
-# **device_move**
-> device_move(device_id, movement_data)
+# **device_event**
+> device_event(device_id, event_data)
 
-Moves a simulated device
+Send an event to a simulated device
 
-Send movement data to the target device
+Send raw HID event data to the target device
 
 ### Example
 
@@ -27,22 +27,22 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
-device_id = 'device_id_example' # str | ID of the device to return
-movement_data = ratbag_emu_client.MovementData() # MovementData | Movement data
+device_id = 56 # int | ID of the device to return
+event_data = ratbag_emu_client.EventData() # EventData | Event data
 
 try:
-    # Moves a simulated device
-    api_instance.device_move(device_id, movement_data)
+    # Send an event to a simulated device
+    api_instance.device_event(device_id, event_data)
 except ApiException as e:
-    print("Exception when calling DeviceApi->device_move: %s\n" % e)
+    print("Exception when calling DeviceApi->device_event: %s\n" % e)
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **device_id** | **str**| ID of the device to return | 
- **movement_data** | [**MovementData**](MovementData.md)| Movement data | 
+ **device_id** | **int**| ID of the device to return | 
+ **event_data** | [**EventData**](EventData.md)| Event data | 
 
 ### Return type
 
@@ -61,7 +61,7 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | OK |  -  |
-**400** | Error moving the device |  -  |
+**400** | Error sending data to the device |  -  |
 **404** | Device not found |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
@@ -84,7 +84,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
-device_id = 'device_id_example' # str | ID of the device to return
+device_id = 56 # int | ID of the device to return
 
 try:
     # Returns a simulated device
@@ -98,7 +98,7 @@ except ApiException as e:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **device_id** | **str**| ID of the device to return | 
+ **device_id** | **int**| ID of the device to return | 
 
 ### Return type
 

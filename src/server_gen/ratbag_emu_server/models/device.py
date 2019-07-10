@@ -19,12 +19,12 @@ class Device(Model):
         """Device - a model defined in OpenAPI
 
         :param id: The id of this Device.  # noqa: E501
-        :type id: str
+        :type id: int
         :param name: The name of this Device.  # noqa: E501
         :type name: str
         """
         self.openapi_types = {
-            'id': str,
+            'id': int,
             'name': str
         }
 
@@ -53,7 +53,7 @@ class Device(Model):
 
 
         :return: The id of this Device.
-        :rtype: str
+        :rtype: int
         """
         return self._id
 
@@ -63,7 +63,7 @@ class Device(Model):
 
 
         :param id: The id of this Device.
-        :type id: str
+        :type id: int
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501

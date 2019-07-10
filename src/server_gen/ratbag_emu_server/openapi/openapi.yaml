@@ -11,7 +11,7 @@ tags:
 - description: Control interface for the simulated device
   name: device
 paths:
-  /device:
+  /devices:
     get:
       description: Provides the list of devices that are being currently simulated
         by ratbag-emu
@@ -30,7 +30,7 @@ paths:
       tags:
       - device
       x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
-  /device/{device_id}:
+  /devices/{device_id}:
     get:
       description: Returns one the of devices currently simulated by ratbag-emu
       operationId: get_device
@@ -41,7 +41,8 @@ paths:
         name: device_id
         required: true
         schema:
-          type: string
+          format: int32
+          type: integer
         style: simple
       responses:
         200:
@@ -56,10 +57,10 @@ paths:
       tags:
       - device
       x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
-  /device/{device_id}/move:
+  /devices/{device_id}/event:
     post:
-      description: Send movement data to the target device
-      operationId: device_move
+      description: Send raw HID event data to the target device
+      operationId: device_event
       parameters:
       - description: ID of the device to return
         explode: false
@@ -67,23 +68,24 @@ paths:
         name: device_id
         required: true
         schema:
-          type: string
+          format: int32
+          type: integer
         style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MovementData'
-        description: Movement data
+              $ref: '#/components/schemas/EventData'
+        description: Event data
         required: true
       responses:
         200:
           description: OK
         400:
-          description: Error moving the device
+          description: Error sending data to the device
         404:
           description: Device not found
-      summary: Moves a simulated device
+      summary: Send an event to a simulated device
       tags:
       - device
       x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
@@ -101,30 +103,29 @@ components:
       description: Simulated device
       example:
         name: name
-        id: id
+        id: 0
       properties:
         id:
-          type: string
+          format: int32
+          type: integer
         name:
           type: string
       required:
       - id
       title: Device
       type: object
-    MovementData:
-      description: X and Y values in milimeters to move
+    EventData:
+      description: Raw HID event data
       example:
-        x: 0
-        y: 6
+        data:
+        - 0
+        - 0
       properties:
-        x:
-          format: int32
-          type: integer
-        y:
-          format: int32
-          type: integer
+        data:
+          items:
+            type: integer
+          type: array
       required:
-      - x
-      - y
-      title: Movement data
+      - data
+      title: Event data
       type: object

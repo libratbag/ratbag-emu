@@ -54,14 +54,14 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi(ratbag_emu_client.ApiClient(configuration))
-device_id = 'device_id_example' # str | ID of the device to return
-movement_data = ratbag_emu_client.MovementData() # MovementData | Movement data
+device_id = 56 # int | ID of the device to return
+event_data = ratbag_emu_client.EventData() # EventData | Event data
 
 try:
-    # Moves a simulated device
-    api_instance.device_move(device_id, movement_data)
+    # Send an event to a simulated device
+    api_instance.device_event(device_id, event_data)
 except ApiException as e:
-    print("Exception when calling DeviceApi->device_move: %s\n" % e)
+    print("Exception when calling DeviceApi->device_event: %s\n" % e)
 
 ```
 
@@ -71,15 +71,15 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DeviceApi* | [**device_move**](docs/DeviceApi.md#device_move) | **POST** /device/{device_id}/move | Moves a simulated device
-*DeviceApi* | [**get_device**](docs/DeviceApi.md#get_device) | **GET** /device/{device_id} | Returns a simulated device
-*DeviceApi* | [**list_devices**](docs/DeviceApi.md#list_devices) | **GET** /device | List of simulated devices
+*DeviceApi* | [**device_event**](docs/DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
+*DeviceApi* | [**get_device**](docs/DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
+*DeviceApi* | [**list_devices**](docs/DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices
 
 
 ## Documentation For Models
 
  - [Device](docs/Device.md)
- - [MovementData](docs/MovementData.md)
+ - [EventData](docs/EventData.md)
 
 
 ## Documentation For Authorization

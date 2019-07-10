@@ -4,4 +4,4 @@
 from __future__ import absolute_import
 # import models into model package
 from ratbag_emu_server.models.device import Device
-from ratbag_emu_server.models.movement_data import MovementData
+from ratbag_emu_server.models.event_data import EventData

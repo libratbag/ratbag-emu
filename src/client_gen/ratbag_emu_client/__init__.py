@@ -29,5 +29,5 @@ from ratbag_emu_client.exceptions import ApiKeyError
 from ratbag_emu_client.exceptions import ApiException
 # import models into sdk package
 from ratbag_emu_client.models.device import Device
-from ratbag_emu_client.models.movement_data import MovementData
+from ratbag_emu_client.models.event_data import EventData
 

@@ -2,25 +2,25 @@ import connexion
 import six
 
 from ratbag_emu_server.models.device import Device  # noqa: E501
-from ratbag_emu_server.models.event_data import EventData  # noqa: E501
+from ratbag_emu_server.models.movement_data import MovementData  # noqa: E501
 from ratbag_emu_server import util
 
 
-def device_event(device_id, event_data):  # noqa: E501
-    """Send an event to a simulated device
+def device_move(device_id, movement_data):  # noqa: E501
+    """Moves a simulated device
 
-    Send raw HID event data to the target device # noqa: E501
+    Send movement data to the target device # noqa: E501
 
     :param device_id: ID of the device to return
-    :type device_id: int
-    :param event_data: Event data
-    :type event_data: dict | bytes
+    :type device_id: str
+    :param movement_data: Movement data
+    :type movement_data: dict | bytes
 
     :rtype: None
     """
     if connexion.request.is_json:
-        event_data = EventData.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        movement_data = MovementData.from_dict(connexion.request.get_json())  # noqa: E501
+    return 'device_move()'
 
 
 def get_device(device_id):  # noqa: E501
@@ -29,11 +29,11 @@ def get_device(device_id):  # noqa: E501
     Returns one the of devices currently simulated by ratbag-emu # noqa: E501
 
     :param device_id: ID of the device to return
-    :type device_id: int
+    :type device_id: str
 
     :rtype: Device
     """
-    return 'do some magic!'
+    return 'get_device()'
 
 
 def list_devices():  # noqa: E501
@@ -44,4 +44,4 @@ def list_devices():  # noqa: E501
 
     :rtype: List[Device]
     """
-    return 'do some magic!'
+    return openapi_devices

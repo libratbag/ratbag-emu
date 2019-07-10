@@ -36,18 +36,18 @@ class DeviceApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-    def device_move(self, device_id, movement_data, **kwargs):  # noqa: E501
-        """Moves a simulated device  # noqa: E501
+    def device_event(self, device_id, event_data, **kwargs):  # noqa: E501
+        """Send an event to a simulated device  # noqa: E501
 
-        Send movement data to the target device  # noqa: E501
+        Send raw HID event data to the target device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.device_move(device_id, movement_data, async_req=True)
+        >>> thread = api.device_event(device_id, event_data, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param str device_id: ID of the device to return (required)
-        :param MovementData movement_data: Movement data (required)
+        :param int device_id: ID of the device to return (required)
+        :param EventData event_data: Event data (required)
         :param _preload_content: if False, the urllib3.HTTPResponse object will
                                  be returned without reading/decoding response
                                  data. Default is True.
@@ -60,20 +60,20 @@ class DeviceApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.device_move_with_http_info(device_id, movement_data, **kwargs)  # noqa: E501
+        return self.device_event_with_http_info(device_id, event_data, **kwargs)  # noqa: E501
 
-    def device_move_with_http_info(self, device_id, movement_data, **kwargs):  # noqa: E501
-        """Moves a simulated device  # noqa: E501
+    def device_event_with_http_info(self, device_id, event_data, **kwargs):  # noqa: E501
+        """Send an event to a simulated device  # noqa: E501
 
-        Send movement data to the target device  # noqa: E501
+        Send raw HID event data to the target device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.device_move_with_http_info(device_id, movement_data, async_req=True)
+        >>> thread = api.device_event_with_http_info(device_id, event_data, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param str device_id: ID of the device to return (required)
-        :param MovementData movement_data: Movement data (required)
+        :param int device_id: ID of the device to return (required)
+        :param EventData event_data: Event data (required)
         :param _return_http_data_only: response data without head status code
                                        and headers
         :param _preload_content: if False, the urllib3.HTTPResponse object will
@@ -90,7 +90,7 @@ class DeviceApi(object):
 
         local_var_params = locals()
 
-        all_params = ['device_id', 'movement_data']  # noqa: E501
+        all_params = ['device_id', 'event_data']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -100,18 +100,18 @@ class DeviceApi(object):
             if key not in all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method device_move" % key
+                    " to method device_event" % key
                 )
             local_var_params[key] = val
         del local_var_params['kwargs']
         # verify the required parameter 'device_id' is set
         if ('device_id' not in local_var_params or
                 local_var_params['device_id'] is None):
-            raise ApiValueError("Missing the required parameter `device_id` when calling `device_move`")  # noqa: E501
-        # verify the required parameter 'movement_data' is set
-        if ('movement_data' not in local_var_params or
-                local_var_params['movement_data'] is None):
-            raise ApiValueError("Missing the required parameter `movement_data` when calling `device_move`")  # noqa: E501
+            raise ApiValueError("Missing the required parameter `device_id` when calling `device_event`")  # noqa: E501
+        # verify the required parameter 'event_data' is set
+        if ('event_data' not in local_var_params or
+                local_var_params['event_data'] is None):
+            raise ApiValueError("Missing the required parameter `event_data` when calling `device_event`")  # noqa: E501
 
         collection_formats = {}
 
@@ -127,8 +127,8 @@ class DeviceApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'movement_data' in local_var_params:
-            body_params = local_var_params['movement_data']
+        if 'event_data' in local_var_params:
+            body_params = local_var_params['event_data']
         # HTTP header `Content-Type`
         header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
             ['application/json'])  # noqa: E501
@@ -137,7 +137,7 @@ class DeviceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/device/{device_id}/move', 'POST',
+            '/devices/{device_id}/event', 'POST',
             path_params,
             query_params,
             header_params,
@@ -162,7 +162,7 @@ class DeviceApi(object):
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param str device_id: ID of the device to return (required)
+        :param int device_id: ID of the device to return (required)
         :param _preload_content: if False, the urllib3.HTTPResponse object will
                                  be returned without reading/decoding response
                                  data. Default is True.
@@ -187,7 +187,7 @@ class DeviceApi(object):
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param str device_id: ID of the device to return (required)
+        :param int device_id: ID of the device to return (required)
         :param _return_http_data_only: response data without head status code
                                        and headers
         :param _preload_content: if False, the urllib3.HTTPResponse object will
@@ -245,7 +245,7 @@ class DeviceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/device/{device_id}', 'GET',
+            '/devices/{device_id}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -345,7 +345,7 @@ class DeviceApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/device', 'GET',
+            '/devices', 'GET',
             path_params,
             query_params,
             header_params,
