@@ -14,9 +14,9 @@ class BaseDevice(UHIDDevice):
                                                     hex(self.vid),
                                                     hex(self.pid))
 
-        self._output_report = self.output_report
+        self._output_report = self._protocol_receive
 
-    def output_report(self, data, size, rtype):
+    def _protocol_receive(self, data, size, rtype):
         data = [struct.unpack(">H", b'\x00' + data[i:i+1])[0]
                 for i in range(0, size)]
 
