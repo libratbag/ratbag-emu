@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info:
+  license:
+    name: MIT
+    url: https://raw.githubusercontent.com/libratbag/ratbag-emu/master/LICENSE
+  title: ratbag-emu
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+tags:
+- description: Control interface for the simulated device
+  name: device
+paths:
+  /device:
+    get:
+      description: Provides the list of devices that are being currently simulated
+        by ratbag-emu
+      operationId: list_devices
+      parameters: []
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Device'
+                type: array
+          description: OK
+      summary: List of simulated devices
+      tags:
+      - device
+      x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
+  /device/{device_id}:
+    get:
+      description: Returns one the of devices currently simulated by ratbag-emu
+      operationId: get_device
+      parameters:
+      - description: ID of the device to return
+        explode: false
+        in: path
+        name: device_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+          description: OK
+        404:
+          description: Device not found
+      summary: Returns a simulated device
+      tags:
+      - device
+      x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
+  /device/{device_id}/move:
+    post:
+      description: Send movement data to the target device
+      operationId: device_move
+      parameters:
+      - description: ID of the device to return
+        explode: false
+        in: path
+        name: device_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovementData'
+        description: Movement data
+        required: true
+      responses:
+        200:
+          description: OK
+        400:
+          description: Error moving the device
+        404:
+          description: Device not found
+      summary: Moves a simulated device
+      tags:
+      - device
+      x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
+components:
+  requestBodies:
+    Device:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Device'
+      description: Simulated device
+      required: true
+  schemas:
+    Device:
+      description: Simulated device
+      example:
+        name: name
+        id: id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required:
+      - id
+      title: Device
+      type: object
+    MovementData:
+      description: X and Y values in milimeters to move
+      example:
+        x: 0
+        y: 6
+      properties:
+        x:
+          format: int32
+          type: integer
+        y:
+          format: int32
+          type: integer
+      required:
+      - x
+      - y
+      title: Movement data
+      type: object
