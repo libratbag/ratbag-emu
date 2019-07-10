@@ -16,6 +16,8 @@ class BaseDevice(UHIDDevice):
 
         self._output_report = self._protocol_receive
 
+        self.create_kernel_device()
+
     def _protocol_receive(self, data, size, rtype):
         data = [struct.unpack(">H", b'\x00' + data[i:i+1])[0]
                 for i in range(0, size)]
@@ -43,3 +45,11 @@ class BaseDevice(UHIDDevice):
     @protocol.setter
     def protocol(self, value):
         self._protocol = value
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def protocol(self, value):
+        self._id = value

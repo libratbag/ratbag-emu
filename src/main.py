@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
+import threading
+
 import connexion
 from ratbag_emu_server import encoder
+from ratbag_emu_server.models.device import Device
 
 from protocol.hidpp20 import HIDPP20Device
-
-server = connexion.App('ratbag-emu',
-                specification_dir='src/server_gen/ratbag_emu_server/openapi')
-server.app.json_encoder = encoder.JSONEncoder
-server.add_api('openapi.yaml',
-                arguments={'title': 'ratbag-emu'},
-                pythonic_params=True)
-server.run(port=8080)
 
 # G Pro - Endpoint 2
 report_descriptor = [
@@ -65,10 +60,31 @@ report_descriptor = [
 name = 'Logitech G Pro'
 
 
-test = HIDPP20Device(report_descriptor, (0x3, 0x046d, 0xc539), name)
-test.create_kernel_device()
+devices = []
 
-test.start(None)
+def devices_handle():
+    devices = [
+        HIDPP20Device(report_descriptor, (0x3, 0x046d, 0xc539), name)
+    ]
 
-while True:
-    test.dispatch()
+    for device in devices:
+        device.start(None)
+
+    while True:
+        for device in devices:
+            device.dispatch()
+
+
+if __name__ == "__main__":
+    # Start handling devices
+    devices_thread = threading.Thread(target=devices_handle)
+    devices_thread.start()
+
+    # Run server
+    server = connexion.App(__name__,
+                    specification_dir='server_gen/ratbag_emu_server/openapi')
+    server.app.json_encoder = encoder.JSONEncoder
+    server.add_api('openapi.yaml',
+                    arguments={'title': 'ratbag-emu'},
+                    pythonic_params=True)
+    server.run(port=8080)
