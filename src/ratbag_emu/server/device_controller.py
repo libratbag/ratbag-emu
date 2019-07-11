@@ -7,15 +7,17 @@ from ratbag_emu_server.models.device import Device  # noqa: E501
 from ratbag_emu_server.models.event_data import EventData  # noqa: E501
 from ratbag_emu_server import util
 
-def add_device():  # noqa: E501
+def add_device(shortname):  # noqa: E501
     """Creates a simulated device
 
     Tells ratbag-emu to create a new simulated device # noqa: E501
 
+    :param shortname: Short name name of the device to add
+    :type shortname: str
 
-    :rtype: List[Device]
+    :rtype: None
     """
-    return 'add_device()'
+    return DeviceHandler.add_device(shortname)
 
 def device_event(device_id, event_data):  # noqa: E501
     """Send an event to a simulated device
