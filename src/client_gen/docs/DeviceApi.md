@@ -4,10 +4,61 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**add_device**](DeviceApi.md#add_device) | **GET** /devices/add | Creates a simulated device
 [**device_event**](DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
 [**get_device**](DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
 [**list_devices**](DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices
 
+
+# **add_device**
+> list[Device] add_device()
+
+Creates a simulated device
+
+Tells ratbag-emu to create a new simulated device
+
+### Example
+
+```python
+from __future__ import print_function
+import time
+import ratbag_emu_client
+from ratbag_emu_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = ratbag_emu_client.DeviceApi()
+
+try:
+    # Creates a simulated device
+    api_response = api_instance.add_device()
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling DeviceApi->add_device: %s\n" % e)
+```
+
+### Parameters
+This endpoint does not need any parameter.
+
+### Return type
+
+[**list[Device]**](Device.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **device_event**
 > device_event(device_id, event_data)

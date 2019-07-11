@@ -54,14 +54,13 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi(ratbag_emu_client.ApiClient(configuration))
-device_id = 56 # int | ID of the device to return
-event_data = ratbag_emu_client.EventData() # EventData | Event data
 
 try:
-    # Send an event to a simulated device
-    api_instance.device_event(device_id, event_data)
+    # Creates a simulated device
+    api_response = api_instance.add_device()
+    pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DeviceApi->device_event: %s\n" % e)
+    print("Exception when calling DeviceApi->add_device: %s\n" % e)
 
 ```
 
@@ -71,6 +70,7 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DeviceApi* | [**add_device**](docs/DeviceApi.md#add_device) | **GET** /devices/add | Creates a simulated device
 *DeviceApi* | [**device_event**](docs/DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
 *DeviceApi* | [**get_device**](docs/DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
 *DeviceApi* | [**list_devices**](docs/DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices

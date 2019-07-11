@@ -1,11 +1,10 @@
 import connexion
 import six
 
-from ratbag_emu.device_handler import DeviceHandler
-
 from ratbag_emu_server.models.device import Device  # noqa: E501
 from ratbag_emu_server.models.event_data import EventData  # noqa: E501
 from ratbag_emu_server import util
+
 
 def add_device():  # noqa: E501
     """Creates a simulated device
@@ -15,7 +14,8 @@ def add_device():  # noqa: E501
 
     :rtype: List[Device]
     """
-    return 'add_device()'
+    return 'do some magic!'
+
 
 def device_event(device_id, event_data):  # noqa: E501
     """Send an event to a simulated device
@@ -31,7 +31,7 @@ def device_event(device_id, event_data):  # noqa: E501
     """
     if connexion.request.is_json:
         event_data = EventData.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'device_event()'
+    return 'do some magic!'
 
 
 def get_device(device_id):  # noqa: E501
@@ -44,7 +44,7 @@ def get_device(device_id):  # noqa: E501
 
     :rtype: Device
     """
-    return DeviceHandler.get_openapi_device(device_id)
+    return 'do some magic!'
 
 
 def list_devices():  # noqa: E501
@@ -55,4 +55,4 @@ def list_devices():  # noqa: E501
 
     :rtype: List[Device]
     """
-    return DeviceHandler.get_openapi_devices()
+    return 'do some magic!'

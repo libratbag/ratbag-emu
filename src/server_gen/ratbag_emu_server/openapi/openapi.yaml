@@ -30,6 +30,24 @@ paths:
       tags:
       - device
       x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
+  /devices/add:
+    get:
+      description: Tells ratbag-emu to create a new simulated device
+      operationId: add_device
+      parameters: []
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Device'
+                type: array
+          description: OK
+      summary: Creates a simulated device
+      tags:
+      - device
+      x-openapi-router-controller: ratbag_emu_server.controllers.device_controller
   /devices/{device_id}:
     get:
       description: Returns one the of devices currently simulated by ratbag-emu
