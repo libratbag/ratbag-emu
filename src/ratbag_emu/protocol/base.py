@@ -2,6 +2,7 @@ import struct
 
 from hidtools.uhid import UHIDDevice
 
+
 class BaseDevice(UHIDDevice):
 
     _protocol = None
@@ -47,9 +48,9 @@ class BaseDevice(UHIDDevice):
         self._protocol = value
 
     @property
-    def id(self):
-        return self._id
+    def name(self):
+        return self._name
 
-    @id.setter
-    def protocol(self, value):
-        self._id = value
+    @name.setter
+    def name(self, value):
+        self._name = value
