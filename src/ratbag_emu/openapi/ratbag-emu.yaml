@@ -31,23 +31,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Device'
-  /devices/add:
+  '/devices/add/{shortname}':
     get:
       tags:
         - device
       summary: Creates a simulated device
       description: 'Tells ratbag-emu to create a new simulated device'
       operationId: add_device
-      parameters: []
+      parameters:
+        - name: shortname
+          in: path
+          description: Short name name of the device to add
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Can't add device
   '/devices/{device_id}':
     get:
       tags:
@@ -85,8 +87,9 @@ paths:
           description: ID of the device to return
           required: true
           schema:
-            type: integer
-            format: int32
+            type: array
+            items:
+              type: integer
       requestBody:
         description: Event data
         required: true
