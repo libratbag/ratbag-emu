@@ -36,13 +36,13 @@ class DeviceApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-    def add_device(self, shortname, **kwargs):  # noqa: E501
+    def ratbag_emu_server_add_device(self, shortname, **kwargs):  # noqa: E501
         """Creates a simulated device  # noqa: E501
 
         Tells ratbag-emu to create a new simulated device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.add_device(shortname, async_req=True)
+        >>> thread = api.ratbag_emu_server_add_device(shortname, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -59,15 +59,15 @@ class DeviceApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.add_device_with_http_info(shortname, **kwargs)  # noqa: E501
+        return self.ratbag_emu_server_add_device_with_http_info(shortname, **kwargs)  # noqa: E501
 
-    def add_device_with_http_info(self, shortname, **kwargs):  # noqa: E501
+    def ratbag_emu_server_add_device_with_http_info(self, shortname, **kwargs):  # noqa: E501
         """Creates a simulated device  # noqa: E501
 
         Tells ratbag-emu to create a new simulated device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.add_device_with_http_info(shortname, async_req=True)
+        >>> thread = api.ratbag_emu_server_add_device_with_http_info(shortname, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -98,14 +98,14 @@ class DeviceApi(object):
             if key not in all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method add_device" % key
+                    " to method ratbag_emu_server_add_device" % key
                 )
             local_var_params[key] = val
         del local_var_params['kwargs']
         # verify the required parameter 'shortname' is set
         if ('shortname' not in local_var_params or
                 local_var_params['shortname'] is None):
-            raise ApiValueError("Missing the required parameter `shortname` when calling `add_device`")  # noqa: E501
+            raise ApiValueError("Missing the required parameter `shortname` when calling `ratbag_emu_server_add_device`")  # noqa: E501
 
         collection_formats = {}
 
@@ -140,18 +140,18 @@ class DeviceApi(object):
             _request_timeout=local_var_params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def device_event(self, device_id, event_data, **kwargs):  # noqa: E501
+    def ratbag_emu_server_device_event(self, device_id, request_body, **kwargs):  # noqa: E501
         """Send an event to a simulated device  # noqa: E501
 
-        Send raw HID event data to the target device  # noqa: E501
+        Send HID event data to the target device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.device_event(device_id, event_data, async_req=True)
+        >>> thread = api.ratbag_emu_server_device_event(device_id, request_body, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param list[int] device_id: ID of the device to return (required)
-        :param EventData event_data: Event data (required)
+        :param int device_id: ID of the device to use as the event source (required)
+        :param list[dict(str, int)] request_body: Event data (required)
         :param _preload_content: if False, the urllib3.HTTPResponse object will
                                  be returned without reading/decoding response
                                  data. Default is True.
@@ -164,20 +164,20 @@ class DeviceApi(object):
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.device_event_with_http_info(device_id, event_data, **kwargs)  # noqa: E501
+        return self.ratbag_emu_server_device_event_with_http_info(device_id, request_body, **kwargs)  # noqa: E501
 
-    def device_event_with_http_info(self, device_id, event_data, **kwargs):  # noqa: E501
+    def ratbag_emu_server_device_event_with_http_info(self, device_id, request_body, **kwargs):  # noqa: E501
         """Send an event to a simulated device  # noqa: E501
 
-        Send raw HID event data to the target device  # noqa: E501
+        Send HID event data to the target device  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.device_event_with_http_info(device_id, event_data, async_req=True)
+        >>> thread = api.ratbag_emu_server_device_event_with_http_info(device_id, request_body, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
-        :param list[int] device_id: ID of the device to return (required)
-        :param EventData event_data: Event data (required)
+        :param int device_id: ID of the device to use as the event source (required)
+        :param list[dict(str, int)] request_body: Event data (required)
         :param _return_http_data_only: response data without head status code
                                        and headers
         :param _preload_content: if False, the urllib3.HTTPResponse object will
@@ -194,7 +194,7 @@ class DeviceApi(object):
 
         local_var_params = locals()
 
-        all_params = ['device_id', 'event_data']  # noqa: E501
+        all_params = ['device_id', 'request_body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -204,25 +204,24 @@ class DeviceApi(object):
             if key not in all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method device_event" % key
+                    " to method ratbag_emu_server_device_event" % key
                 )
             local_var_params[key] = val
         del local_var_params['kwargs']
         # verify the required parameter 'device_id' is set
         if ('device_id' not in local_var_params or
                 local_var_params['device_id'] is None):
-            raise ApiValueError("Missing the required parameter `device_id` when calling `device_event`")  # noqa: E501
-        # verify the required parameter 'event_data' is set
-        if ('event_data' not in local_var_params or
-                local_var_params['event_data'] is None):
-            raise ApiValueError("Missing the required parameter `event_data` when calling `device_event`")  # noqa: E501
+            raise ApiValueError("Missing the required parameter `device_id` when calling `ratbag_emu_server_device_event`")  # noqa: E501
+        # verify the required parameter 'request_body' is set
+        if ('request_body' not in local_var_params or
+                local_var_params['request_body'] is None):
+            raise ApiValueError("Missing the required parameter `request_body` when calling `ratbag_emu_server_device_event`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
         if 'device_id' in local_var_params:
             path_params['device_id'] = local_var_params['device_id']  # noqa: E501
-            collection_formats['device_id'] = 'csv'  # noqa: E501
 
         query_params = []
 
@@ -232,8 +231,8 @@ class DeviceApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'event_data' in local_var_params:
-            body_params = local_var_params['event_data']
+        if 'request_body' in local_var_params:
+            body_params = local_var_params['request_body']
         # HTTP header `Content-Type`
         header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
             ['application/json'])  # noqa: E501
@@ -257,13 +256,13 @@ class DeviceApi(object):
             _request_timeout=local_var_params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_device(self, device_id, **kwargs):  # noqa: E501
+    def ratbag_emu_server_get_device(self, device_id, **kwargs):  # noqa: E501
         """Returns a simulated device  # noqa: E501
 
         Returns one the of devices currently simulated by ratbag-emu  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_device(device_id, async_req=True)
+        >>> thread = api.ratbag_emu_server_get_device(device_id, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -275,20 +274,20 @@ class DeviceApi(object):
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :return: Device
+        :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.get_device_with_http_info(device_id, **kwargs)  # noqa: E501
+        return self.ratbag_emu_server_get_device_with_http_info(device_id, **kwargs)  # noqa: E501
 
-    def get_device_with_http_info(self, device_id, **kwargs):  # noqa: E501
+    def ratbag_emu_server_get_device_with_http_info(self, device_id, **kwargs):  # noqa: E501
         """Returns a simulated device  # noqa: E501
 
         Returns one the of devices currently simulated by ratbag-emu  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.get_device_with_http_info(device_id, async_req=True)
+        >>> thread = api.ratbag_emu_server_get_device_with_http_info(device_id, async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -302,7 +301,7 @@ class DeviceApi(object):
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :return: tuple(Device, status_code(int), headers(HTTPHeaderDict))
+        :return: tuple(object, status_code(int), headers(HTTPHeaderDict))
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -319,14 +318,14 @@ class DeviceApi(object):
             if key not in all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method get_device" % key
+                    " to method ratbag_emu_server_get_device" % key
                 )
             local_var_params[key] = val
         del local_var_params['kwargs']
         # verify the required parameter 'device_id' is set
         if ('device_id' not in local_var_params or
                 local_var_params['device_id'] is None):
-            raise ApiValueError("Missing the required parameter `device_id` when calling `get_device`")  # noqa: E501
+            raise ApiValueError("Missing the required parameter `device_id` when calling `ratbag_emu_server_get_device`")  # noqa: E501
 
         collection_formats = {}
 
@@ -357,7 +356,7 @@ class DeviceApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Device',  # noqa: E501
+            response_type='object',  # noqa: E501
             auth_settings=auth_settings,
             async_req=local_var_params.get('async_req'),
             _return_http_data_only=local_var_params.get('_return_http_data_only'),  # noqa: E501
@@ -365,13 +364,13 @@ class DeviceApi(object):
             _request_timeout=local_var_params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def list_devices(self, **kwargs):  # noqa: E501
+    def ratbag_emu_server_list_devices(self, **kwargs):  # noqa: E501
         """List of simulated devices  # noqa: E501
 
         Provides the list of devices that are being currently simulated by ratbag-emu  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.list_devices(async_req=True)
+        >>> thread = api.ratbag_emu_server_list_devices(async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -382,20 +381,20 @@ class DeviceApi(object):
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :return: list[Device]
+        :return: object
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
-        return self.list_devices_with_http_info(**kwargs)  # noqa: E501
+        return self.ratbag_emu_server_list_devices_with_http_info(**kwargs)  # noqa: E501
 
-    def list_devices_with_http_info(self, **kwargs):  # noqa: E501
+    def ratbag_emu_server_list_devices_with_http_info(self, **kwargs):  # noqa: E501
         """List of simulated devices  # noqa: E501
 
         Provides the list of devices that are being currently simulated by ratbag-emu  # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async_req=True
-        >>> thread = api.list_devices_with_http_info(async_req=True)
+        >>> thread = api.ratbag_emu_server_list_devices_with_http_info(async_req=True)
         >>> result = thread.get()
 
         :param async_req bool: execute request asynchronously
@@ -408,7 +407,7 @@ class DeviceApi(object):
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :return: tuple(list[Device], status_code(int), headers(HTTPHeaderDict))
+        :return: tuple(object, status_code(int), headers(HTTPHeaderDict))
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -425,7 +424,7 @@ class DeviceApi(object):
             if key not in all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method list_devices" % key
+                    " to method ratbag_emu_server_list_devices" % key
                 )
             local_var_params[key] = val
         del local_var_params['kwargs']
@@ -457,7 +456,7 @@ class DeviceApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[Device]',  # noqa: E501
+            response_type='object',  # noqa: E501
             auth_settings=auth_settings,
             async_req=local_var_params.get('async_req'),
             _return_http_data_only=local_var_params.get('_return_http_data_only'),  # noqa: E501

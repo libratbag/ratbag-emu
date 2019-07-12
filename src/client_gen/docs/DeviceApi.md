@@ -4,14 +4,14 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**add_device**](DeviceApi.md#add_device) | **GET** /devices/add/{shortname} | Creates a simulated device
-[**device_event**](DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
-[**get_device**](DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
-[**list_devices**](DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices
+[**ratbag_emu_server_add_device**](DeviceApi.md#ratbag_emu_server_add_device) | **GET** /devices/add/{shortname} | Creates a simulated device
+[**ratbag_emu_server_device_event**](DeviceApi.md#ratbag_emu_server_device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
+[**ratbag_emu_server_get_device**](DeviceApi.md#ratbag_emu_server_get_device) | **GET** /devices/{device_id} | Returns a simulated device
+[**ratbag_emu_server_list_devices**](DeviceApi.md#ratbag_emu_server_list_devices) | **GET** /devices | List of simulated devices
 
 
-# **add_device**
-> add_device(shortname)
+# **ratbag_emu_server_add_device**
+> ratbag_emu_server_add_device(shortname)
 
 Creates a simulated device
 
@@ -26,15 +26,15 @@ import ratbag_emu_client
 from ratbag_emu_client.rest import ApiException
 from pprint import pprint
 
-# create an instance of the API class
+# Create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
 shortname = 'shortname_example' # str | Short name name of the device to add
 
 try:
     # Creates a simulated device
-    api_instance.add_device(shortname)
+    api_instance.ratbag_emu_server_add_device(shortname)
 except ApiException as e:
-    print("Exception when calling DeviceApi->add_device: %s\n" % e)
+    print("Exception when calling DeviceApi->ratbag_emu_server_add_device: %s\n" % e)
 ```
 
 ### Parameters
@@ -64,12 +64,12 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **device_event**
-> device_event(device_id, event_data)
+# **ratbag_emu_server_device_event**
+> ratbag_emu_server_device_event(device_id, request_body)
 
 Send an event to a simulated device
 
-Send raw HID event data to the target device
+Send HID event data to the target device
 
 ### Example
 
@@ -80,24 +80,24 @@ import ratbag_emu_client
 from ratbag_emu_client.rest import ApiException
 from pprint import pprint
 
-# create an instance of the API class
+# Create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
-device_id = [56] # list[int] | ID of the device to return
-event_data = ratbag_emu_client.EventData() # EventData | Event data
+device_id = 56 # int | ID of the device to use as the event source
+request_body = None # list[dict(str, int)] | Event data
 
 try:
     # Send an event to a simulated device
-    api_instance.device_event(device_id, event_data)
+    api_instance.ratbag_emu_server_device_event(device_id, request_body)
 except ApiException as e:
-    print("Exception when calling DeviceApi->device_event: %s\n" % e)
+    print("Exception when calling DeviceApi->ratbag_emu_server_device_event: %s\n" % e)
 ```
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **device_id** | [**list[int]**](int.md)| ID of the device to return | 
- **event_data** | [**EventData**](EventData.md)| Event data | 
+ **device_id** | **int**| ID of the device to use as the event source | 
+ **request_body** | [**list[dict(str, int)]**](dict.md)| Event data | 
 
 ### Return type
 
@@ -121,8 +121,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **get_device**
-> Device get_device(device_id)
+# **ratbag_emu_server_get_device**
+> object ratbag_emu_server_get_device(device_id)
 
 Returns a simulated device
 
@@ -137,16 +137,16 @@ import ratbag_emu_client
 from ratbag_emu_client.rest import ApiException
 from pprint import pprint
 
-# create an instance of the API class
+# Create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
 device_id = 56 # int | ID of the device to return
 
 try:
     # Returns a simulated device
-    api_response = api_instance.get_device(device_id)
+    api_response = api_instance.ratbag_emu_server_get_device(device_id)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DeviceApi->get_device: %s\n" % e)
+    print("Exception when calling DeviceApi->ratbag_emu_server_get_device: %s\n" % e)
 ```
 
 ### Parameters
@@ -157,7 +157,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Device**](Device.md)
+**object**
 
 ### Authorization
 
@@ -176,8 +176,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **list_devices**
-> list[Device] list_devices()
+# **ratbag_emu_server_list_devices**
+> object ratbag_emu_server_list_devices()
 
 List of simulated devices
 
@@ -192,15 +192,15 @@ import ratbag_emu_client
 from ratbag_emu_client.rest import ApiException
 from pprint import pprint
 
-# create an instance of the API class
+# Create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi()
 
 try:
     # List of simulated devices
-    api_response = api_instance.list_devices()
+    api_response = api_instance.ratbag_emu_server_list_devices()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DeviceApi->list_devices: %s\n" % e)
+    print("Exception when calling DeviceApi->ratbag_emu_server_list_devices: %s\n" % e)
 ```
 
 ### Parameters
@@ -208,7 +208,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**list[Device]**](Device.md)
+**object**
 
 ### Authorization
 

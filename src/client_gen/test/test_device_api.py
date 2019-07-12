@@ -28,22 +28,29 @@ class TestDeviceApi(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_device_move(self):
-        """Test case for device_move
+    def test_ratbag_emu_server_add_device(self):
+        """Test case for ratbag_emu_server_add_device
 
-        Moves a simulated device  # noqa: E501
+        Creates a simulated device  # noqa: E501
         """
         pass
 
-    def test_get_device(self):
-        """Test case for get_device
+    def test_ratbag_emu_server_device_event(self):
+        """Test case for ratbag_emu_server_device_event
+
+        Send an event to a simulated device  # noqa: E501
+        """
+        pass
+
+    def test_ratbag_emu_server_get_device(self):
+        """Test case for ratbag_emu_server_get_device
 
         Returns a simulated device  # noqa: E501
         """
         pass
 
-    def test_list_devices(self):
-        """Test case for list_devices
+    def test_ratbag_emu_server_list_devices(self):
+        """Test case for ratbag_emu_server_list_devices
 
         List of simulated devices  # noqa: E501
         """

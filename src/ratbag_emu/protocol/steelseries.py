@@ -45,7 +45,7 @@ class SteelseriesDevice(BaseDevice):
     '''
     Init routine
     '''
-    def __init__(self, protocol_version=2, rdesc=None, info=None,
+    def __init__(self, rdesc=None, info=None, protocol_version=2,
      name='Generic Steelseries Device'):
         self.protocol = 'Steelseries v{}'.format(protocol_version)
         super().__init__(rdesc, info, name)

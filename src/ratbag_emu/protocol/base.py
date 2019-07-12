@@ -6,6 +6,7 @@ from hidtools.uhid import UHIDDevice
 class BaseDevice(UHIDDevice):
 
     _protocol = None
+    _buttons = []
 
     def __init__(self, rdesc=None, info=None, name='Generic Device'):
         super().__init__()
@@ -32,13 +33,16 @@ class BaseDevice(UHIDDevice):
     def protocol_receive(self, data, size, rtype):
         return
 
-    def _protocol_send(self, data):
+    def _send_raw(self, data):
         print('write' + ''.join(' {:02x}'.format(byte) for byte in data))
 
         self.call_input_event(data)
 
     def protocol_send(self, data):
-        self._protocol_send(data)
+        self._send_raw(data)
+
+    def send_raw(self, data):
+        self._send_raw(data)
 
     @property
     def protocol(self):
@@ -55,3 +59,24 @@ class BaseDevice(UHIDDevice):
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def buttons(self):
+        return self._buttons
+
+    @buttons.setter
+    def buttons(self, value):
+        self._buttons = value
+
+
+class MouseData(object):
+    def __init__(self, device):
+        i = 1
+        for button in device.buttons:
+            setattr(self, 'b{}'.format(i), button)
+            i += 1
+
+        self.x = 0
+        self.y = 0
+        self.wheel = 0
+        self.acpan = 0

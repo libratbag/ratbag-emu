@@ -2,8 +2,11 @@
 import threading
 
 import connexion
-from ratbag_emu_server import encoder
+from connexion.resolver import RestyResolver
 
+#from ratbag_emu_server import encoder
+
+import ratbag_emu.server
 from ratbag_emu.device_handler import DeviceHandler
 
 if __name__ == "__main__":
@@ -12,10 +15,12 @@ if __name__ == "__main__":
     devices_thread.start()
 
     # Run server
-    server = connexion.App(__name__,
-                    specification_dir='server_gen/ratbag_emu_server/openapi')
-    server.app.json_encoder = encoder.JSONEncoder
-    server.add_api('openapi.yaml',
-                    arguments={'title': 'ratbag-emu'},
-                    pythonic_params=True)
+    server = connexion.FlaskApp(__name__,
+                                specification_dir='ratbag_emu/openapi/',
+                                debug=True)
+    server.add_api('ratbag-emu.yaml',
+                   options={"swagger_ui": True},
+                   arguments={'title': 'ratbag-emu'},
+                   strict_validation=True,
+                   validate_responses=True)
     server.run(port=8080)

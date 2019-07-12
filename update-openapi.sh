@@ -1,17 +1,8 @@
-#!/bin/bash
+#!/bin/bash -e
 
-
-# Server
-echo 'Updating server code...'
-openapi-generator-cli generate \
-    -i src/ratbag_emu/openapi/ratbag-emu.yaml \
-    --package-name ratbag_emu_server \
-    -g python-flask \
-    -o src/server_gen/ \
-    > /dev/null
-
-mv src/server_gen/ratbag_emu_server/controllers/device_controller.py src/server_gen/ratbag_emu_server/controllers/device_controller_gen.py
-cp src/ratbag_emu/server/device_controller.py src/server_gen/ratbag_emu_server/controllers/device_controller.py
+# Validate
+echo 'Validating...'
+openapi-generator-cli validate -i src/ratbag_emu/openapi/ratbag-emu.yaml > /dev/null
 
 # Client
 echo 'Updating client code...'

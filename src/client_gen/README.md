@@ -52,15 +52,17 @@ from ratbag_emu_client.rest import ApiException
 from pprint import pprint
 
 
-# create an instance of the API class
+# Defining host is optional and default to http://localhost:8080
+configuration.host = "http://localhost:8080"
+# Create an instance of the API class
 api_instance = ratbag_emu_client.DeviceApi(ratbag_emu_client.ApiClient(configuration))
 shortname = 'shortname_example' # str | Short name name of the device to add
 
 try:
     # Creates a simulated device
-    api_instance.add_device(shortname)
+    api_instance.ratbag_emu_server_add_device(shortname)
 except ApiException as e:
-    print("Exception when calling DeviceApi->add_device: %s\n" % e)
+    print("Exception when calling DeviceApi->ratbag_emu_server_add_device: %s\n" % e)
 
 ```
 
@@ -70,16 +72,14 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DeviceApi* | [**add_device**](docs/DeviceApi.md#add_device) | **GET** /devices/add/{shortname} | Creates a simulated device
-*DeviceApi* | [**device_event**](docs/DeviceApi.md#device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
-*DeviceApi* | [**get_device**](docs/DeviceApi.md#get_device) | **GET** /devices/{device_id} | Returns a simulated device
-*DeviceApi* | [**list_devices**](docs/DeviceApi.md#list_devices) | **GET** /devices | List of simulated devices
+*DeviceApi* | [**ratbag_emu_server_add_device**](docs/DeviceApi.md#ratbag_emu_server_add_device) | **GET** /devices/add/{shortname} | Creates a simulated device
+*DeviceApi* | [**ratbag_emu_server_device_event**](docs/DeviceApi.md#ratbag_emu_server_device_event) | **POST** /devices/{device_id}/event | Send an event to a simulated device
+*DeviceApi* | [**ratbag_emu_server_get_device**](docs/DeviceApi.md#ratbag_emu_server_get_device) | **GET** /devices/{device_id} | Returns a simulated device
+*DeviceApi* | [**ratbag_emu_server_list_devices**](docs/DeviceApi.md#ratbag_emu_server_list_devices) | **GET** /devices | List of simulated devices
 
 
 ## Documentation For Models
 
- - [Device](docs/Device.md)
- - [EventData](docs/EventData.md)
 
 
 ## Documentation For Authorization
