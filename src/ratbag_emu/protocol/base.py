@@ -7,14 +7,15 @@ class BaseDevice(UHIDDevice):
 
     _protocol = None
     _buttons = []
+    _dpi = 800
 
     def __init__(self, rdesc=None, info=None, name='Generic Device'):
         super().__init__()
         self.info = info
         self.rdesc = rdesc
         self.name = 'Test {} ({}:{})'.format(name,
-                                                    hex(self.vid),
-                                                    hex(self.pid))
+                                             hex(self.vid),
+                                             hex(self.pid))
 
         self._output_report = self._protocol_receive
 
@@ -43,6 +44,15 @@ class BaseDevice(UHIDDevice):
 
     def send_raw(self, data):
         self._send_raw(data)
+
+    def create_report(self, data, type):
+        # Translate mm to pixel
+        for attr in ["x", "y"]:
+            if hasattr(data, attr):
+                setattr(data, attr,
+                        int(getattr(data, attr) * 0.0393700787 * self._dpi))
+
+        return super().create_report(data, type)
 
     @property
     def protocol(self):

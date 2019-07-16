@@ -2,9 +2,6 @@
 import threading
 
 import connexion
-from connexion.resolver import RestyResolver
-
-#from ratbag_emu_server import encoder
 
 import ratbag_emu.server
 from ratbag_emu.device_handler import DeviceHandler
