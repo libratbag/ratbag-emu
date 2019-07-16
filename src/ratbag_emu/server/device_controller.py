@@ -6,7 +6,13 @@ from hidtools.hid import RangeError
 from ratbag_emu.device_handler import DeviceHandler
 
 def add_device(shortname):
-    return DeviceHandler.add_device(shortname), 201
+    res = DeviceHandler.add_device(shortname)
+    status = 201
+
+    if res is None:
+        status = 404
+
+    return None, status
 
 
 def device_event(device_id):

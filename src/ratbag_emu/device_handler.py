@@ -22,8 +22,14 @@ class DeviceHandler(object):
 
     @staticmethod
     def add_device(shortname):
-        DeviceHandler.devices.append(HIDPP20Device(report_descriptor_g_pro, (0x3, 0x046d, 0xc539), 'Logitech Simple Device'))
-        DeviceHandler.devices.append(SteelseriesDevice(report_descriptor_g_pro, (0x3, 0x01038, 0x1720), 2, 'Steelseriesw Rival 310'))
+        if shortname == "steelseries-rival310":
+            DeviceHandler.devices.append(SteelseriesDevice(report_descriptor_g_pro, (0x3, 0x01038, 0x1720), 'Steelseriesw Rival 310', 2))
+        elif shortname == "logitech-g-pro":
+            DeviceHandler.devices.append(HIDPP20Device(report_descriptor_g_pro, (0x3, 0x046d, 0xc4079), 'Logitech G Pro'))
+        else:
+            return None
+
+        return True
 
     @staticmethod
     def get_openapi_devices():
