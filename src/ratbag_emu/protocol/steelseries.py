@@ -6,8 +6,8 @@ class SteelseriesReport():
     Arguments                   = 2
 
     # Dpi
-    DpiId                       = 2
-    DpiSteps                    = 3
+    DpiId                       = 0
+    DpiSteps                    = 1
 
 
 class SteelseriesReportType():
@@ -17,6 +17,8 @@ class SteelseriesReportType():
 
 class Steelseries2Commands():
     Dpi                         = 0x53
+    ReportRate                  = 0x54
+    Save                        = 0x59
     LEDs                        = 0x5b
     ReadFirmware                = 0x90
     ReadSettings                = 0x92
@@ -66,6 +68,8 @@ class SteelseriesDevice(BaseDevice):
 
         self.report_size = {
             self.Commands.Dpi:                  self.ReportType.ShortSize,
+            self.Commands.ReportRate:           self.ReportType.ShortSize,
+            self.Commands.Save:                 self.ReportType.ShortSize,
             self.Commands.LEDs:                 self.ReportType.LongSize,
             self.Commands.ReadFirmware:         self.ReportType.ShortSize,
             self.Commands.ReadSettings:         self.ReportType.ShortSize
@@ -73,6 +77,8 @@ class SteelseriesDevice(BaseDevice):
 
         self.commands = {
             self.Commands.Dpi:                  self.change_dpi,
+            self.Commands.ReportRate:           self.nop,
+            self.Commands.Save:                 self.nop,
             self.Commands.LEDs:                 self.change_leds,
             self.Commands.ReadFirmware:         self.read_firmware,
             self.Commands.ReadSettings:         self.read_settings
@@ -81,13 +87,13 @@ class SteelseriesDevice(BaseDevice):
     '''
     Interface functions
     '''
-    def protocol_send(self, command, buf):
-        data = [0] * self.report_size[command]
-        data[self.Report.Command] = command
-        for i in range(len(buf)):
-            data[self.Report.Arguments + i] = buf[i]
+    def protocol_send(self, command, data):
+        buf = [0] * self.report_size[command]
+        buf[self.Report.Command] = command
+        for i in range(len(data)):
+            buf[self.Report.Arguments + i] = data[i]
 
-        super().protocol_send(data)
+        super().protocol_send(buf)
 
     '''
     Logic definition
@@ -111,7 +117,7 @@ class SteelseriesDevice(BaseDevice):
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
-        self.dpi[dpi_id + 1] = self.step + self.step * dpi_steps
+        self.dpi[dpi_id - 1] = self.step + self.step * dpi_steps
         return
 
     def change_leds(self, command, data, args):
@@ -124,8 +130,13 @@ class SteelseriesDevice(BaseDevice):
     def read_settings(self, command, data, args):
         data = [0]
         data.append(self.active_dpi)
-        data.append(self.dpi)
-        data.append(self.led_color)
+        for dpi in self.dpi:
+            data.append(int((dpi - self.step) / self.step))
+        for color in self.led_color:
+            data += color
         self.protocol_send(command, data)
         return
+
+    def nop(self, commandb, data, args):
+        pass
 
