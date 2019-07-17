@@ -5,9 +5,13 @@ from hidtools.hid import RangeError
 
 from ratbag_emu.device_handler import DeviceHandler
 
-def add_device(shortname):
-    res = DeviceHandler.add_device(shortname)
+
+def add_device():
+    res = None
     status = 201
+
+    if connexion.request.is_json:
+        res = DeviceHandler.add_device(connexion.request.json['shortname'])
 
     if res is None:
         status = 404
@@ -24,10 +28,10 @@ def device_event(device_id):
             res = DeviceHandler.create_event(device_id, connexion.request.json)
         except KeyError:
             return \
-                json.dumps("Invalid event"), 500
+                json.dumps('Invalid event'), 500
         except RangeError:
             return \
-                json.dumps("The X or Y values exceed the maximum supported"), \
+                json.dumps('The X or Y values exceed the maximum supported'), \
                 400
 
     if res is None:

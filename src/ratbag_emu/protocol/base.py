@@ -28,7 +28,8 @@ class BaseDevice(UHIDDevice):
 
     profiles = []
 
-    def __init__(self, rdesc=None, info=None, name='Generic Device'):
+    def __init__(self, rdesc=None, info=None, name='Generic Device',
+                 shortname='generic'):
         try:
             super().__init__()
         except PermissionError:
@@ -39,6 +40,7 @@ class BaseDevice(UHIDDevice):
         self.name = 'Test {} ({}:{})'.format(name,
                                              hex(self.vid),
                                              hex(self.pid))
+        self.shortname = shortname
 
         self._output_report = self._protocol_receive
 

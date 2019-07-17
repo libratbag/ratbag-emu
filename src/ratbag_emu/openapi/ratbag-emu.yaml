@@ -28,21 +28,23 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-  '/devices/add/{shortname}':
-    get:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  '/devices/add':
+    post:
       tags:
         - device
       summary: Creates a simulated device
       description: 'Tells ratbag-emu to create a new simulated device'
       operationId: ratbag_emu.server.add_device
-      parameters:
-        - name: shortname
-          in: path
-          description: Short name name of the device to add
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Short name name of the device to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
       responses:
         '200':
           description: OK
@@ -69,7 +71,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Device'
         '404':
           description: Device not found
   '/devices/{device_id}/event':
@@ -106,3 +108,20 @@ paths:
           description: Error sending data to the device
         '404':
           description: Device not found
+
+components:
+  schemas:
+    Device:
+      title: Device
+      description: Simulated device
+      type: object
+      required:
+        - shortname
+      properties:
+        id:
+          type: integer
+          format: int32
+        shortname:
+          type: string
+        name:
+          type: string

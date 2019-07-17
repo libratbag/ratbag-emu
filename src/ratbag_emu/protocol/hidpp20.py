@@ -46,9 +46,10 @@ class HIDPP20Device(BaseDevice):
     '''
     Init routine
     '''
-    def __init__(self, rdesc=None, info=None, name='Generic HID++ 2.0 Device'):
+    def __init__(self, rdesc=None, info=None, name='Generic HID++ 2.0 Device',
+                 shortname='generic-hipp20'):
         self.protocol = 'HID++ 2.0'
-        super().__init__(rdesc, info, name)
+        super().__init__(rdesc, info, name, shortname)
 
         self.Report         = HIDPPReport
         self.ReportType     = HIDPPReportType

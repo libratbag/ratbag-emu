@@ -23,9 +23,9 @@ class DeviceHandler(object):
     @staticmethod
     def add_device(shortname):
         if shortname == "steelseries-rival310":
-            DeviceHandler.devices.append(SteelseriesDevice(report_descriptor_g_pro, (0x3, 0x01038, 0x1720), 'Steelseriesw Rival 310', 2))
+            DeviceHandler.devices.append(SteelseriesDevice(report_descriptor_g_pro, (0x3, 0x01038, 0x1720), 'Steelseriesw Rival 310', shortname, 2))
         elif shortname == "logitech-g-pro":
-            DeviceHandler.devices.append(HIDPP20Device(report_descriptor_g_pro, (0x3, 0x046d, 0xc4079), 'Logitech G Pro'))
+            DeviceHandler.devices.append(HIDPP20Device(report_descriptor_g_pro, (0x3, 0x046d, 0xc4079), 'Logitech G Pro', shortname))
         else:
             return None
 
@@ -33,11 +33,15 @@ class DeviceHandler(object):
 
     @staticmethod
     def get_openapi_devices():
-        openapi_devices = dict()
+        openapi_devices = []
 
         i = 0
         for device in DeviceHandler.devices:
-            openapi_devices[i] = device.name
+            openapi_devices.append({
+                'id':           i,
+                'name':         device.name,
+                'shortname':    device.shortname
+            })
             i += 1
 
         return openapi_devices
@@ -47,7 +51,11 @@ class DeviceHandler(object):
         if device_id > len(DeviceHandler.devices) - 1:
             return None
 
-        return {device_id: DeviceHandler.devices[device_id].name}
+        return {
+                'id':           device_id,
+                'name':         DeviceHandler.devices[device_id].name,
+                'shortname':    DeviceHandler.devices[device_id].shortname
+            }
 
     @staticmethod
     def create_event(device_id, event_data):
