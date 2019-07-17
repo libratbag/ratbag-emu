@@ -100,7 +100,7 @@ class HIDPP20Device(BaseDevice):
         for i in range(len(args)):
             data[self.Report.Arguments + i] = args[i]
 
-        super().protocol_send(data)
+        super().send_raw(data)
 
     def protocol_reply(self, data, args):
         assert len(data) >= self.Report.Arguments + len(args), \
@@ -109,15 +109,18 @@ class HIDPP20Device(BaseDevice):
         for i in range(len(args)):
             data[self.Report.Arguments + i] = args[i]
 
-        super().protocol_send(data)
+        super().send_raw(data)
 
     def protocol_error(self, data, error):
-        for i in reversed(range(len(data[2:-1]))):
-            data[i + 1 + 2] = data[i + 2]
-
-        data[self.Report.Feature] = error
-
-        super().protocol_send(data)
+        super().send_raw([
+            self.ReportType.Short,
+            data[self.Report.Device],
+            0x8f,
+            data[self.Report.Feature],
+            data[self.Report.ASE],
+            error,
+            0
+        ])
 
     '''
     Logic definition

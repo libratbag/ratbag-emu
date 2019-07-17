@@ -126,6 +126,41 @@ paths:
           description: Error sending data to the device
         '404':
           description: Device not found
+  '/devices/{device_id}/leds/{led_id}':
+    get:
+      tags:
+        - device
+      summary: Returns the LED state of a specific LED from a simulated device
+      operationId: ratbag_emu.server.get_led
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of the device
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: led_id
+          in: path
+          description: ID of the LED to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: array
+                    items:
+                      type: integer
+                      format: int32
+                  - type: string
+        '404':
+          description: Device not found
 
 components:
   schemas:
