@@ -116,7 +116,7 @@ class SteelseriesDevice(BaseDevice):
 
     def read_settings(self, command, data, args):
         data = [0]
-        data.append(self.active_dpi)
+        data.append(self.active_dpi - 1)
         for dpi in self.dpi:
             data.append(int((dpi - self.step) / self.step))
         for color in self.leds:

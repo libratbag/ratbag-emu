@@ -12,7 +12,7 @@ class BaseDevice(UHIDDevice):
     '''
     buttons = []
 
-    active_dpi = 2
+    active_dpi = 0
     dpi = [
         3000,
         6000
@@ -74,8 +74,8 @@ class BaseDevice(UHIDDevice):
         # Translate mm to pixel
         for attr in ["x", "y"]:
             if hasattr(data, attr):
-                setattr(data, attr,
-                        int(getattr(data, attr) * 0.0393700787 * self._dpi))
+                setattr(data, attr, int(int(getattr(data, attr)) * 0.0393700787
+                                        * self.dpi[self.active_dpi]))
 
         return super().create_report(data, type)
 
