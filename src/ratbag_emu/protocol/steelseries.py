@@ -31,19 +31,6 @@ class SteelseriesDevice(BaseDevice):
     version_major = 1
     version_minor = 33
 
-    step = 100
-
-    active_dpi = 2
-    dpi = [
-        3000,
-        6000
-    ]
-
-    led_color = [
-        [0xff, 0xff, 0xff],
-        [0xff, 0xff, 0xff]
-    ]
-
     '''
     Init routine
     '''
@@ -132,7 +119,7 @@ class SteelseriesDevice(BaseDevice):
         data.append(self.active_dpi)
         for dpi in self.dpi:
             data.append(int((dpi - self.step) / self.step))
-        for color in self.led_color:
+        for color in self.leds:
             data += color
         self.protocol_send(command, data)
         return

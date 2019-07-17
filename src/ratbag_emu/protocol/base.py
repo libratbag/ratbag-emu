@@ -5,9 +5,28 @@ from hidtools.uhid import UHIDDevice
 
 class BaseDevice(UHIDDevice):
 
-    _protocol = None
-    _buttons = []
-    _dpi = 800
+    protocol = None
+
+    '''
+    Hardware properties
+    '''
+    buttons = []
+
+    active_dpi = 2
+    dpi = [
+        3000,
+        6000
+    ]
+    step = 100
+
+    polling_rate = 1000
+
+    leds = [
+        [0xff, 0xff, 0xff],
+        [0xff, 0xff, 0xff]
+    ]
+
+    profiles = []
 
     def __init__(self, rdesc=None, info=None, name='Generic Device'):
         super().__init__()
@@ -53,30 +72,6 @@ class BaseDevice(UHIDDevice):
                         int(getattr(data, attr) * 0.0393700787 * self._dpi))
 
         return super().create_report(data, type)
-
-    @property
-    def protocol(self):
-        return self._protocol
-
-    @protocol.setter
-    def protocol(self, value):
-        self._protocol = value
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def buttons(self):
-        return self._buttons
-
-    @buttons.setter
-    def buttons(self, value):
-        self._buttons = value
 
 
 class MouseData(object):
