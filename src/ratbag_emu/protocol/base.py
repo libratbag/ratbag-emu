@@ -29,7 +29,11 @@ class BaseDevice(UHIDDevice):
     profiles = []
 
     def __init__(self, rdesc=None, info=None, name='Generic Device'):
-        super().__init__()
+        try:
+            super().__init__()
+        except PermissionError:
+            print('!!! Not enough permissions to create UHID devices. Bailing out. !!!')
+            exit(1)
         self.info = info
         self.rdesc = rdesc
         self.name = 'Test {} ({}:{})'.format(name,
