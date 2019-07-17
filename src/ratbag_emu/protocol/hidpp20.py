@@ -31,13 +31,20 @@ class HIDPPFeatures():
     DFU                         = 0x00d0
 
 
-class HIDPP20Device(BaseDevice):
-    '''
-    Device properties
-    '''
-    version_major = 4
-    version_minor = 2
+class HIDPPErrors():
+    NoError                     = 0
+    Unknown                     = 1
+    InvalidArgument             = 2
+    OutOfRange                  = 3
+    HWError                     = 4
+    LogitechInternal            = 5
+    INVALID_FEATURE_INDEX       = 6
+    INVALID_FUNCTION_ID         = 7
+    Busy                        = 8
+    Unsupported                 = 9
 
+
+class HIDPP20Device(BaseDevice):
     '''
     Internal variables
     '''
@@ -51,22 +58,35 @@ class HIDPP20Device(BaseDevice):
         self.protocol = 'HID++ 2.0'
         super().__init__(rdesc, info, name, shortname)
 
+        # Protocol declarations
         self.Report         = HIDPPReport
         self.ReportType     = HIDPPReportType
         self.Features       = HIDPPFeatures
-
-        self.features = {
-            self.Features.IRoot:                self.IRoot,
-            self.Features.IFeatureSet:          self.IFeatureSet,
-            self.Features.IFeatureInfo:         self.IFeatureInfo
-        }
+        self.Errors         = HIDPPErrors
 
         self.report_size = {
             self.ReportType.Short:              self.ReportType.ShortSize,
             self.ReportType.Long:               self.ReportType.LongSize
         }
 
+        # Function mapping
+        self.features = {
+            self.Features.IRoot:                self.IRoot,
+            self.Features.IFeatureSet:          self.IFeatureSet,
+            self.Features.IFeatureInfo:         self.IFeatureInfo
+        }
+
         self.events = {}
+
+        # Device proprieties
+        self.version_major = 4
+        self.version_minor = 2
+
+        self.feature_table = [
+            self.Features.IRoot,
+            self.Features.IFeatureSet,
+            self.Features.IFeatureInfo
+        ]
 
     '''
     Interface functions
@@ -88,6 +108,14 @@ class HIDPP20Device(BaseDevice):
 
         for i in range(len(args)):
             data[self.Report.Arguments + i] = args[i]
+
+        super().protocol_send(data)
+
+    def protocol_error(self, data, error):
+        for i in reversed(range(len(data[2:-1]))):
+            data[i + 1 + 2] = data[i + 2]
+
+        data[self.Report.Feature] = error
 
         super().protocol_send(data)
 
@@ -114,6 +142,7 @@ class HIDPP20Device(BaseDevice):
             return
         # Function
         else:
+            print('# DEBUG: Got feature {}, ASE {}'.format(feature, ase))
             self.features[feature](data, ase, args)
 
     '''
@@ -126,14 +155,36 @@ class HIDPP20Device(BaseDevice):
     def IRoot(self, data, ase, args):
         # featIndex, featType, featVer = getFeature(featId)
         if ase == 0:
-            return
+            featId = (args[0] << 4) + args[1]
+            print('# DEBUG: getFeature({}) = {}'.format(featId, self.feature_table[featId]))
+            # we won't support any hidden features and we are also not planning
+            # to support obsolete features ATM so we will set featType to 0
+            self.protocol_reply(data, [self.feature_table.index(featId), 0])
 
         # protocolNum, targetSw, pingData = getProtocolVersion(0, 0, pingData)
         elif ase == 1:
-            self.protocol_reply(data, [4, 2, args[2]])
+            print('# DEBUG: getProtocolVersion() = {}.{}'.format(self.version_major, self.version_minor))
+            self.protocol_reply(data,
+                [self.version_major, self.version_minor, args[2]])
 
     def IFeatureSet(self, data, ase, args):
-        return
+        # count = getCount()
+        if ase == 0:
+            print('# DEBUG: getCount() = {}'.format(len(self.feature_table)))
+            self.protocol_reply(data, [len(self.feature_table)])
+
+        # featureID, featureType, featureVersion = getFeatureID(featureIndex)
+        elif ase == 1:
+            featureIndex = args[0]
+
+            if featureIndex >= len(self.feature_table):
+                self.protocol_error(data, self.Errors.OutOfRange)
+                return
+
+            print('# DEBUG: getFeatureID({}) = {}'.format(featureIndex, self.feature_table[featureIndex]))
+            # we won't support any hidden features and we are also not planning
+            # to support obsolete features ATM so we will set featType to 0
+            self.protocol_reply(data, [self.feature_table[featureIndex], 0])
 
     def IFeatureInfo(self, data, ase, args):
         return
