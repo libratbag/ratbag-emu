@@ -50,5 +50,15 @@ def get_device(device_id):
     return res, status
 
 
+def delete_device(device_id):
+    res = DeviceHandler.delete_device(device_id)
+    status = 204
+
+    if res is False:
+        status = 404
+
+    return res, status
+
+
 def list_devices():
     return DeviceHandler.get_openapi_devices(), 200
