@@ -47,8 +47,8 @@ class BaseDevice(UHIDDevice):
         try:
             super().__init__()
         except PermissionError:
-            print('!!! Not enough permissions to create UHID devices. Bailling out. !!!')
-            exit(1)
+            print('Error: Not enough permissions to create UHID devices')
+            os._exit()
         self.info = info
         self.rdesc = rdesc
         self.name = 'Test {} ({}:{})'.format(name, hex(self.vid), hex(self.pid))
