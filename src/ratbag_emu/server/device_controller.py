@@ -114,7 +114,29 @@ def set_led(device_id, led_id, value):
 '''
 Event
 '''
-def device_event(device_id, event_data):
+def device_event(device_id):
+    if not connexion.request.is_json:
+        return json.dumps('The request is not valid JSON.'), 400
+
+    actions = connexion.request.json
+
+    if device_id > len(DeviceHandler.devices) - 1:
+        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+
+    if actions is None:
+        return json.dumps('Invalid value'), 400
+
+    DeviceHandler.devices[device_id].simulate_action(actions)
+
+    return json.dumps('Success'), 200
+
+
+def device_event_raw(device_id):
+    if not connexion.request.is_json:
+        return json.dumps('The request is not valid JSON.'), 400
+
+    event_data = connexion.request.json
+
     if device_id > len(DeviceHandler.devices) - 1:
         return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
 
@@ -125,11 +147,14 @@ def device_event(device_id, event_data):
 
     for data in event_data:
         for key, prop in data.items():
-            setattr(event, key, prop)
+            if hasattr(event, key):
+                setattr(event, key, prop)
+            else:
+                print('Invalid attribute ({})'.format(key))
 
-    data = DeviceHandler.devices[device_id].create_report(event, 0x11)
+    data = None
     try:
-        DeviceHandler.devices[device_id].send_raw(data)
+        data = DeviceHandler.devices[device_id].create_report(event, 0x11)
     except KeyError:
         return \
             json.dumps('Invalid event'), 500
@@ -137,5 +162,7 @@ def device_event(device_id, event_data):
         return \
             json.dumps('The X or Y values exceed the maximum supported'), \
             400
+
+    DeviceHandler.devices[device_id].send_raw(data)
 
     return json.dumps('Success'), 200

@@ -1,6 +1,12 @@
+import copy
 import struct
+import os
+import threading
+import time
 
 from hidtools.uhid import UHIDDevice
+
+from ratbag_emu.util import AbsInt
 
 
 class BaseDevice(UHIDDevice):
@@ -22,7 +28,7 @@ class BaseDevice(UHIDDevice):
     ]
     step = 100
 
-    polling_rate = 1000
+    report_rate = 1000  # Hz
 
     leds = [
         [0xff, 0xff, 0xff],
@@ -107,9 +113,123 @@ class BaseDevice(UHIDDevice):
         for attr in ["x", "y"]:
             if hasattr(data, attr):
                 setattr(data, attr, int(int(getattr(data, attr)) * 0.0393700787
-                                        * self.dpi[self.active_dpi]))
+                                        * self.get_dpi()))
 
         return super().create_report(data, type)
+
+    '''
+    Simulates user actions
+    '''
+    def simulate_action(self, actions):
+        packets = {}
+        duration = 0
+
+        #self.report_rate = 100
+
+        print('Start contructing packets...')
+        for action in actions:
+            start_report = int(action['start'] * self.report_rate)
+            end_report = int(action['end'] * self.report_rate)
+            report_count = end_report - start_report
+
+            if report_count == 0:
+                continue
+
+            if action['end'] > duration:
+                duration = action['end']
+
+            # XY movement
+            if action['action']['type'] == 'xy':
+                # We assume a straight movement
+                pixel_buffer = {}
+                step = {}
+
+                '''
+                Initialize pixel_buffer, real_pixel_buffer and step for X and Y
+
+                pixel_buffer holds the ammount of pixels left to send (kinda,
+                read bellow).
+
+                We actually have two variables for this, real_pixel_buffer and
+                pixel_buffer. pixel_buffer mimmics the user movement and
+                real_pixel_buffer holds true number of pixels left to send.
+                When using high report rates (ex. 1000Hz) we usually don't
+                have a full pixel to send, that's why we need two variables. We
+                subtract the step to pixel_buffer at each iteration, when the
+                difference between pixel_buffer and real_pixel_buffer is equal
+                or higher than 1 pixel we then send a HID report to the device
+                with that difference (int! we send the int part of the
+                difference) and update real_pixel_buffer to include this
+                changes.
+                '''
+                for attr in ['x', 'y']:
+                    # move_value * inch_to_mm * active_dpi
+                    pixel_buffer[attr] = AbsInt((action['action'][attr] *
+                                         0.0393700787 * self.get_dpi()))
+                    step[attr] = pixel_buffer[attr] / report_count
+                real_pixel_buffer = copy.deepcopy(pixel_buffer)
+
+                for i in range(start_report, end_report):
+                    if i not in packets:
+                        packets[i] = MouseData(self)
+
+                    for attr in ['x', 'y']:
+                        pixel_buffer[attr] -= step[attr]
+                        diff = real_pixel_buffer[attr] - pixel_buffer[attr]
+                        '''
+                        The max is 127, if this happens we need to leave the
+                        excess in the buffer for it to be sent next in the
+                        next report
+                        '''
+                        if abs(diff) >= 1:
+                            if abs(diff) > 127:
+                                diff = 127 if diff > 0 else -127
+                            setattr(packets[i], attr, int(diff))
+                            real_pixel_buffer[attr] -= int(diff)
+
+            # Button
+            elif action['action']['type'] == 'button':
+                for i in range(start_report, end_report):
+                    if i not in packets:
+                        packets[i] = MouseData(self)
+
+                    setattr(packets[i], 'b{}'.format(action['action']['id']), 1)
+
+        sim_thread = threading.Thread(target=self._send_packets,
+                                    args=(packets, duration * self.report_rate))
+        sim_thread.start()
+        #self._send_packets(packets, duration * self.report_rate)
+
+    '''
+    Helper function: Send packets
+    '''
+    def _send_packets(self, packets, total):
+        print('Start sending packets...')
+        for i in range(total):
+            # We don't send empty reports
+            if i not in packets:
+                continue
+            empty = True
+            for attr in packets[i].__dict__:
+                if getattr(packets[i], attr) != 0 or \
+                   getattr(packets[i], attr) != None:
+                    empty = False
+                    break
+            if empty:
+                return
+
+            if packets[i].x != 0 and packets[i].y != 0:
+                self.send_raw([0x00, packets[i].x, packets[i].y])
+                #self.send_raw(self.create_report(packets[i], 0x11))
+            #time.sleep(1 / self.report_rate)
+
+
+    '''
+    Gets the active DPI value
+    '''
+    def get_dpi(self):
+        return self.dpi[self.active_dpi]
+
 
 
 class MouseData(object):
