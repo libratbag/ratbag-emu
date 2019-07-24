@@ -12,12 +12,19 @@ info:
 tags:
   - name: device
     description: Control interface for the simulated device
+  - name: device-management
+    description: Manage the emulated devices
+  - name: device-event
+    description: Emulate user actions
+  - name: device-led
+    description: Interface with the device LEDs
 
 paths:
   /devices:
     get:
       tags:
-        - device
+#        - device
+        - device-management
       summary: List of simulated devices
       description: 'Provides the list of devices that are being currently simulated by ratbag-emu'
       operationId: ratbag_emu.server.list_devices
@@ -34,7 +41,8 @@ paths:
   '/devices/add':
     post:
       tags:
-        - device
+#        - device
+        - device-management
       summary: Creates a simulated device
       description: 'Tells ratbag-emu to create a new simulated device'
       operationId: ratbag_emu.server.add_device
@@ -53,7 +61,8 @@ paths:
   '/devices/{device_id}':
     get:
       tags:
-        - device
+#        - device
+        - device-management
       summary: Returns a simulated device
       description: 'Returns one the of devices currently simulated by ratbag-emu'
       operationId: ratbag_emu.server.get_device
@@ -76,7 +85,8 @@ paths:
           description: Device not found
     delete:
       tags:
-        - device
+#        - device
+        - device-management
       summary: Deletes a simulated device
       operationId: ratbag_emu.server.delete_device
       parameters:
@@ -95,9 +105,64 @@ paths:
   '/devices/{device_id}/event':
     post:
       tags:
-        - device
+#        - device
+        - device-event
       summary: Send an event to a simulated device
       operationId: ratbag_emu.server.device_event
+      description: 'Send HID event data to the target device'
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of the device to use as the event source
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Event data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Action'
+            examples:
+              basic:
+                summary: Moves the simulated mouse 200mm in both x and y axis during 3s and presses the button 3 during the first 250ms
+                value: {
+                        "0": {
+                          "start": 0,
+                          "end": 250,
+                          "action": {
+                            "type": "button",
+                            "id": 0
+                          }
+                        },
+                        "1": {
+                          "start": 0,
+                          "end": 3000,
+                          "action": {
+                            "type": "xy",
+                            "x": 200,
+                            "y": 200
+                          }
+                        }
+                      }
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Error sending data to the device
+        '404':
+          description: Device not found
+  '/devices/{device_id}/raw_event':
+    post:
+      tags:
+#        - device
+        - device-event
+      summary: Send a raw event to a simulated device
+      operationId: ratbag_emu.server.device_event_raw
       description: 'Send HID event data to the target device'
       parameters:
         - name: device_id
@@ -129,9 +194,45 @@ paths:
   '/devices/{device_id}/leds/{led_id}':
     get:
       tags:
-        - device
+#        - device
+        - device-led
       summary: Returns the LED state of a specific LED from a simulated device
       operationId: ratbag_emu.server.get_led
+      parameters:
+        - name: device_id
+          in: path
+          description: ID of the device
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: led_id
+          in: path
+          description: ID of the LED to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - type: array
+                    items:
+                      type: integer
+                      format: int32
+                  - type: string
+        '404':
+          description: Device not found
+    put:
+      tags:
+#        - device
+        - device-led
+      summary: Returns the LED state of a specific LED from a simulated device
+      operationId: ratbag_emu.server.set_led
       parameters:
         - name: device_id
           in: path
@@ -178,3 +279,32 @@ components:
           type: string
         name:
           type: string
+    Action:
+      title: Action
+      description: Simulated device
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: integer
+          format: int32
+        end:
+          type: integer
+          format: int32
+        action:
+          type: object
+          properties:
+            type:
+              type: string
+            x:
+              type: integer
+              format: int32
+            y:
+              type: integer
+              format: int32
+            id:
+              type: integer
+              format: int32
+
