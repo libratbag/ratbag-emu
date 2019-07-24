@@ -238,10 +238,8 @@ class MouseData(object):
     '''
 
     def __init__(self, device):
-        i = 1
-        for button in device.buttons:
+        for i, button in enumerate(device.buttons):
             setattr(self, 'b{}'.format(i), button)
-            i += 1
 
         self.x = 0
         self.y = 0

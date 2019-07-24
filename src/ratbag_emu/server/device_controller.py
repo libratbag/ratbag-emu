@@ -47,7 +47,7 @@ def get_device(device_id):
 
 def add_device():
     if not connexion.request.is_json:
-        return json.dumps('The request is not balid JSON.'), 400
+        return json.dumps('The request is not valid JSON.'), 400
 
     shortname = connexion.request.json['shortname']
 
