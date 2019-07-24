@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import threading
+import traceback
 
 import connexion
 
 import ratbag_emu.server
 from ratbag_emu.device_handler import DeviceHandler
 
-if __name__ == "__main__":
+
+def main():
     # Start handling devices
     devices_thread = threading.Thread(target=DeviceHandler.handle)
     devices_thread.start()
@@ -21,3 +23,12 @@ if __name__ == "__main__":
                    strict_validation=True,
                    validate_responses=True)
     server.run(port=8080)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    except Exception:
+        traceback.print_exc(file=sys.stdout)
