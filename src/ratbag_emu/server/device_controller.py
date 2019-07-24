@@ -9,6 +9,7 @@ from ratbag_emu.protocol.descriptors import report_descriptor_simple, \
 from ratbag_emu.device_handler import DeviceHandler
 from ratbag_emu.protocol.base import MouseData
 from ratbag_emu.protocol.hidpp20 import HIDPP20Device
+from ratbag_emu.protocol.hidpp20 import HIDPPFeatures as HIDPP20Features
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 
@@ -57,7 +58,38 @@ def add_device():
             'Steelseriesw Rival 310', shortname, 2))
     elif shortname == "logitech-g-pro":
         DeviceHandler.append_device(HIDPP20Device(
-            report_descriptor_g_pro, (0x3, 0x046d, 0xc4079),
+            report_descriptor_g_pro, (0x3, 0x046d, 0x4079),
+            [
+                HIDPP20Features.IRoot,
+                HIDPP20Features.IFeatureSet,
+                HIDPP20Features.IFeatureInfo,
+                HIDPP20Features.DeviceNameAndType,
+                0x1d4b,
+                0x0020,
+                0x1001,
+                0x8070,
+                0x1300,
+                0x8100,
+                0x8110,
+                0x8060,
+                0x2201,
+                0x1802,
+                0x1803,
+                0x1805,
+                0x1806,
+                0x1811,
+                0x1830,
+                0x1890,
+                0x1891,
+                0x18a1,
+                0x1801,
+                0x18b1,
+                0x1df3,
+                0x1e00,
+                0x1eb0,
+                0x1863,
+                0x1e22
+            ],
             'Logitech G Pro', shortname))
     else:
         return \
@@ -71,7 +103,7 @@ def delete_device(device_id):
     if device_id > len(DeviceHandler.devices) - 1:
         return False
 
-    # TODO: Destroy device
+    DeviceHandler.devices[device_id].destroy()
     DeviceHandler.devices[device_id] = None
 
 

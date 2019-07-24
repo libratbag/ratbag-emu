@@ -53,10 +53,11 @@ class HIDPP20Device(BaseDevice):
     '''
     Init routine
     '''
-    def __init__(self, rdesc=None, info=None, name='Generic HID++ 2.0 Device',
-                 shortname='generic-hipp20'):
+    def __init__(self, rdesc=None, info=None, feature_table=None,
+                 name='Generic HID++ 2.0 Device', shortname='generic-hipp20'):
         self.protocol = 'HID++ 2.0'
         super().__init__(rdesc, info, name, shortname)
+        self.feature_table = feature_table
 
         # Protocol declarations
         self.Report         = HIDPPReport
@@ -81,12 +82,6 @@ class HIDPP20Device(BaseDevice):
         # Device proprieties
         self.version_major = 4
         self.version_minor = 2
-
-        self.feature_table = [
-            self.Features.IRoot,
-            self.Features.IFeatureSet,
-            self.Features.IFeatureInfo
-        ]
 
     '''
     Interface functions
@@ -162,7 +157,7 @@ class HIDPP20Device(BaseDevice):
             print('# DEBUG: getFeature({}) = {}'.format(featId, self.feature_table[featId]))
             # we won't support any hidden features and we are also not planning
             # to support obsolete features ATM so we will set featType to 0
-            self.protocol_reply(data, [self.feature_table.index(featId), 0])
+            self.protocol_reply(data, [self.feature_table.index(featId), 0, 0])
 
         # protocolNum, targetSw, pingData = getProtocolVersion(0, 0, pingData)
         elif ase == 1:
@@ -187,7 +182,8 @@ class HIDPP20Device(BaseDevice):
             print('# DEBUG: getFeatureID({}) = {}'.format(featureIndex, self.feature_table[featureIndex]))
             # we won't support any hidden features and we are also not planning
             # to support obsolete features ATM so we will set featType to 0
-            self.protocol_reply(data, [self.feature_table[featureIndex], 0])
+            print(self.feature_table[featureIndex])
+            self.protocol_reply(data, [self.feature_table[featureIndex], 0, 0])
 
     def IFeatureInfo(self, data, ase, args):
         return

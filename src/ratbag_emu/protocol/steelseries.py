@@ -80,7 +80,7 @@ class SteelseriesDevice(BaseDevice):
         for i in range(len(data)):
             buf[self.Report.Arguments + i] = data[i]
 
-        super().protocol_send(buf)
+        super().send_raw(buf)
 
     '''
     Logic definition
@@ -117,7 +117,7 @@ class SteelseriesDevice(BaseDevice):
 
     def read_settings(self, command, data, args):
         data = [0]
-        data.append(self.active_dpi - 1)
+        data.append(self.active_dpi)
         for dpi in self.dpi:
             data.append(int((dpi - self.step) / self.step))
         for color in self.leds:
