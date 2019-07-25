@@ -92,6 +92,9 @@ class BaseDevice(UHIDDevice):
     Logs the buffer to the console and send the packet trhough UHID
     '''
     def _send_raw(self, data):
+        if not data:
+            return
+
         print('write' + ''.join(' {:02x}'.format(byte) for byte in data))
 
         self.call_input_event(data)
@@ -103,19 +106,36 @@ class BaseDevice(UHIDDevice):
         self._send_raw(data)
 
     '''
-    Routine used to send event output reports
+    Create report routine
+
+    We overwrite super's behavior to ignore empty reports
+    '''
+    def create_report(self, data, type=None):
+        empty = True
+        for attr in data.__dict__:
+            if getattr(data, attr):
+                empty = False
+                break
+
+        if empty:
+            return
+
+        return super().create_report(data, type)
+
+    '''
+    Routine used to convert and generate event output reports
 
     Translates the received x and y values to pixels based on the internal
     device DPI property
     '''
-    def create_report(self, data, type):
+    def generate_report(self, data, type=None):
         # Translate mm to pixel
         for attr in ["x", "y"]:
             if hasattr(data, attr):
                 setattr(data, attr, int(int(getattr(data, attr)) * 0.0393700787
                                         * self.get_dpi()))
 
-        return super().create_report(data, type)
+        return self.create_report(data, type)
 
     '''
     Simulates user actions
@@ -124,9 +144,6 @@ class BaseDevice(UHIDDevice):
         packets = {}
         duration = 0
 
-        #self.report_rate = 100
-
-        print('Start contructing packets...')
         for action in actions:
             start_report = int(action['start'] * self.report_rate)
             end_report = int(action['end'] * self.report_rate)
@@ -171,7 +188,7 @@ class BaseDevice(UHIDDevice):
 
                 for i in range(start_report, end_report):
                     if i not in packets:
-                        packets[i] = MouseData(self)
+                        packets[i] = MouseData()
 
                     for attr in ['x', 'y']:
                         pixel_buffer[attr] -= step[attr]
@@ -191,7 +208,7 @@ class BaseDevice(UHIDDevice):
             elif action['action']['type'] == 'button':
                 for i in range(start_report, end_report):
                     if i not in packets:
-                        packets[i] = MouseData(self)
+                        packets[i] = MouseData()
 
                     setattr(packets[i], 'b{}'.format(action['action']['id']), 1)
 
@@ -204,23 +221,8 @@ class BaseDevice(UHIDDevice):
     Helper function: Send packets
     '''
     def _send_packets(self, packets, total):
-        print('Start sending packets...')
         for i in range(total):
-            # We don't send empty reports
-            if i not in packets:
-                continue
-            empty = True
-            for attr in packets[i].__dict__:
-                if getattr(packets[i], attr) != 0 or \
-                   getattr(packets[i], attr) != None:
-                    empty = False
-                    break
-            if empty:
-                return
-
-            if packets[i].x != 0 and packets[i].y != 0:
-                self.send_raw([0x00, packets[i].x, packets[i].y])
-                #self.send_raw(self.create_report(packets[i], 0x11))
+            self.send_raw(self.create_report(packets[i], 0x11))
             #time.sleep(1 / self.report_rate)
 
 
@@ -231,17 +233,8 @@ class BaseDevice(UHIDDevice):
         return self.dpi[self.active_dpi]
 
 
-
 class MouseData(object):
     '''
     Holds event data
     '''
-
-    def __init__(self, device):
-        for i, button in enumerate(device.buttons):
-            setattr(self, 'b{}'.format(i), button)
-
-        self.x = 0
-        self.y = 0
-        self.wheel = 0
-        self.acpan = 0
+    pass

@@ -186,7 +186,7 @@ def device_event_raw(device_id):
 
     data = None
     try:
-        data = DeviceHandler.devices[device_id].create_report(event, 0x11)
+        data = DeviceHandler.devices[device_id].generate_report(event, 0x11)
     except KeyError:
         return \
             json.dumps('Invalid event'), 500
