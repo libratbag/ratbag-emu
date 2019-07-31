@@ -3,8 +3,8 @@ import json
 import connexion
 from hidtools.hid import RangeError
 
-from ratbag_emu.protocol.descriptors import report_descriptor_simple, \
-                                            report_descriptor_g_pro
+from ratbag_emu.protocol.util.descriptors import report_descriptor_simple, \
+                                                 report_descriptor_g_pro
 
 from ratbag_emu.device_handler import DeviceHandler
 from ratbag_emu.protocol.base import MouseData

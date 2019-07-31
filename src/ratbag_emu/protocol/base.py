@@ -8,6 +8,7 @@ import time
 from hidtools.uhid import UHIDDevice
 
 from ratbag_emu.util import AbsInt
+from ratbag_emu.protocol.util.profile import Profile
 
 
 class BaseDevice(UHIDDevice):
@@ -18,24 +19,13 @@ class BaseDevice(UHIDDevice):
     protocol = None
 
     '''
-    Hardware properties
+    Hardware profile
+
+    Represents the active profile in the hardware.
     '''
-    buttons = []
+    hprof = Profile()
 
-    active_dpi = 0
-    dpi = [
-        3000,
-        6000
-    ]
-    step = 100
-
-    report_rate = 1000  # Hz
-
-    leds = [
-        [0xff, 0xff, 0xff],
-        [0xff, 0xff, 0xff]
-    ]
-
+    active_profile = None
     profiles = []
 
     '''
@@ -154,8 +144,8 @@ class BaseDevice(UHIDDevice):
         duration = 0
 
         for action in actions:
-            start_report = int(action['start'] * self.report_rate)
-            end_report = int(action['end'] * self.report_rate)
+            start_report = int(action['start'] * self.hprof.report_rate)
+            end_report = int(action['end'] * self.hprof.report_rate)
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -222,9 +212,8 @@ class BaseDevice(UHIDDevice):
                     setattr(packets[i], 'b{}'.format(action['action']['id']), 1)
 
         sim_thread = threading.Thread(target=self._send_packets,
-                                    args=(packets, duration * self.report_rate))
+                            args=(packets, duration * self.hprof.report_rate))
         sim_thread.start()
-        #self._send_packets(packets, duration * self.report_rate)
 
     '''
     Helper function: Send packets
@@ -235,14 +224,14 @@ class BaseDevice(UHIDDevice):
         for i in range(total):
             s.enter(next_time, 1, self.send_raw,
                     kwargs={'data': self.create_report(packets[i], 0x11)})
-            next_time += 1 / self.report_rate
+            next_time += 1 / self.hprof.report_rate
         s.run()
 
     '''
     Gets the active DPI value
     '''
     def get_dpi(self):
-        return self.dpi[self.active_dpi]
+        return self.hprof.dpi[self.hprof.active_dpi]
 
 
 class MouseData(object):

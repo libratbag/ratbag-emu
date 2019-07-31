@@ -1,5 +1,5 @@
-from .protocol.descriptors import report_descriptor_simple, \
-                                  report_descriptor_g_pro
+from .protocol.util.descriptors import report_descriptor_simple, \
+                                       report_descriptor_g_pro
 from .protocol.hidpp20 import HIDPP20Device
 from .protocol.steelseries import SteelseriesDevice
 
