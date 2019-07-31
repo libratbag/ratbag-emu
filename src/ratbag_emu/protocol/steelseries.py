@@ -104,7 +104,7 @@ class SteelseriesDevice(BaseDevice):
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
-        self.dpi[dpi_id - 1] = self.step + self.step * dpi_steps
+        self.hprof.dpi[dpi_id - 1] = self.hprof.step * (dpi_steps + 1)
         print('# DEBUG: New DPI values: {}, {}'.format(self.dpi[0], self.dpi[1]))
         return
 
@@ -117,10 +117,10 @@ class SteelseriesDevice(BaseDevice):
 
     def read_settings(self, command, data, args):
         data = [0]
-        data.append(self.active_dpi)
-        for dpi in self.dpi:
-            data.append(int((dpi - self.step) / self.step))
-        for color in self.leds:
+        data.append(self.hprof.active_dpi)
+        for dpi in self.hprof.dpi:
+            data.append(int((dpi - self.hprof.step) / self.hprof.step))
+        for color in self.hprof.leds:
             data += color
         self.protocol_send(command, data)
         return
