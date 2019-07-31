@@ -204,8 +204,8 @@ class BaseDevice(UHIDDevice):
                         diff = real_pixel_buffer[attr] - pixel_buffer[attr]
                         '''
                         The max is 127, if this happens we need to leave the
-                        excess in the buffer for it to be sent next in the
-                        next report
+                        excess in the buffer for it to be sent in the next
+                        report
                         '''
                         if abs(diff) >= 1:
                             if abs(diff) > 127:
