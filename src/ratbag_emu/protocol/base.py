@@ -144,8 +144,8 @@ class BaseDevice(UHIDDevice):
         duration = 0
 
         for action in actions:
-            start_report = int(action['start'] * self.hprof.report_rate)
-            end_report = int(action['end'] * self.hprof.report_rate)
+            start_report = int(action['start'] / 1000 * self.hprof.report_rate)
+            end_report = int(action['end'] / 1000 * self.hprof.report_rate)
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -212,7 +212,7 @@ class BaseDevice(UHIDDevice):
                     setattr(packets[i], 'b{}'.format(action['action']['id']), 1)
 
         sim_thread = threading.Thread(target=self._send_packets,
-                            args=(packets, duration * self.hprof.report_rate))
+                args=(packets, int(duration / 1000 * self.hprof.report_rate)))
         sim_thread.start()
 
     '''
