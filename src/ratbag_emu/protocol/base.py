@@ -61,6 +61,14 @@ class BaseDevice(UHIDDevice):
         self.start(None)
 
     '''
+    Logs message to the console
+
+    Prints target message as well as the timestamp
+    '''
+    def log(self, msg):
+        print('{:20}{}'.format('{}:'.format(time.time()), msg))
+
+    '''
     Output report callback
 
     Is called when we receive a report. Logs the buffer to the console and calls
@@ -75,7 +83,7 @@ class BaseDevice(UHIDDevice):
                 for i in range(0, size)]
 
         if size > 0:
-            print('read ' + ''.join(' {:02x}'.format(byte) for byte in data))
+            self.log('read ' + ''.join(' {:02x}'.format(byte) for byte in data))
 
         self.protocol_receive(data, size, rtype)
 
@@ -96,7 +104,7 @@ class BaseDevice(UHIDDevice):
         if not data:
             return
 
-        print('write' + ''.join(' {:02x}'.format(byte) for byte in data))
+        self.log('write' + ''.join(' {:02x}'.format(byte) for byte in data))
 
         self.call_input_event(data)
 
