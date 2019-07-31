@@ -1,4 +1,5 @@
 import copy
+import sched
 import struct
 import os
 import threading
@@ -221,10 +222,13 @@ class BaseDevice(UHIDDevice):
     Helper function: Send packets
     '''
     def _send_packets(self, packets, total):
+        s = sched.scheduler(time.time, time.sleep)
+        next_time = 0
         for i in range(total):
-            self.send_raw(self.create_report(packets[i], 0x11))
-            #time.sleep(1 / self.report_rate)
-
+            s.enter(next_time, 1, self.send_raw,
+                    kwargs={'data': self.create_report(packets[i], 0x11)})
+            next_time += 1 / self.report_rate
+        s.run()
 
     '''
     Gets the active DPI value
