@@ -106,6 +106,7 @@ def delete_device(device_id):
     DeviceHandler.devices[device_id].destroy()
     DeviceHandler.devices[device_id] = None
 
+    return json.dumps('Device deleted'), 204
 
 '''
 LEDs
