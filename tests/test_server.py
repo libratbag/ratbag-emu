@@ -12,6 +12,16 @@ server.add_api('ratbag-emu.yaml',
                 strict_validation=True,
                 validate_responses=True)
 
+
+def test_permissions():
+    from hidtools.uhid import UHIDDevice
+
+    try:
+        assert UHIDDevice() is not None
+    except PermissionError:
+        pytest.exit('Not enough permissions to create UHID devices')
+
+
 @pytest.fixture
 def handle_devices():
     import threading
