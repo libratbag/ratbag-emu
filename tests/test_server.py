@@ -1,15 +1,14 @@
-import threading
-from time import sleep
-
-import connexion
-
 from . import ratbag_emu
-
-import ratbag_emu.server
-from ratbag_emu.device_handler import DeviceHandler
 
 
 def create_server():
+    import threading
+
+    import connexion
+
+    import ratbag_emu.server
+    from ratbag_emu.device_handler import DeviceHandler
+
     # Start handling devices
     devices_thread = threading.Thread(target=DeviceHandler.handle)
     devices_thread.start()
@@ -29,6 +28,8 @@ def create_server():
     return server_thread
 
 def test_create_server():
+    from time import sleep
+
     server = create_server()
 
     sleep(1)
