@@ -27,13 +27,16 @@ def handle_devices():
 
     yield devices_thread
 
+
 @pytest.fixture(autouse=True)
 def client():
     yield server.app.test_client()
 
+
 def test_list_devices(client):
     response = client.get('/devices')
     assert response.status_code == 200
+
 
 def test_add_device(client):
     data = {
