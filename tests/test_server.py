@@ -48,6 +48,7 @@ def test_list_devices(client):
     assert response.status_code == 200
 
 
+@pytest.fixture
 def test_add_device(client):
     data = {
         'shortname': 'steelseries-rival310'
@@ -56,3 +57,12 @@ def test_add_device(client):
                            data=json.dumps(data),
                            content_type='application/json')
     assert response.status_code == 201
+
+
+def test_get_device(client, test_add_device):
+    response = client.get('/devices/0')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'id' in data
+    assert 'shortname' in data
+    assert 'name' in data
