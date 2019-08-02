@@ -9,7 +9,7 @@ import ratbag_emu.server
 from ratbag_emu.device_handler import DeviceHandler
 
 
-def test_create_server():
+def create_server():
     # Start handling devices
     devices_thread = threading.Thread(target=DeviceHandler.handle)
     devices_thread.start()
@@ -23,6 +23,13 @@ def test_create_server():
                    arguments={'title': 'ratbag-emu'},
                    strict_validation=True,
                    validate_responses=True)
-    server.run(port=8080)
+    server_thread = threading.Thread(target=server.run, kwargs={'port': 8080})
+    server_thread.start()
+
+    return server_thread
+
+def test_create_server():
+    server = create_server()
+
     sleep(1)
     server.shutdown()
