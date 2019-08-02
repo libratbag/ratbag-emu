@@ -66,3 +66,8 @@ def test_get_device(client, test_add_device):
     assert 'id' in data
     assert 'shortname' in data
     assert 'name' in data
+
+
+def test_delete_device(client):
+    response = client.delete('/devices/0')
+    assert response.status_code == 204
