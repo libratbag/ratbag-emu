@@ -48,19 +48,25 @@ def test_list_devices(client):
     assert response.status_code == 200
 
 
-@pytest.fixture
-def test_add_device(client):
+def test_add_device(client, name='steelseries-rival310'):
     data = {
-        'shortname': 'steelseries-rival310'
+        'shortname': name
     }
     response = client.post('/devices/add',
                            data=json.dumps(data),
                            content_type='application/json')
     assert response.status_code == 201
+    data = json.loads(response.data)
+    assert 'id' in data
+    assert 'shortname' in data
+    assert 'name' in data
+    return data['id']
 
 
-def test_get_device(client, test_add_device):
-    response = client.get('/devices/0')
+def test_get_device(client):
+    id = test_add_device(client)
+
+    response = client.get('/devices/{}'.format(id))
     assert response.status_code == 200
     data = json.loads(response.data)
     assert 'id' in data
@@ -69,5 +75,28 @@ def test_get_device(client, test_add_device):
 
 
 def test_delete_device(client):
-    response = client.delete('/devices/0')
+    id = test_add_device(client)
+
+    response = client.delete('/devices/{}'.format(id))
     assert response.status_code == 204
+
+
+def test_get_led(client):
+    id = test_add_device(client)
+
+    response = client.get('/devices/{}/leds/0'.format(id))
+    assert response.status_code == 200
+
+
+def test_set_led(client):
+    id = test_add_device(client)
+
+    data = [
+        0xFF,
+        0xFF,
+        0xFF
+    ]
+    response = client.put('/devices/{}/leds/0'.format(id),
+                          data=json.dumps(data),
+                          content_type='application/json')
+    assert response.status_code == 200

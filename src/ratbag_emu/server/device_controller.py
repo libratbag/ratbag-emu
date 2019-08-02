@@ -96,12 +96,16 @@ def add_device():
             json.dumps("Specification '{}' does not exist".format(shortname)), \
             404
 
-    return json.dumps('Device added'), 201
+    return {
+        'id':           DeviceHandler.next_id-1,
+        'name':         DeviceHandler.devices[DeviceHandler.next_id-1].name,
+        'shortname':    DeviceHandler.devices[DeviceHandler.next_id-1].shortname
+    }, 201
 
 
 def delete_device(device_id):
     if device_id > len(DeviceHandler.devices) - 1:
-        return False
+        return json.dumps('Device not found'), 404
 
     DeviceHandler.devices[device_id].destroy()
     DeviceHandler.devices[device_id] = None
@@ -116,21 +120,26 @@ def get_led(device_id, led_id):
        DeviceHandler.devices[device_id] is None:
         return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
 
-    if led_id > len(DeviceHandler.devices[device_id].leds) - 1:
+    if led_id > len(DeviceHandler.devices[device_id].hprof.leds) - 1:
         return \
             json.dumps("LED '{}' doesn't exist for device '{}'".format(
                         device_id, led_id)), \
             404
 
-    return DeviceHandler.devices[device_id].leds[led_id]
+    return DeviceHandler.devices[device_id].hprof.leds[led_id]
 
 
-def set_led(device_id, led_id, value):
+def set_led(device_id, led_id):
+    if not connexion.request.is_json:
+        return json.dumps('The request is not valid JSON.'), 400
+
+    value = connexion.request.json
+
     if device_id > len(DeviceHandler.devices) - 1 or \
        DeviceHandler.devices[device_id] is None:
         return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
 
-    if led_id > len(DeviceHandler.devices[device_id].leds) - 1:
+    if led_id > len(DeviceHandler.devices[device_id].hprof.leds) - 1:
         return \
             json.dumps("LED '{}' doesn't exist for device '{}'".format(
                         device_id, led_id)), \
@@ -139,7 +148,7 @@ def set_led(device_id, led_id, value):
     if len(value) != 3:
         return json.dumps('Invalid value'), 400
 
-    DeviceHandler.devices[device_id].leds[led_id] = value
+    DeviceHandler.devices[device_id].hprof.leds[led_id] = value
 
     return json.dumps('Value updated'), 200
 
