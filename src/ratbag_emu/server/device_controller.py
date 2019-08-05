@@ -26,7 +26,8 @@ def list_devices():
         devices.append({
             'id':           device_id,
             'name':         device.name,
-            'shortname':    device.shortname
+            'shortname':    device.shortname,
+            'input_nodes':  device.device_nodes
         })
 
     return devices, 200
@@ -42,7 +43,8 @@ def get_device(device_id):
     return {
         'id':           device_id,
         'name':         DeviceHandler.devices[device_id].name,
-        'shortname':    DeviceHandler.devices[device_id].shortname
+        'shortname':    DeviceHandler.devices[device_id].shortname,
+        'input_nodes':  DeviceHandler.devices[device_id].device_nodes
     }, 200
 
 
@@ -99,7 +101,8 @@ def add_device():
     return {
         'id':           DeviceHandler.next_id-1,
         'name':         DeviceHandler.devices[DeviceHandler.next_id-1].name,
-        'shortname':    DeviceHandler.devices[DeviceHandler.next_id-1].shortname
+        'shortname':    DeviceHandler.devices[DeviceHandler.next_id-1].shortname,
+        'input_nodes':  DeviceHandler.devices[DeviceHandler.next_id-1].device_nodes
     }, 201
 
 

@@ -283,6 +283,10 @@ components:
           type: string
         name:
           type: string
+        input_nodes:
+          type: array
+          items:
+            type: string
     Action:
       title: Action
       description: Simulated device
