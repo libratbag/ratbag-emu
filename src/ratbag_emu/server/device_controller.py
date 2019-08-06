@@ -1,4 +1,5 @@
 import json
+from time import sleep
 
 import connexion
 from hidtools.hid import RangeError
@@ -40,12 +41,7 @@ def get_device(device_id):
     if device_id > len(DeviceHandler.devices) - 1:
         return json.dumps("Device '{}' does not exist".format(device_id)), 404
 
-    return {
-        'id':           device_id,
-        'name':         DeviceHandler.devices[device_id].name,
-        'shortname':    DeviceHandler.devices[device_id].shortname,
-        'input_nodes':  DeviceHandler.devices[device_id].device_nodes
-    }, 200
+    return DeviceHandler.get_device(device_id), 200
 
 
 def add_device():
@@ -54,7 +50,10 @@ def add_device():
 
     shortname = connexion.request.json['shortname']
 
-    if shortname == "steelseries-rival310":
+    if shortname == "generic-hidpp20":
+        DeviceHandler.append_device(HIDPP20Device(
+            report_descriptor_simple, (0x3, 0x0001, 0x0001), []))
+    elif shortname == "steelseries-rival310":
         DeviceHandler.append_device(SteelseriesDevice(
             report_descriptor_g_pro, (0x3, 0x01038, 0x1720),
             'Steelseriesw Rival 310', shortname, 2))
@@ -98,22 +97,68 @@ def add_device():
             json.dumps("Specification '{}' does not exist".format(shortname)), \
             404
 
-    return {
-        'id':           DeviceHandler.next_id-1,
-        'name':         DeviceHandler.devices[DeviceHandler.next_id-1].name,
-        'shortname':    DeviceHandler.devices[DeviceHandler.next_id-1].shortname,
-        'input_nodes':  DeviceHandler.devices[DeviceHandler.next_id-1].device_nodes
-    }, 201
+    sleep(0.1)
+
+    return DeviceHandler.get_device(DeviceHandler.cur_id), 201
 
 
 def delete_device(device_id):
     if device_id > len(DeviceHandler.devices) - 1:
         return json.dumps('Device not found'), 404
 
-    DeviceHandler.devices[device_id].destroy()
-    DeviceHandler.devices[device_id] = None
+    DeviceHandler.destroy_device(device_id)
 
     return json.dumps('Device deleted'), 204
+
+'''
+DPI
+'''
+def get_dpi(device_id, dpi_id):
+    if device_id > len(DeviceHandler.devices) - 1 or \
+       DeviceHandler.devices[device_id] is None:
+        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+
+    if dpi_id == 'active':
+        dpi_id = DeviceHandler.devices[device_id].hprof.active_dpi
+    else:
+        dpi_id = int(dpi_id)
+
+    if dpi_id > len(DeviceHandler.devices[device_id].hprof.dpi) - 1:
+        return \
+            json.dumps("DPI '{}' doesn't exist for device '{}'".format(
+                        device_id, dpi_id)), \
+            404
+
+    return DeviceHandler.devices[device_id].hprof.dpi[dpi_id], 200
+
+
+def set_dpi(device_id, dpi_id):
+    if not connexion.request.is_json:
+        return json.dumps('The request is not valid JSON.'), 400
+
+    value = connexion.request.json
+
+    if device_id > len(DeviceHandler.devices) - 1 or \
+       DeviceHandler.devices[device_id] is None:
+        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+
+    print('dpi_id  = {}'.format(dpi_id))
+    if dpi_id == 'active':
+        dpi_id = DeviceHandler.devices[device_id].hprof.active_dpi
+    else:
+        dpi_id = int(dpi_id)
+
+    print('dpi_id  = {}'.format(dpi_id))
+    if dpi_id > len(DeviceHandler.devices[device_id].hprof.dpi) - 1:
+        return \
+            json.dumps("DPI '{}' doesn't exist for device '{}'".format(
+                        device_id, dpi_id)), \
+            404
+
+    DeviceHandler.devices[device_id].hprof.dpi[dpi_id] = value
+
+    return json.dumps('Value updated'), 200
+
 
 '''
 LEDs
@@ -188,18 +233,14 @@ def device_event_raw(device_id):
     if event_data is None:
         return json.dumps('Invalid value'), 400
 
-    event = MouseData(DeviceHandler.devices[device_id])
+    event = MouseData()
 
-    for data in event_data:
-        for key, prop in data.items():
-            if hasattr(event, key):
-                setattr(event, key, prop)
-            else:
-                print('Invalid attribute ({})'.format(key))
+    for key, prop in event_data.items():
+        setattr(event, key, prop)
 
     data = None
     try:
-        data = DeviceHandler.devices[device_id].generate_report(event, 0x11)
+        data = DeviceHandler.devices[device_id].create_report(event, 0x11)
     except KeyError:
         return \
             json.dumps('Invalid event'), 500

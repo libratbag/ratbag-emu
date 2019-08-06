@@ -73,7 +73,6 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device to return
           required: true
           schema:
             type: integer
@@ -96,7 +95,6 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device to delete
           required: true
           schema:
             type: integer
@@ -117,7 +115,6 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device to use as the event source
           required: true
           schema:
             type: integer
@@ -171,7 +168,6 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device to use as the event source
           required: true
           schema:
             type: integer
@@ -182,12 +178,7 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
+              type: object
       responses:
         '200':
           description: OK
@@ -195,7 +186,67 @@ paths:
           description: Error sending data to the device
         '404':
           description: Device not found
-  '/devices/{device_id}/leds/{led_id}':
+  '/devices/{device_id}/phys_props/dpi/{dpi_id}':
+    get:
+      tags:
+#        - device
+        - device-dpi
+      summary: Returns the value of the active DPI setting
+      operationId: ratbag_emu.server.get_dpi
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: dpi_id
+          in: path
+          required: true
+          schema:
+            type: string
+#            anyOf:
+#              - type: integer
+#                format: int32
+#              - type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+        '404':
+          description: Device not found
+    put:
+      tags:
+#        - device
+        - device-dpi
+      summary: Changes the value of the specified DPI setting
+      operationId: ratbag_emu.server.set_dpi
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: dpi_id
+          in: path
+          required: true
+          schema:
+            type: string
+#            anyOf:
+#              - type: integer
+#                format: int32
+#              - type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Device not found
+  '/devices/{device_id}/phys_props/leds/{led_id}':
     get:
       tags:
 #        - device
@@ -205,14 +256,12 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device
           required: true
           schema:
             type: integer
             format: int32
         - name: led_id
           in: path
-          description: ID of the LED to return
           required: true
           schema:
             type: integer
@@ -240,14 +289,12 @@ paths:
       parameters:
         - name: device_id
           in: path
-          description: ID of the device
           required: true
           schema:
             type: integer
             format: int32
         - name: led_id
           in: path
-          description: ID of the LED to return
           required: true
           schema:
             type: integer
@@ -315,4 +362,3 @@ components:
             id:
               type: integer
               format: int32
-

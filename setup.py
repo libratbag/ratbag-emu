@@ -41,7 +41,8 @@ setup(
     package_dir={'':'src'},
     install_requires=['hid-tools', 'connexion'],
     extras_require={
-        'ui': ['connexion[swagger-ui]']
+        'ui': ['connexion[swagger-ui]'],
+        'test': ['libevdev']
     },
     package_data={
         'openapi': ['src/ratbag_emu/openapi/ratbag-emu.yaml'],

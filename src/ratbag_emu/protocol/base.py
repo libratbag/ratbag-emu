@@ -12,6 +12,8 @@ from ratbag_emu.protocol.util.profile import Profile
 
 
 class BaseDevice(UHIDDevice):
+    log = True
+
     '''
     Represents an hardware device
     '''
@@ -56,7 +58,8 @@ class BaseDevice(UHIDDevice):
     Prints target message as well as the timestamp
     '''
     def log(self, msg):
-        print('{:20}{}'.format('{}:'.format(time.time()), msg))
+        if self.log:
+            print('{:20}{}'.format('{}:'.format(time.time()), msg))
 
     '''
     Output report callback
@@ -121,20 +124,6 @@ class BaseDevice(UHIDDevice):
 
         return super().create_report(data, type)
 
-    '''
-    Routine used to convert and generate event output reports
-
-    Translates the received x and y values to pixels based on the internal
-    device DPI property
-    '''
-    def generate_report(self, data, type=None):
-        # Translate mm to pixel
-        for attr in ["x", "y"]:
-            if hasattr(data, attr):
-                setattr(data, attr, int(int(getattr(data, attr)) * 0.0393700787
-                                        * self.get_dpi()))
-
-        return self.create_report(data, type)
 
     '''
     Simulates user actions
