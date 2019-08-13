@@ -12,7 +12,7 @@ from ratbag_emu.protocol.util.profile import Profile
 
 
 class BaseDevice(UHIDDevice):
-    log = True
+    verbose = True
 
     '''
     Represents an hardware device
@@ -58,7 +58,7 @@ class BaseDevice(UHIDDevice):
     Prints target message as well as the timestamp
     '''
     def log(self, msg):
-        if self.log:
+        if self.verbose:
             print('{:20}{}'.format('{}:'.format(time.time()), msg))
 
     '''

@@ -151,6 +151,8 @@ def test_device_event_raw_xy(client):
     id = test_add_device(client, 'generic-hidpp20')
     sleep(0.1) # Give time for the event nodes to be created
 
+    DeviceHandler.devices[id].verbose = False
+
     # Claim the event nodes
     event_nodes = []
     for node in DeviceHandler.devices[id].device_nodes:
