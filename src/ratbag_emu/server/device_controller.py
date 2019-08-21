@@ -18,30 +18,28 @@ from ratbag_emu.protocol.steelseries import SteelseriesDevice
 Devices
 '''
 def list_devices():
-    devices = []
+    device_list = []
 
-    for device_id, device in DeviceHandler.devices.items():
+    DeviceHandler.lock.acquire()
+    devices = DeviceHandler.devices.copy()
+    DeviceHandler.lock.release()
+    for device_id, device in devices.items():
         if not device:
             continue
 
-        devices.append({
-            'id':           device_id,
-            'name':         device.name,
-            'shortname':    device.shortname,
-            'input_nodes':  device.device_nodes
-        })
+        device_list.append(DeviceHandler.get_device(device_id))
 
-    return devices, 200
+    return device_list, 200
 
 
 '''
 Device
 '''
 def get_device(device_id):
-    if device_id > len(DeviceHandler.devices) - 1:
-        return json.dumps("Device '{}' does not exist".format(device_id)), 404
-
-    return DeviceHandler.get_device(device_id), 200
+    try:
+        return DeviceHandler.get_device(device_id), 200
+    except KeyError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
 
 def add_device():
@@ -93,43 +91,41 @@ def add_device():
             ],
             'Logitech G Pro', shortname))
     else:
-        return \
-            json.dumps("Specification '{}' does not exist".format(shortname)), \
-            404
+        return json.dumps(f"Specification '{shortname}' does not exist"), 404
+
+    id = DeviceHandler.cur_id
+    DeviceHandler.wait_for_device_nodes(id)
 
     sleep(0.1)
 
-    return DeviceHandler.get_device(DeviceHandler.cur_id), 201
+    return DeviceHandler.get_device(id), 201
 
 
 def delete_device(device_id):
-    if device_id > len(DeviceHandler.devices) - 1:
-        return json.dumps('Device not found'), 404
-
-    DeviceHandler.destroy_device(device_id)
-
-    return json.dumps('Device deleted'), 204
+    try:
+        DeviceHandler.destroy_device(device_id)
+        return json.dumps('Device deleted'), 204
+    except KeyError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
 '''
 DPI
 '''
 def get_dpi(device_id, dpi_id):
-    if device_id > len(DeviceHandler.devices) - 1 or \
-       DeviceHandler.devices[device_id] is None:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+    try:
+        device = DeviceHandler.devices[device_id]
+    except KeyError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     if dpi_id == 'active':
-        dpi_id = DeviceHandler.devices[device_id].hprof.active_dpi
+        dpi_id = device.hw_profile.active_dpi
     else:
         dpi_id = int(dpi_id)
 
-    if dpi_id > len(DeviceHandler.devices[device_id].hprof.dpi) - 1:
-        return \
-            json.dumps("DPI '{}' doesn't exist for device '{}'".format(
-                        device_id, dpi_id)), \
-            404
-
-    return DeviceHandler.devices[device_id].hprof.dpi[dpi_id], 200
+    try:
+        return device.hw_profile.dpi[dpi_id], 200
+    except IndexError:
+        return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
 
 
 def set_dpi(device_id, dpi_id):
@@ -138,43 +134,37 @@ def set_dpi(device_id, dpi_id):
 
     value = connexion.request.json
 
-    if device_id > len(DeviceHandler.devices) - 1 or \
-       DeviceHandler.devices[device_id] is None:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+    try:
+        device = DeviceHandler.devices[device_id]
+    except KeyError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
-    print('dpi_id  = {}'.format(dpi_id))
     if dpi_id == 'active':
-        dpi_id = DeviceHandler.devices[device_id].hprof.active_dpi
+        dpi_id = device.hw_profile.active_dpi
     else:
         dpi_id = int(dpi_id)
 
-    print('dpi_id  = {}'.format(dpi_id))
-    if dpi_id > len(DeviceHandler.devices[device_id].hprof.dpi) - 1:
-        return \
-            json.dumps("DPI '{}' doesn't exist for device '{}'".format(
-                        device_id, dpi_id)), \
-            404
-
-    DeviceHandler.devices[device_id].hprof.dpi[dpi_id] = value
-
-    return json.dumps('Value updated'), 200
+    try:
+        device.hw_profile.dpi[dpi_id] = value
+        return json.dumps('Value updated'), 200
+    except IndexError:
+        return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
 
 
 '''
 LEDs
 '''
 def get_led(device_id, led_id):
-    if device_id > len(DeviceHandler.devices) - 1 or \
-       DeviceHandler.devices[device_id] is None:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+    try:
+        device = DeviceHandler.devices[device_id]
+    except IndexError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
-    if led_id > len(DeviceHandler.devices[device_id].hprof.leds) - 1:
-        return \
-            json.dumps("LED '{}' doesn't exist for device '{}'".format(
-                        device_id, led_id)), \
-            404
+    try:
+        return device.hw_profile.leds[led_id]
+    except IndexError:
+        return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
 
-    return DeviceHandler.devices[device_id].hprof.leds[led_id]
 
 
 def set_led(device_id, led_id):
@@ -183,22 +173,20 @@ def set_led(device_id, led_id):
 
     value = connexion.request.json
 
-    if device_id > len(DeviceHandler.devices) - 1 or \
-       DeviceHandler.devices[device_id] is None:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
-
-    if led_id > len(DeviceHandler.devices[device_id].hprof.leds) - 1:
-        return \
-            json.dumps("LED '{}' doesn't exist for device '{}'".format(
-                        device_id, led_id)), \
-            404
+    try:
+        device = DeviceHandler.devices[device_id]
+    except IndexError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     if len(value) != 3:
         return json.dumps('Invalid value'), 400
 
-    DeviceHandler.devices[device_id].hprof.leds[led_id] = value
+    try:
+        device.hw_profile.leds[led_id] = value
 
-    return json.dumps('Value updated'), 200
+        return json.dumps('Value updated'), 200
+    except IndexError:
+        return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
 
 
 '''
@@ -210,45 +198,14 @@ def device_event(device_id):
 
     actions = connexion.request.json
 
-    if device_id > len(DeviceHandler.devices) - 1:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
+    try:
+        device = DeviceHandler.devices[device_id]
+    except IndexError:
+        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     if actions is None:
         return json.dumps('Invalid value'), 400
 
-    DeviceHandler.devices[device_id].simulate_action(actions)
-
-    return json.dumps('Success'), 200
-
-
-def device_event_raw(device_id):
-    if not connexion.request.is_json:
-        return json.dumps('The request is not valid JSON.'), 400
-
-    event_data = connexion.request.json
-
-    if device_id > len(DeviceHandler.devices) - 1:
-        return json.dumps("Device '{}' doesn't exist".format(device_id)), 404
-
-    if event_data is None:
-        return json.dumps('Invalid value'), 400
-
-    event = MouseData()
-
-    for key, prop in event_data.items():
-        setattr(event, key, prop)
-
-    data = None
-    try:
-        data = DeviceHandler.devices[device_id].create_report(event, 0x11)
-    except KeyError:
-        return \
-            json.dumps('Invalid event'), 500
-    except RangeError:
-        return \
-            json.dumps('The X or Y values exceed the maximum supported'), \
-            400
-
-    DeviceHandler.devices[device_id].send_raw(data)
+    device.simulate_action(actions)
 
     return json.dumps('Success'), 200

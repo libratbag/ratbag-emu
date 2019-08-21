@@ -36,7 +36,7 @@ class SteelseriesDevice(BaseDevice):
     '''
     def __init__(self, rdesc=None, info=None,name='Generic Steelseries Device',
                  shortname='generic-steelseries', protocol_version=2):
-        self.protocol = 'Steelseries v{}'.format(protocol_version)
+        self.protocol = f'Steelseries v{protocol_version}'
         super().__init__(rdesc, info, name, shortname)
 
         self.Commands = None
@@ -48,7 +48,7 @@ class SteelseriesDevice(BaseDevice):
             pass
 
         assert self.Commands is not None, \
-            'Steelseries v{} not implemented'.format(protocol_version)
+            'Steelseries v{protocol_version} not implemented'
 
         self.Report     = SteelseriesReport
         self.ReportType = SteelseriesReportType
@@ -89,9 +89,7 @@ class SteelseriesDevice(BaseDevice):
         command     = data[self.Report.Command]
         args        = data[self.Report.Arguments:]
 
-        assert len(data) == self.report_size[command], \
-               'Wrong report size. Expected {}, got {}'. \
-               format(self.report_size[command], len(data))
+        assert len(data) == self.report_size[command], 'Wrong report size'
 
         self.commands[command](command, data, args)
 
@@ -104,8 +102,8 @@ class SteelseriesDevice(BaseDevice):
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
-        self.hprof.dpi[dpi_id - 1] = self.hprof.step * (dpi_steps + 1)
-        print('# DEBUG: New DPI values: {}, {}'.format(self.dpi[0], self.dpi[1]))
+        self.hw_profile.dpi[dpi_id - 1] = self.hw_profile.step * (dpi_steps + 1)
+        print(f'# DEBUG: New DPI values: {self.dpi[0]}, {self.fpi[1]}')
         return
 
     def change_leds(self, command, data, args):
@@ -117,10 +115,10 @@ class SteelseriesDevice(BaseDevice):
 
     def read_settings(self, command, data, args):
         data = [0]
-        data.append(self.hprof.active_dpi)
-        for dpi in self.hprof.dpi:
-            data.append(int((dpi - self.hprof.step) / self.hprof.step))
-        for color in self.hprof.leds:
+        data.append(self.hw_profile.active_dpi)
+        for dpi in self.hw_profile.dpi:
+            data.append(int((dpi - self.hw_profile.step) / self.hw_profile.step))
+        for color in self.hw_profile.leds:
             data += color
         self.protocol_send(command, data)
         return

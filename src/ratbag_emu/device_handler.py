@@ -1,4 +1,4 @@
-from time import sleep
+from time import time, sleep
 from threading import RLock
 
 from .protocol.util.descriptors import report_descriptor_simple, \
@@ -8,7 +8,7 @@ from .protocol.steelseries import SteelseriesDevice
 
 
 class DeviceHandler(object):
-    devices = dict()
+    devices = {}
     cur_id = -1
 
     lock = RLock()
@@ -20,6 +20,15 @@ class DeviceHandler(object):
         DeviceHandler.cur_id += 1
         DeviceHandler.devices[DeviceHandler.cur_id] = device
         DeviceHandler.lock.release()
+
+    @staticmethod
+    def wait_for_device_nodes(device_id, timeout=3):
+        start = time()
+        for endpoint in DeviceHandler.devices[device_id].endpoints.values():
+            while not endpoint.device_nodes or len(endpoint.device_nodes) == 0:
+                sleep(0.1)
+                if time() > start + timeout:
+                    return
 
     @staticmethod
     def get_device(device_id):
@@ -37,21 +46,16 @@ class DeviceHandler(object):
     def destroy_device(device_id):
         DeviceHandler.lock.acquire()
         DeviceHandler.devices[device_id].destroy()
-        DeviceHandler.devices[device_id] = None
+        del DeviceHandler.devices[device_id]
         DeviceHandler.lock.release()
 
     @staticmethod
     def handle():
-        name = 'Simple Device'
-
-        DeviceHandler.append_device(HIDPP20Device(
-            report_descriptor_simple, (0x3, 0x0001, 0x0001), [], name))
-
         while True:
             DeviceHandler.lock.acquire()
             devices = DeviceHandler.devices.copy()
             DeviceHandler.lock.release()
-            for device_id, device in devices.items():
+            for device in devices.values():
                 if device is not None:
                     DeviceHandler.pool_lock.acquire()
                     device.dispatch()

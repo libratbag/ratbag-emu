@@ -64,3 +64,6 @@ class AbsInt(Absolute):
 class AbsFloat(Absolute):
     def __init__(self, n):
         super().__init__(float(n))
+
+
+MM_TO_INCH = 0.0393700787

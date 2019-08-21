@@ -55,8 +55,8 @@ class HIDPP20Device(BaseDevice):
     '''
     def __init__(self, rdesc=None, info=None, feature_table=None,
                  name='Generic HID++ 2.0 Device', shortname='generic-hipp20'):
-        self.protocol = 'HID++ 2.0'
         super().__init__(rdesc, info, name, shortname)
+        self.protocol = 'HID++ 2.0'
         self.feature_table = feature_table
 
         # Protocol declarations
@@ -128,19 +128,17 @@ class HIDPP20Device(BaseDevice):
         sw_id       = data[self.Report.ASE] - ase
         args        = data[self.Report.Arguments:]
 
-        assert report_type in self.report_size, \
-               'Invalid report type ({:2x})'.format(report_type)
+        assert report_type in self.report_size, f'Invalid report type ({report_type:2x})'
 
-        assert len(data) == self.report_size[report_type], \
-               'Wrong report size. Expected {}, got {}'. \
-               format(self.report_size[report_type], len(data))
+        assert len(data) == self.report_size[report_type], 'Wrong report size.' \
+            f'Expected {self.report_size[report_type]}, got {len(data)}'
 
         # Event
         if self.expecting_reply:
             return
         # Function
         else:
-            print('# DEBUG: Got feature {}, ASE {}'.format(feature, ase))
+            print(f'# DEBUG: Got feature {feature}, ASE {ase}')
             self.features[feature](data, ase, args)
 
     '''
@@ -154,21 +152,21 @@ class HIDPP20Device(BaseDevice):
         # featIndex, featType, featVer = getFeature(featId)
         if ase == 0:
             featId = (args[0] << 4) + args[1]
-            print('# DEBUG: getFeature({}) = {}'.format(featId, self.feature_table[featId]))
+            print(f'# DEBUG: getFeature({featId}) = {self.feature_table[featId]}')
             # we won't support any hidden features and we are also not planning
             # to support obsolete features ATM so we will set featType to 0
             self.protocol_reply(data, [self.feature_table.index(featId), 0, 0])
 
         # protocolNum, targetSw, pingData = getProtocolVersion(0, 0, pingData)
         elif ase == 1:
-            print('# DEBUG: getProtocolVersion() = {}.{}'.format(self.version_major, self.version_minor))
+            print(f'# DEBUG: getProtocolVersion() = {self.version_major}.{self.version_minor}')
             self.protocol_reply(data,
                 [self.version_major, self.version_minor, args[2]])
 
     def IFeatureSet(self, data, ase, args):
         # count = getCount()
         if ase == 0:
-            print('# DEBUG: getCount() = {}'.format(len(self.feature_table)))
+            print(f'# DEBUG: getCount() = {len(self.feature_table)}')
             self.protocol_reply(data, [len(self.feature_table)])
 
         # featureID, featureType, featureVersion = getFeatureID(featureIndex)
@@ -179,7 +177,7 @@ class HIDPP20Device(BaseDevice):
                 self.protocol_error(data, self.Errors.OutOfRange)
                 return
 
-            print('# DEBUG: getFeatureID({}) = {}'.format(featureIndex, self.feature_table[featureIndex]))
+            print(f'# DEBUG: getFeatureID({featureIndex}) = {self.feature_table[featureIndex]}')
             # we won't support any hidden features and we are also not planning
             # to support obsolete features ATM so we will set featType to 0
             print(self.feature_table[featureIndex])

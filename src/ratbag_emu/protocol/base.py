@@ -7,28 +7,12 @@ import time
 
 from hidtools.uhid import UHIDDevice
 
-from ratbag_emu.util import AbsInt
+from ratbag_emu.util import AbsInt, MM_TO_INCH
 from ratbag_emu.protocol.util.profile import Profile
 
 
-class BaseDevice(UHIDDevice):
+class SimulatedDevice(UHIDDevice):
     verbose = True
-
-    '''
-    Represents an hardware device
-    '''
-
-    protocol = None
-
-    '''
-    Hardware profile
-
-    Represents the active profile in the hardware.
-    '''
-    hprof = Profile()
-
-    active_profile = None
-    profiles = []
 
     '''
     Init procedure
@@ -44,8 +28,10 @@ class BaseDevice(UHIDDevice):
             os._exit(1)
         self.info = info
         self.rdesc = rdesc
-        self.name = 'Test {} ({}:{})'.format(name, hex(self.vid), hex(self.pid))
+        self.name = f'ratbag-emu test device ({name}, {hex(self.vid)}:{hex(self.pid)})'
         self.shortname = shortname
+
+        self.hw_profile = None
 
         self._output_report = self._protocol_receive
 
@@ -58,8 +44,8 @@ class BaseDevice(UHIDDevice):
     Prints target message as well as the timestamp
     '''
     def log(self, msg):
-        if self.verbose:
-            print('{:20}{}'.format('{}:'.format(time.time()), msg))
+        if SimulatedDevice.verbose:
+            print('{:20}{}'.format(f'{time.time()}:', msg))
 
     '''
     Output report callback
@@ -76,7 +62,7 @@ class BaseDevice(UHIDDevice):
                 for i in range(0, size)]
 
         if size > 0:
-            self.log('read ' + ''.join(' {:02x}'.format(byte) for byte in data))
+            self.log('read ' + ''.join(f' {byte:02x}' for byte in data))
 
         self.protocol_receive(data, size, rtype)
 
@@ -97,7 +83,7 @@ class BaseDevice(UHIDDevice):
         if not data:
             return
 
-        self.log('write' + ''.join(' {:02x}'.format(byte) for byte in data))
+        self.log('write' + ''.join(f' {byte:02x}' for byte in data))
 
         self.call_input_event(data)
 
@@ -133,8 +119,8 @@ class BaseDevice(UHIDDevice):
         duration = 0
 
         for action in actions:
-            start_report = int(action['start'] / 1000 * self.hprof.report_rate)
-            end_report = int(action['end'] / 1000 * self.hprof.report_rate)
+            start_report = int(action['start'] / 1000 * self.hw_profile.get_report_rate())
+            end_report = int(action['end'] / 1000 * self.hw_profile.get_report_rate())
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -156,7 +142,7 @@ class BaseDevice(UHIDDevice):
                 read bellow).
 
                 We actually have two variables for this, real_pixel_buffer and
-                pixel_buffer. pixel_buffer mimmics the user movement and
+                pixel_buffer. pixel_buffer mimics the user movement and
                 real_pixel_buffer holds true number of pixels left to send.
                 When using high report rates (ex. 1000Hz) we usually don't
                 have a full pixel to send, that's why we need two variables. We
@@ -170,7 +156,8 @@ class BaseDevice(UHIDDevice):
                 for attr in ['x', 'y']:
                     # move_value * inch_to_mm * active_dpi
                     pixel_buffer[attr] = AbsInt((action['action'][attr] *
-                                         0.0393700787 * self.get_dpi()))
+                                         MM_TO_INCH *
+                                         self.hw_profile.get_dpi_value()))
                     step[attr] = pixel_buffer[attr] / report_count
                 real_pixel_buffer = copy.deepcopy(pixel_buffer)
 
@@ -198,10 +185,10 @@ class BaseDevice(UHIDDevice):
                     if i not in packets:
                         packets[i] = MouseData()
 
-                    setattr(packets[i], 'b{}'.format(action['action']['id']), 1)
+                    setattr(packets[i], f"b{action['action']['id']}", 1)
 
         sim_thread = threading.Thread(target=self._send_packets,
-                args=(packets, int(duration / 1000 * self.hprof.report_rate)))
+                args=(packets, int(duration / 1000 * self.hw_profile.get_report_rate())))
         sim_thread.start()
 
     '''
@@ -213,18 +200,70 @@ class BaseDevice(UHIDDevice):
         for i in range(total):
             s.enter(next_time, 1, self.send_raw,
                     kwargs={'data': self.create_report(packets[i], 0x11)})
-            next_time += 1 / self.hprof.report_rate
+            next_time += 1 / self.hw_profile.get_report_rate()
         s.run()
 
+
+class BaseDevice(object):
+    def __init__(self, rdesc=None, info=None, name='Generic Device',
+                 shortname='generic'):
+        self.info = info
+        self.name = name
+        self.shortname = shortname
+        self.endpoints = {}
+
+        self.endpoints[0] = SimulatedDevice(rdesc, info, name, shortname)
+
+        self.protocol = None
+
+
+        # Represents the active profile in the hardware.
+        self.hw_profile = Profile()
+
+        self.active_profile = None
+        self.profiles = []
+
+        self.mouse_endpoint = 0
+        self.keyboard_endpoint = 0
+        self.media_endpoint = 0
+
+        for endpoint in self.endpoints.values():
+            endpoint.hw_profile = self.hw_profile
+
     '''
-    Gets the active DPI value
+    Pass to the correct endpoint
     '''
-    def get_dpi(self):
-        return self.hprof.dpi[self.hprof.active_dpi]
+    def create_report(self, data, type=None):
+        self.endpoints[self.mouse_endpoint].create_report(data, type)
+
+    def simulate_action(self, actions):
+        self.endpoints[self.mouse_endpoint].simulate_action(actions)
+
+    def send_raw_event(self, data):
+        self.endpoints[self.mouse_endpoint].send_raw(data)
+
+    def dispatch(self):
+        for endpoint in self.endpoints.values():
+            endpoint.dispatch()
+
+    def destroy(self):
+        for endpoint in self.endpoints.values():
+            endpoint.destroy()
+
+    @property
+    def device_nodes(self):
+        nodes = []
+        for endpoint in self.endpoints.values():
+            nodes += endpoint.device_nodes
+        return nodes
 
 
 class MouseData(object):
     '''
     Holds event data
     '''
-    pass
+
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+

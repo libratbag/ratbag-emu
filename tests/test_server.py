@@ -1,191 +1,225 @@
-import json
+import fcntl
+import os
+import shutil
+import subprocess
+import threading
+import warnings
 
-import connexion
 import pytest
+import requests
+import libevdev
 
-server = connexion.FlaskApp(__name__,
-                            specification_dir='../src/ratbag_emu/openapi/',
-                            debug=True)
-server.add_api('ratbag-emu.yaml',
-                options={"swagger_ui": True},
-                arguments={'title': 'ratbag-emu'},
-                strict_validation=True,
-                validate_responses=True)
+from time import time, sleep
+from pathlib import Path
 
-
-def test_permissions():
-    from hidtools.uhid import UHIDDevice
-
-    try:
-        assert UHIDDevice() is not None
-    except PermissionError:
-        pytest.exit('Not enough permissions to create UHID devices')
+from ratbag_emu.util import MM_TO_INCH
+from ratbag_emu.protocol.base import MouseData
 
 
-@pytest.fixture(autouse=True)
-def handle_devices():
-    import threading
+class Client(object):
+    def __init__(self, url='http://localhost:8080'):
+        self.url = url
 
-    from . import ratbag_emu
+    def get(self, path):
+        return requests.get(f'{self.url}{path}')
 
-    import ratbag_emu.server
-    from ratbag_emu.device_handler import DeviceHandler
+    def post(self, path, data=None, json=None):
+        return requests.post(f'{self.url}{path}',
+                             data=data,
+                             json=json)
 
-    devices_thread = threading.Thread(target=DeviceHandler.handle)
-    devices_thread.daemon = True
-    devices_thread.start()
+    def delete(self, path):
+        return requests.delete(f'{self.url}{path}')
 
-    yield devices_thread
-
-
-@pytest.fixture(autouse=True)
-def client(handle_devices):
-    yield server.app.test_client()
-
-
-def test_list_devices(client):
-    response = client.get('/devices')
-    assert response.status_code == 200
+    def put(self, path, data=None, json=None):
+        return requests.put(f'{self.url}{path}',
+                            data=data,
+                            json=json)
 
 
-def test_add_device(client, name='steelseries-rival310'):
-    data = {
-        'shortname': name
-    }
-    response = client.post('/devices/add',
-                           data=json.dumps(data),
-                           content_type='application/json')
-    assert response.status_code == 201
-    data = json.loads(response.data)
-    assert 'id' in data
-    assert 'shortname' in data
-    assert 'name' in data
-    return data['id']
+class TestServer(object):
+    def reload_udev_rules(self):
+        subprocess.run('udevadm control --reload-rules'.split())
 
+    @pytest.fixture(scope='session', autouse=True)
+    def udev_rules(self):
+        rules_dir = Path('/run/udev/rules.d')
+        rules_dir.mkdir(exist_ok=True)
+        shutil.copyfile('rules.d/61-ratbag-emu-ignore-test-devices.rules', '/run/udev/rules.d/61-ratbag-emu-ignore-test-devices.rules')
+        self.reload_udev_rules()
 
-def test_get_device(client):
-    id = test_add_device(client)
+        yield
 
-    response = client.get('/devices/{}'.format(id))
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert 'id' in data
-    assert 'shortname' in data
-    assert 'name' in data
+        rules = rules_dir.joinpath('61-ratbag-emu-ignore-test-devices.rules')
+        if rules.is_file():
+            rules.unlink()
+            self.reload_udev_rules()
 
+    @pytest.fixture(autouse=True)
+    def client(self):
+        yield Client()
 
-def test_delete_device(client):
-    id = test_add_device(client)
+    def add_device(self, client, name='steelseries-rival310'):
+        data = {
+            'shortname': name
+        }
+        response = client.post('/devices/add', json=data)
+        assert response.status_code == 201
+        return response.json()['id']
 
-    response = client.delete('/devices/{}'.format(id))
-    assert response.status_code == 204
+    def test_add_device(self, client, name='steelseries-rival310'):
+        data = {
+            'shortname': name
+        }
+        response = client.post('/devices/add', json=data)
+        assert response.status_code == 201
+        answer = response.json()
+        assert 'id' in answer
+        assert 'shortname' in answer
+        assert 'name' in answer
+        assert 'input_nodes' in answer
+        client.delete(f"/devices/{answer['id']}")
 
+    @pytest.mark.dependency(depends=['test_add_device'])
+    def test_delete_device(self, client):
+        id = self.add_device(client)
 
-def test_get_dpi(client, dpi_id=0):
-    from ratbag_emu.device_handler import DeviceHandler
+        response = client.delete(f'/devices/{id}')
+        assert response.status_code == 204
 
-    id = test_add_device(client)
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_list_devices(self, client):
+        response = client.get('/devices')
+        assert response.status_code == 200
+        assert response.json() == []
 
-    response = client.get('/devices/{}/phys_props/dpi/{}'.format(id, dpi_id))
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert data == DeviceHandler.devices[id].hprof.dpi[dpi_id if
-        dpi_id != 'active' else DeviceHandler.devices[id].hprof.active_dpi]
+        id = self.add_device(client)
 
+        response = client.get('/devices')
+        assert response.status_code == 200
+        answer = response.json()
+        assert len(answer) == 1
+        assert answer[0]['id'] == id
 
-def test_set_dpi(client, dpi_id=0):
-    from ratbag_emu.device_handler import DeviceHandler
+        client.delete(f'/devices/{id}')
 
-    id = test_add_device(client)
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_get_device(self, client):
+        id = self.add_device(client)
 
-    DeviceHandler.devices[id].hprof.dpi[dpi_id if dpi_id != 'active' else
-        DeviceHandler.devices[id].hprof.active_dpi] = 6666
+        response = client.get(f'/devices/{id}')
+        assert response.status_code == 200
+        answer = response.json()
+        assert 'id' in answer
+        assert 'shortname' in answer
+        assert 'name' in answer
+        assert 'input_nodes' in answer
 
-    response = client.get('/devices/{}/phys_props/dpi/{}'.format(id, dpi_id))
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert data == 6666
+        client.delete(f'/devices/{id}')
 
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_dpi(self, client, dpi_id=0):
+        id = self.add_device(client)
 
-def test_get_active_dpi(client):
-    test_get_dpi(client, 'active')
+        data = 6666
+        response = client.put(f'/devices/{id}/phys_props/dpi/{dpi_id}', json=data)
 
+        response = client.get(f'/devices/{id}/phys_props/dpi/{dpi_id}')
+        assert response.status_code == 200
+        assert response.json() == data
 
-def test_set_active_dpi(client):
-    test_set_dpi(client, 'active')
+        client.delete(f'/devices/{id}')
 
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_active_dpi(self, client):
+        self.test_dpi(client, 'active')
 
-def test_get_led(client):
-    id = test_add_device(client)
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_led(self, client):
+        id = self.add_device(client)
 
-    response = client.get('/devices/{}/phys_props/leds/0'.format(id))
-    assert response.status_code == 200
+        data = [
+            0xFF,
+            0xFF,
+            0xFF
+        ]
+        response = client.put(f'/devices/{id}/phys_props/leds/0', json=data)
+        assert response.status_code == 200
 
+        response = client.get(f'/devices/{id}/phys_props/leds/0')
+        assert response.status_code == 200
+        assert response.json() == data
 
-def test_set_led(client):
-    id = test_add_device(client)
+        client.delete(f'/devices/{id}')
 
-    data = [
-        0xFF,
-        0xFF,
-        0xFF
-    ]
-    response = client.put('/devices/{}/phys_props/leds/0'.format(id),
-                          data=json.dumps(data),
-                          content_type='application/json')
-    assert response.status_code == 200
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    def test_device_event(self, client):
+        id = self.add_device(client, 'generic-hidpp20')
+        input_nodes = []
 
+        start = time()
+        while len(input_nodes) == 0:
+            input_nodes = client.get(f'/devices/{id}').json()['input_nodes']
+            sleep(0.1)
+            if time() > start + 3:
+                break
 
-def test_device_event_raw_xy(client):
-    import os
+        # Claim the event nodes
+        event_nodes = []
+        for node in set(input_nodes):
+            fd = open(node, 'rb')
+            fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
+            event_nodes.append(libevdev.Device(fd))
 
-    from time import sleep
-    from threading import Thread
+        # make this exit on a timeout
+        events = []
+        def collect_events(stop):
+            nonlocal events
+            while not stop.is_set():
+                for node in event_nodes:
+                    events += list(node.events())
 
-    import libevdev
-    import fcntl
-    import warnings
+        stop_event_thread = threading.Event()
+        event_thread = threading.Thread(target=collect_events, args=(stop_event_thread,))
+        event_thread.start()
 
-    from ratbag_emu.device_handler import DeviceHandler
+        # Send event
+        x = y = 5
+        data = [
+            {
+                'start': 0,
+                'end': 500,
+                'action': {
+                    'type': 'xy',
+                    'x': x,
+                    'y': y
+                }
+            }
+        ]
+        response = client.post(f'/devices/{id}/event', json=data)
+        assert response.status_code == 200
 
-    id = test_add_device(client, 'generic-hidpp20')
-    sleep(0.1) # Give time for the event nodes to be created
+        sleep(1)
+        stop_event_thread.set()
+        event_thread.join()
 
-    DeviceHandler.devices[id].verbose = False
+        for node in event_nodes:
+            node.fd.close()
 
-    # Claim the event nodes
-    event_nodes = []
-    for node in DeviceHandler.devices[id].device_nodes:
-        fd = open(node, 'rb')
-        fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
-        device = libevdev.Device(fd)
-        try:
-            device.grab()
-        except libevdev.device.DeviceGrabError:
-            with pytest.warns(UserWarning):
-                warnings.warn("Couldn't grab one of the event nodes", UserWarning)
-        event_nodes.append(device)
-
-    # Send event
-    data = {
-        'x': 127,
-        'y': 127
-    }
-    response = client.post('/devices/{}/raw_event'.format(id),
-                           data=json.dumps(data),
-                           content_type='application/json')
-    assert response.status_code == 200
-
-    # Check if we received the event
-    x = y = 0
-    for node in event_nodes:
-        events = node.events()
+        received = MouseData()
         for e in events:
             if e.matches(libevdev.EV_REL.REL_X):
-                x += e.value
+                received.x += e.value
             elif e.matches(libevdev.EV_REL.REL_Y):
-                y += e.value
-        node.fd.close()
-    assert x == data['x']
-    assert y == data['y']
+                received.y += e.value
 
+        dpi = client.get(f'/devices/{id}/phys_props/dpi/active').json()
+
+        expected = MouseData()
+        expected.x = int(x * MM_TO_INCH * dpi)
+        expected.y = int(y * MM_TO_INCH * dpi)
+
+        assert expected.x - 1 <= received.x <= expected.x + 1
+        assert expected.y - 1 <= received.y <= expected.y + 1
+
+        client.delete(f'/devices/{id}')

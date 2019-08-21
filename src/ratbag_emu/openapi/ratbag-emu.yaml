@@ -157,35 +157,6 @@ paths:
           description: Error sending data to the device
         '404':
           description: Device not found
-  '/devices/{device_id}/raw_event':
-    post:
-      tags:
-#        - device
-        - device-event
-      summary: Send a raw event to a simulated device
-      operationId: ratbag_emu.server.device_event_raw
-      description: 'Send HID event data to the target device'
-      parameters:
-        - name: device_id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        description: Event data
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Error sending data to the device
-        '404':
-          description: Device not found
   '/devices/{device_id}/phys_props/dpi/{dpi_id}':
     get:
       tags:
