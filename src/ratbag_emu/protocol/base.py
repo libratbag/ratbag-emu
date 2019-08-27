@@ -19,13 +19,16 @@ class SimulatedDevice(UHIDDevice):
 
     Initializes the device attributes and creates the UHID device
     '''
-    def __init__(self, rdesc=None, info=None, name='Generic Device',
+    def __init__(self, owner, rdesc=None, info=None, name='Generic Device',
                  shortname='generic'):
         try:
             super().__init__()
         except PermissionError:
             print('Error: Not enough permissions to create UHID devices')
             os._exit(1)
+
+        self.owner = owner
+
         self.info = info
         self.rdesc = rdesc
         self.name = f'ratbag-emu test device ({name}, {hex(self.vid)}:{hex(self.pid)})'
@@ -64,15 +67,8 @@ class SimulatedDevice(UHIDDevice):
         if size > 0:
             self.log('read ' + ''.join(f' {byte:02x}' for byte in data))
 
-        self.protocol_receive(data, size, rtype)
+        self.owner.protocol_receive(data, size, rtype)
 
-    '''
-    Callback called upon receiving output reports from the kernel
-
-    Dummy protocol receiver implementation.
-    '''
-    def protocol_receive(self, data, size, rtype):
-        return
 
     '''
     Internal routine used to send raw output reports
@@ -212,7 +208,7 @@ class BaseDevice(object):
         self.shortname = shortname
         self.endpoints = {}
 
-        self.endpoints[0] = SimulatedDevice(rdesc, info, name, shortname)
+        self.endpoints[0] = SimulatedDevice(self, rdesc, info, name, shortname)
 
         self.protocol = None
 
@@ -231,6 +227,14 @@ class BaseDevice(object):
             endpoint.hw_profile = self.hw_profile
 
     '''
+    Callback called upon receiving output reports from the kernel
+
+    Dummy protocol receiver implementation.
+    '''
+    def protocol_receive(self, data, size, rtype):
+        return
+
+    '''
     Pass to the correct endpoint
     '''
     def create_report(self, data, type=None):
@@ -239,7 +243,7 @@ class BaseDevice(object):
     def simulate_action(self, actions):
         self.endpoints[self.mouse_endpoint].simulate_action(actions)
 
-    def send_raw_event(self, data):
+    def send_raw(self, data):
         self.endpoints[self.mouse_endpoint].send_raw(data)
 
     def dispatch(self):
