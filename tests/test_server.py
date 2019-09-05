@@ -59,7 +59,7 @@ class TestServer(object):
     def client(self):
         yield Client()
 
-    def add_device(self, client, hw_settings=[]):
+    def add_device(self, client, hw_settings={}):
         data = {
             'hw_settings': hw_settings
         }

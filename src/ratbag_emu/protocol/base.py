@@ -9,7 +9,6 @@ from hidtools.uhid import UHIDDevice
 
 from ratbag_emu.util import AbsInt, MM_TO_INCH
 from ratbag_emu.protocol.util.profile import Profile
-from ratbag_emu.protocol.hidpp20 import *
 
 
 class Endpoint(UHIDDevice):
@@ -208,10 +207,6 @@ class Endpoint(UHIDDevice):
 
 
 class BaseDevice(object):
-    device_list = {
-        # Logitech
-        'logitech-g-pro-wireless': LogitechGProWirelessDevice
-    }
 
     def __init__(self, hw_settings={}, name='Generic Device',
         info=(0x03, 0x0001, 0x0001), rdescs=[

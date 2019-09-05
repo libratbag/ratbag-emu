@@ -4,6 +4,7 @@ from time import sleep
 import connexion
 from hidtools.hid import RangeError
 
+import ratbag_emu.protocol.devices
 from ratbag_emu.device_handler import DeviceHandler
 from ratbag_emu.protocol.base import BaseDevice, MouseData
 from ratbag_emu.protocol.devices import DeviceList
@@ -49,10 +50,10 @@ def add_device():
 
     # Normal Device
     if shortname:
-        if shortname not in BaseDevice.device_list:
+        if not DeviceList.exists(shortname):
             return json.dumps(f"Unknown device '{shortname}'"), 404
 
-        DeviceHandler.append_device(BaseDevice.device_list[shortname]())
+        DeviceHandler.append_device(DeviceList.get(shortname)())
 
     # Generic Device
     elif hw_settings:
