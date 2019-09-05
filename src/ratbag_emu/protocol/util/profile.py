@@ -36,6 +36,10 @@ class Profile(object):
         if obj.get('dpi_step'):
             self.dpi_step = obj.get('dpi_step')
 
+        if not self.dpi:
+            self.dpi = [1000]
+            self.active_dpi = self.default_dpi = 0
+
         # Report Rates
         self.active_report_rate = 0
         self.report_rates = obj.get('report_rates', []) # Hz
