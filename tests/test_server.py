@@ -59,9 +59,9 @@ class TestServer(object):
     def client(self):
         yield Client()
 
-    def add_device(self, client, name='steelseries-rival310'):
+    def add_device(self, client, hw_settings=[]):
         data = {
-            'shortname': name
+            'hw_settings': hw_settings
         }
         response = client.post('/devices/add', json=data)
         assert response.status_code == 201
@@ -69,7 +69,7 @@ class TestServer(object):
 
     def test_add_device(self, client, name='steelseries-rival310'):
         data = {
-            'shortname': name
+            'shortname': 'logitech-g-pro-wireless'
         }
         response = client.post('/devices/add', json=data)
         assert response.status_code == 201
@@ -118,43 +118,123 @@ class TestServer(object):
         client.delete(f'/devices/{id}')
 
     @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
-    def test_dpi(self, client, dpi_id=0):
-        id = self.add_device(client)
+    def test_get_dpi(self, client, dpi_id=0):
+        dpi = 800
 
-        data = 6666
-        response = client.put(f'/devices/{id}/phys_props/dpi/{dpi_id}', json=data)
-
+        id = self.add_device(client,{
+            'is_active': True,
+            'resolutions': [
+                {
+                    'is_active': True,
+                    'xres': dpi,
+                    'dpi_min': 100,
+                    'dpi_max': 16000
+                }
+            ]
+        })
         response = client.get(f'/devices/{id}/phys_props/dpi/{dpi_id}')
         assert response.status_code == 200
-        assert response.json() == data
+        assert response.json() == dpi
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
-    def test_active_dpi(self, client):
-        self.test_dpi(client, 'active')
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
+    def test_set_dpi(self, client, dpi_id=0):
+        id = self.add_device(client, {
+            'is_active': True,
+            'resolutions': [
+                {
+                    'is_active': True,
+                    'xres': 800,
+                    'dpi_min': 100,
+                    'dpi_max': 16000
+                }
+            ]
+        })
+
+        new_dpi = 6666
+        response = client.put(f'/devices/{id}/phys_props/dpi/{dpi_id}', json=new_dpi)
+        assert response.status_code == 200
+
+        response = client.get(f'/devices/{id}/phys_props/dpi/{dpi_id}')
+        assert response.status_code == 200
+        assert response.json() == new_dpi
+
+        client.delete(f'/devices/{id}')
+
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
+    def test_get_active_dpi(self, client):
+        self.test_get_dpi(client, 'active')
+
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_set_dpi', 'test_get_active_dpi'])
+    def test_set_active_dpi(self, client):
+        self.test_set_dpi(client, 'active')
 
     @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
-    def test_led(self, client):
-        id = self.add_device(client)
+    def test_get_led(self, client):
+        led_id = 0
 
-        data = [
+        color = [
             0xFF,
             0xFF,
             0xFF
         ]
-        response = client.put(f'/devices/{id}/phys_props/leds/0', json=data)
+
+        id = self.add_device(client, {
+            'is_active': True,
+            'leds': [
+                {
+                    'color': color
+                }
+            ]
+        })
+
+        response = client.get(f'/devices/{id}/phys_props/leds/{led_id}')
+        assert response.status_code == 200
+        assert response.json() == color
+
+        client.delete(f'/devices/{id}')
+
+    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_led'])
+    def test_set_led(self, client):
+        led_id = 0
+
+        id = self.add_device(client, {
+            'is_active': True,
+            'leds': [
+                {
+                    'color': [0xFF, 0xFF, 0xFF]
+                }
+            ]
+        })
+
+        color = [
+            0xAA,
+            0xBB,
+            0xCC
+        ]
+
+        response = client.put(f'/devices/{id}/phys_props/leds/{led_id}', json=color)
         assert response.status_code == 200
 
-        response = client.get(f'/devices/{id}/phys_props/leds/0')
+        response = client.get(f'/devices/{id}/phys_props/leds/{led_id}')
         assert response.status_code == 200
-        assert response.json() == data
+        assert response.json() == color
 
         client.delete(f'/devices/{id}')
 
     @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
     def test_device_event(self, client):
-        id = self.add_device(client, 'generic-hidpp20')
+        id = self.add_device(client, {
+            'is_active': True,
+            'resolutions': [
+                {
+                    'is_active': True,
+                    'xres': 1000,
+                    'rate': 1000
+                }
+            ]
+        })
         input_nodes = []
 
         start = time()
