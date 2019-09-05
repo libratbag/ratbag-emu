@@ -86,7 +86,7 @@ class HIDPP20Device(BaseDevice):
     '''
     Interface functions
     '''
-    def protocol_send(report_type, device, feature, ase, sw_id, args):
+    def protocol_send(self, report_type, device, feature, ase, sw_id, args):
         data = [0] * self.report_size[report_type]
         data[self.Report.ReportType]    = report_type
         data[self.Report.Device]        = device
