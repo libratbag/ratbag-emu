@@ -8,9 +8,10 @@ from ratbag_emu.protocol.util.descriptors import report_descriptor_simple, \
                                                  report_descriptor_g_pro
 
 from ratbag_emu.device_handler import DeviceHandler
-from ratbag_emu.protocol.base import MouseData
+from ratbag_emu.protocol.base import BaseDevice, MouseData
+from ratbag_emu.protocol.devices import DeviceList
 from ratbag_emu.protocol.hidpp20 import HIDPP20Device
-from ratbag_emu.protocol.hidpp20 import HIDPPFeatures as HIDPP20Features
+from ratbag_emu.protocol.hidpp20 import HIDPP20Features
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 
@@ -46,52 +47,19 @@ def add_device():
     if not connexion.request.is_json:
         return json.dumps('The request is not valid JSON.'), 400
 
-    shortname = connexion.request.json['shortname']
+    shortname = connexion.request.json.get('shortname')
+    hw_settings = connexion.request.json.get('hw_settings')
 
-    if shortname == "generic-hidpp20":
-        DeviceHandler.append_device(HIDPP20Device(
-            report_descriptor_simple, (0x3, 0x0001, 0x0001), []))
-    elif shortname == "steelseries-rival310":
-        DeviceHandler.append_device(SteelseriesDevice(
-            report_descriptor_g_pro, (0x3, 0x01038, 0x1720),
-            'Steelseriesw Rival 310', shortname, 2))
-    elif shortname == "logitech-g-pro":
-        DeviceHandler.append_device(HIDPP20Device(
-            report_descriptor_g_pro, (0x3, 0x046d, 0x4079),
-            [
-                HIDPP20Features.IRoot,
-                HIDPP20Features.IFeatureSet,
-                HIDPP20Features.IFeatureInfo,
-                HIDPP20Features.DeviceNameAndType,
-                0x1d4b,
-                0x0020,
-                0x1001,
-                0x8070,
-                0x1300,
-                0x8100,
-                0x8110,
-                0x8060,
-                0x2201,
-                0x1802,
-                0x1803,
-                0x1805,
-                0x1806,
-                0x1811,
-                0x1830,
-                0x1890,
-                0x1891,
-                0x18a1,
-                0x1801,
-                0x18b1,
-                0x1df3,
-                0x1e00,
-                0x1eb0,
-                0x1863,
-                0x1e22
-            ],
-            'Logitech G Pro', shortname))
-    else:
-        return json.dumps(f"Specification '{shortname}' does not exist"), 404
+    # Normal Device
+    if shortname:
+        if shortname not in BaseDevice.device_list:
+            return json.dumps(f"Unknown device '{shortname}'"), 404
+
+        DeviceHandler.append_device(BaseDevice.device_list[shortname]())
+
+    # Generic Device
+    elif hw_settings:
+        DeviceHandler.append_device(BaseDevice(hw_settings))
 
     id = DeviceHandler.cur_id
     DeviceHandler.wait_for_device_nodes(id)
@@ -118,12 +86,12 @@ def get_dpi(device_id, dpi_id):
         return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     if dpi_id == 'active':
-        dpi_id = device.hw_profile.active_dpi
+        dpi_id = device.hw_settings.active_dpi
     else:
         dpi_id = int(dpi_id)
 
     try:
-        return device.hw_profile.dpi[dpi_id], 200
+        return device.hw_settings.dpi[dpi_id], 200
     except IndexError:
         return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
 
@@ -140,12 +108,12 @@ def set_dpi(device_id, dpi_id):
         return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     if dpi_id == 'active':
-        dpi_id = device.hw_profile.active_dpi
+        dpi_id = device.hw_settings.active_dpi
     else:
         dpi_id = int(dpi_id)
 
     try:
-        device.hw_profile.dpi[dpi_id] = value
+        device.hw_settings.dpi[dpi_id] = value
         return json.dumps('Value updated'), 200
     except IndexError:
         return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
@@ -161,7 +129,7 @@ def get_led(device_id, led_id):
         return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
     try:
-        return device.hw_profile.leds[led_id]
+        return list(device.hw_settings.leds[led_id])
     except IndexError:
         return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
 
@@ -182,8 +150,7 @@ def set_led(device_id, led_id):
         return json.dumps('Invalid value'), 400
 
     try:
-        device.hw_profile.leds[led_id] = value
-
+        device.hw_settings.leds[led_id] = device.hw_settings.Led(*value)
         return json.dumps('Value updated'), 200
     except IndexError:
         return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
@@ -206,6 +173,9 @@ def device_event(device_id):
     if actions is None:
         return json.dumps('Invalid value'), 400
 
-    device.simulate_action(actions)
+    try:
+        device.simulate_action(actions)
+        return json.dumps('Success'), 200
+    except Exception as e:
+        return json.dumps(str(e)), 400
 
-    return json.dumps('Success'), 200

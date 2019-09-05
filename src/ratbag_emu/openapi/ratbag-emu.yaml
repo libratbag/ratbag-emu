@@ -50,7 +50,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Device'
+              oneOf:
+                - type: object
+                  properties:
+                    shortname:
+                      type: string
+                  required:
+                    - shortname
+                - type: object
+                  properties:
+                    hw_settings:
+                      type: string
+                  required:
+                    - hw_settings
       responses:
         '200':
           description: OK

@@ -26,29 +26,24 @@ class Steelseries2Commands():
 
 class SteelseriesDevice(BaseDevice):
     '''
-    Device properties
-    '''
-    version_major = 1
-    version_minor = 33
-
-    '''
     Init routine
     '''
-    def __init__(self, rdesc=None, info=None,name='Generic Steelseries Device',
-                 shortname='generic-steelseries', protocol_version=2):
-        self.protocol = f'Steelseries v{protocol_version}'
-        super().__init__(rdesc, info, name, shortname)
+    def __init__(self):
+        assert hasattr(self, 'protocol_version'), 'Protocol version is missing'
+        assert hasattr(self, 'hw_settings'), 'Hardware settings are missing'
+        super().__init__(self.hw_settings, self.name, self.info, self.rdescs, self.shortname)
 
         self.Commands = None
-        if protocol_version == 1:
+        if self.protocol_version == 1:
             pass
-        elif protocol_version == 2:
+        elif self.protocol_version == 2:
             self.Commands = Steelseries2Commands
-        elif protocol_version == 3:
+        elif self.protocol_version == 3:
             pass
 
-        assert self.Commands is not None, \
-            'Steelseries v{protocol_version} not implemented'
+        self.fw_version = [1, 33]
+
+        assert self.Commands, 'Steelseries protocol v{protocol_version} not implemented'
 
         self.Report     = SteelseriesReport
         self.ReportType = SteelseriesReportType
@@ -102,7 +97,7 @@ class SteelseriesDevice(BaseDevice):
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
-        self.hw_profile.dpi[dpi_id - 1] = self.hw_profile.step * (dpi_steps + 1)
+        self.hw_settings.dpi[dpi_id - 1] = self.hw_settings.dpi_step * (dpi_steps + 1)
         print(f'# DEBUG: New DPI values: {self.dpi[0]}, {self.fpi[1]}')
         return
 
@@ -110,15 +105,15 @@ class SteelseriesDevice(BaseDevice):
         return
 
     def read_firmware(self, command, data, args):
-        self.protocol_send(command, [self.version_major, self.version_minor])
+        self.protocol_send(command, self.fw_version)
         return
 
     def read_settings(self, command, data, args):
         data = [0]
-        data.append(self.hw_profile.active_dpi)
-        for dpi in self.hw_profile.dpi:
-            data.append(int((dpi - self.hw_profile.step) / self.hw_profile.step))
-        for color in self.hw_profile.leds:
+        data.append(self.hw_settings.active_dpi)
+        for dpi in self.hw_settings.dpi:
+            data.append(int((dpi - self.hw_settings.dpi_step) / self.hw_settings.dpi_step))
+        for color in self.hw_settings.leds:
             data += color
         self.protocol_send(command, data)
         return

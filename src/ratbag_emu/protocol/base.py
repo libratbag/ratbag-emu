@@ -9,9 +9,10 @@ from hidtools.uhid import UHIDDevice
 
 from ratbag_emu.util import AbsInt, MM_TO_INCH
 from ratbag_emu.protocol.util.profile import Profile
+from ratbag_emu.protocol.hidpp20 import *
 
 
-class SimulatedDevice(UHIDDevice):
+class Endpoint(UHIDDevice):
     verbose = True
 
     '''
@@ -19,22 +20,20 @@ class SimulatedDevice(UHIDDevice):
 
     Initializes the device attributes and creates the UHID device
     '''
-    def __init__(self, owner, rdesc=None, info=None, name='Generic Device',
-                 shortname='generic'):
+    def __init__(self, owner, rdesc):
         try:
             super().__init__()
         except PermissionError:
             print('Error: Not enough permissions to create UHID devices')
             os._exit(1)
 
-        self.owner = owner
+        self._owner = owner
 
-        self.info = info
+        self._info = owner.info
         self.rdesc = rdesc
-        self.name = f'ratbag-emu test device ({name}, {hex(self.vid)}:{hex(self.pid)})'
-        self.shortname = shortname
+        self.name = f'ratbag-emu test device ({owner.name}, {hex(self.vid)}:{hex(self.pid)})'
 
-        self.hw_profile = None
+        self.hw_settings = None
 
         self._output_report = self._protocol_receive
 
@@ -47,7 +46,7 @@ class SimulatedDevice(UHIDDevice):
     Prints target message as well as the timestamp
     '''
     def log(self, msg):
-        if SimulatedDevice.verbose:
+        if Endpoint.verbose:
             print('{:20}{}'.format(f'{time.time()}:', msg))
 
     '''
@@ -67,7 +66,7 @@ class SimulatedDevice(UHIDDevice):
         if size > 0:
             self.log('read ' + ''.join(f' {byte:02x}' for byte in data))
 
-        self.owner.protocol_receive(data, size, rtype)
+        self._owner.protocol_receive(data, size, rtype)
 
 
     '''
@@ -115,8 +114,8 @@ class SimulatedDevice(UHIDDevice):
         duration = 0
 
         for action in actions:
-            start_report = int(action['start'] / 1000 * self.hw_profile.get_report_rate())
-            end_report = int(action['end'] / 1000 * self.hw_profile.get_report_rate())
+            start_report = int(action['start'] / 1000 * self.hw_settings.get_report_rate())
+            end_report = int(action['end'] / 1000 * self.hw_settings.get_report_rate())
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -153,7 +152,7 @@ class SimulatedDevice(UHIDDevice):
                     # move_value * inch_to_mm * active_dpi
                     pixel_buffer[attr] = AbsInt((action['action'][attr] *
                                          MM_TO_INCH *
-                                         self.hw_profile.get_dpi_value()))
+                                         self.hw_settings.get_dpi_value()))
                     step[attr] = pixel_buffer[attr] / report_count
                 real_pixel_buffer = copy.deepcopy(pixel_buffer)
 
@@ -184,7 +183,7 @@ class SimulatedDevice(UHIDDevice):
                     setattr(packets[i], f"b{action['action']['id']}", 1)
 
         sim_thread = threading.Thread(target=self._send_packets,
-                args=(packets, int(duration / 1000 * self.hw_profile.get_report_rate())))
+                args=(packets, int(duration / 1000 * self.hw_settings.get_report_rate())))
         sim_thread.start()
 
     '''
@@ -196,35 +195,74 @@ class SimulatedDevice(UHIDDevice):
         for i in range(total):
             s.enter(next_time, 1, self.send_raw,
                     kwargs={'data': self.create_report(packets[i], 0x11)})
-            next_time += 1 / self.hw_profile.get_report_rate()
+            next_time += 1 / self.hw_settings.get_report_rate()
         s.run()
+
+    @property
+    def info(self):
+        return self._owner.info
+
+    @property
+    def shortname(self):
+        return self._owner.shortname
 
 
 class BaseDevice(object):
-    def __init__(self, rdesc=None, info=None, name='Generic Device',
-                 shortname='generic'):
-        self.info = info
+    device_list = {
+        # Logitech
+        'logitech-g-pro-wireless': LogitechGProWirelessDevice
+    }
+
+    def __init__(self, hw_settings={}, name='Generic Device',
+        info=(0x03, 0x0001, 0x0001), rdescs=[
+            [
+                0x05, 0x01,  # .Usage Page (Generic Desktop)        0
+                0x09, 0x02,  # .Usage (Mouse)                       2
+                0xa1, 0x01,  # .Collection (Application)            4
+                0x09, 0x02,  # ..Usage (Mouse)                      6
+                0xa1, 0x02,  # ..Collection (Logical)               8
+                0x09, 0x01,  # ...Usage (Pointer)                   10
+                0xa1, 0x00,  # ...Collection (Physical)             12
+                0x05, 0x09,  # ....Usage Page (Button)              14
+                0x19, 0x01,  # ....Usage Minimum (1)                16
+                0x29, 0x03,  # ....Usage Maximum (3)                18
+                0x15, 0x00,  # ....Logical Minimum (0)              20
+                0x25, 0x01,  # ....Logical Maximum (1)              22
+                0x75, 0x01,  # ....Report Size (1)                  24
+                0x95, 0x03,  # ....Report Count (3)                 26
+                0x81, 0x02,  # ....Input (Data,Var,Abs)             28
+                0x75, 0x05,  # ....Report Size (5)                  30
+                0x95, 0x01,  # ....Report Count (1)                 32
+                0x81, 0x03,  # ....Input (Cnst,Var,Abs)             34
+                0x05, 0x01,  # ....Usage Page (Generic Desktop)     36
+                0x09, 0x30,  # ....Usage (X)                        38
+                0x09, 0x31,  # ....Usage (Y)                        40
+                0x15, 0x81,  # ....Logical Minimum (-127)           42
+                0x25, 0x7f,  # ....Logical Maximum (127)            44
+                0x75, 0x08,  # ....Report Size (8)                  46
+                0x95, 0x02,  # ....Report Count (2)                 48
+                0x81, 0x06,  # ....Input (Data,Var,Rel)             50
+                0xc0,        # ...End Collection                    52
+                0xc0,        # ..End Collection                     53
+                0xc0,        # .End Collection                      54
+            ]
+        ], shortname='custom-generic-device'):
         self.name = name
         self.shortname = shortname
-        self.endpoints = {}
+        self.info = info
+        self.rdescs = rdescs
 
-        self.endpoints[0] = SimulatedDevice(self, rdesc, info, name, shortname)
+        self.endpoints = []
 
-        self.protocol = None
+        for r in rdescs:
+            self.endpoints.append(Endpoint(self, r))
 
+        self.hw_settings = Profile(hw_settings)
 
-        # Represents the active profile in the hardware.
-        self.hw_profile = Profile()
-
-        self.active_profile = None
-        self.profiles = []
-
+        # This should be handled by the protocol emulator implementation
         self.mouse_endpoint = 0
         self.keyboard_endpoint = 0
         self.media_endpoint = 0
-
-        for endpoint in self.endpoints.values():
-            endpoint.hw_profile = self.hw_profile
 
     '''
     Callback called upon receiving output reports from the kernel
@@ -247,19 +285,29 @@ class BaseDevice(object):
         self.endpoints[self.mouse_endpoint].send_raw(data)
 
     def dispatch(self):
-        for endpoint in self.endpoints.values():
+        for endpoint in self.endpoints:
             endpoint.dispatch()
 
     def destroy(self):
-        for endpoint in self.endpoints.values():
+        for endpoint in self.endpoints:
             endpoint.destroy()
 
     @property
     def device_nodes(self):
         nodes = []
-        for endpoint in self.endpoints.values():
+        for endpoint in self.endpoints:
             nodes += endpoint.device_nodes
         return nodes
+
+    @property
+    def hw_settings(self):
+        return self._hw_settings
+
+    @hw_settings.setter
+    def hw_settings(self, value):
+        self._hw_settings = value
+        for endpoint in self.endpoints:
+            endpoint.hw_settings = value
 
 
 class MouseData(object):

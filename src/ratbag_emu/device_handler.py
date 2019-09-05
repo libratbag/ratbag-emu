@@ -24,7 +24,7 @@ class DeviceHandler(object):
     @staticmethod
     def wait_for_device_nodes(device_id, timeout=3):
         start = time()
-        for endpoint in DeviceHandler.devices[device_id].endpoints.values():
+        for endpoint in DeviceHandler.devices[device_id].endpoints:
             while not endpoint.device_nodes or len(endpoint.device_nodes) == 0:
                 sleep(0.1)
                 if time() > start + timeout:
