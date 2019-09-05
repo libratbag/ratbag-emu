@@ -23,7 +23,6 @@ paths:
   /devices:
     get:
       tags:
-#        - device
         - device-management
       summary: List of simulated devices
       description: 'Provides the list of devices that are being currently simulated by ratbag-emu'
@@ -41,7 +40,6 @@ paths:
   '/devices/add':
     post:
       tags:
-#        - device
         - device-management
       summary: Creates a simulated device
       description: 'Tells ratbag-emu to create a new simulated device'
@@ -65,7 +63,6 @@ paths:
   '/devices/{device_id}':
     get:
       tags:
-#        - device
         - device-management
       summary: Returns a simulated device
       description: 'Returns one the of devices currently simulated by ratbag-emu'
@@ -88,7 +85,6 @@ paths:
           description: Device not found
     delete:
       tags:
-#        - device
         - device-management
       summary: Deletes a simulated device
       operationId: ratbag_emu.server.delete_device
@@ -107,7 +103,6 @@ paths:
   '/devices/{device_id}/event':
     post:
       tags:
-#        - device
         - device-event
       summary: Send an event to a simulated device
       operationId: ratbag_emu.server.device_event
@@ -160,7 +155,6 @@ paths:
   '/devices/{device_id}/phys_props/dpi/{dpi_id}':
     get:
       tags:
-#        - device
         - device-dpi
       summary: Returns the value of the active DPI setting
       operationId: ratbag_emu.server.get_dpi
@@ -176,10 +170,6 @@ paths:
           required: true
           schema:
             type: string
-#            anyOf:
-#              - type: integer
-#                format: int32
-#              - type: string
       responses:
         '200':
           description: OK
@@ -192,7 +182,6 @@ paths:
           description: Device not found
     put:
       tags:
-#        - device
         - device-dpi
       summary: Changes the value of the specified DPI setting
       operationId: ratbag_emu.server.set_dpi
@@ -208,10 +197,6 @@ paths:
           required: true
           schema:
             type: string
-#            anyOf:
-#              - type: integer
-#                format: int32
-#              - type: string
       responses:
         '200':
           description: OK
@@ -220,7 +205,6 @@ paths:
   '/devices/{device_id}/phys_props/leds/{led_id}':
     get:
       tags:
-#        - device
         - device-led
       summary: Returns the LED state of a specific LED from a simulated device
       operationId: ratbag_emu.server.get_led
@@ -253,7 +237,6 @@ paths:
           description: Device not found
     put:
       tags:
-#        - device
         - device-led
       summary: Returns the LED state of a specific LED from a simulated device
       operationId: ratbag_emu.server.set_led
