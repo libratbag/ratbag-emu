@@ -1,9 +1,12 @@
 from .logitech_g_pro_wireless import *
+from .steelseries_rival_310 import *
 
 class DeviceList(object):
     device_list = {
         # Logitech
-        'logitech-g-pro-wireless': LogitechGProWirelessDevice
+        'logitech-g-pro-wireless': LogitechGProWirelessDevice,
+        # Steelseries
+        'steelseries-rival310': SteelseriesRival310Device,
     }
 
     @classmethod
