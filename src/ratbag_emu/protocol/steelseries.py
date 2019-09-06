@@ -100,7 +100,6 @@ class SteelseriesDevice(BaseDevice):
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
         self.hw_settings.dpi[dpi_id - 1] = self.hw_settings.dpi_step * (dpi_steps + 1)
-        print(f'# DEBUG: New DPI values: {self.dpi[0]}, {self.fpi[1]}')
         return
 
     def change_leds(self, command, data, args):
