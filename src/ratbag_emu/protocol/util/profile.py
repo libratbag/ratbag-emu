@@ -33,8 +33,8 @@ class Profile(object):
                 self.active_dpi = i
             if dpi.get('is_default') == True:
                 self.default_dpi = i
-        if obj.get('dpi_step'):
-            self.dpi_step = obj.get('dpi_step')
+            if dpi.get('dpi_step'):
+                self.dpi_step = dpi.get('dpi_step')
 
         if not self.dpi:
             self.dpi = [1000]
