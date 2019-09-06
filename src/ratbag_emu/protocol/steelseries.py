@@ -37,6 +37,8 @@ class SteelseriesDevice(BaseDevice):
         if self.protocol_version == 1:
             pass
         elif self.protocol_version == 2:
+            self.mouse_endpoint = self.keyboard_endpoint = 0
+            self.media_endpoint = 1
             self.Commands = Steelseries2Commands
         elif self.protocol_version == 3:
             pass
