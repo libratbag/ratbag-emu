@@ -254,10 +254,10 @@ class BaseDevice(object):
 
         self.hw_settings = Profile(hw_settings)
 
-        # This should be handled by the protocol emulator implementation
-        self.mouse_endpoint = 0
-        self.keyboard_endpoint = 0
-        self.media_endpoint = 0
+        # Fill missing endpoints, we default to 0
+        for attr in ['mouse_endpoint', 'keyboard_endpoint', 'media_endpoint']:
+            if not hasattr(self, attr):
+                setattr(self, attr, 0)
 
     '''
     Callback called upon receiving output reports from the kernel
@@ -301,8 +301,9 @@ class BaseDevice(object):
     @hw_settings.setter
     def hw_settings(self, value):
         self._hw_settings = value
-        for endpoint in self.endpoints:
-            endpoint.hw_settings = value
+        if hasattr(self, 'endpoints'):
+            for endpoint in self.endpoints:
+                endpoint.hw_settings = value
 
 
 class MouseData(object):
