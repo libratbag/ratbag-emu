@@ -2,8 +2,8 @@ from ratbag_emu.protocol.hidpp20 import HIDPP20Device, HIDPP20Errors, HIDPP20Fea
 
 class LogitechGProWirelessDevice(HIDPP20Device):
     def __init__(self):
-        self.name = 'Logitech G Pro'
-        self.shortname = 'logitech-g-pro'
+        self.name = 'Logitech G Pro Wireless'
+        self.shortname = 'logitech-g-pro-wireless'
         self.info = (0x03, 0x046d, 0x4079)
         self.rdescs = [
             [
