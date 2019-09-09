@@ -48,7 +48,6 @@ class HIDPP20Device(BaseDevice):
     '''
     Internal variables
     '''
-    expecting_reply = False
 
     '''
     Init routine
@@ -80,6 +79,8 @@ class HIDPP20Device(BaseDevice):
         # Device proprieties
         self.version_major = 4
         self.version_minor = 2
+
+        self.expecting_reply = False
 
     '''
     Interface functions
