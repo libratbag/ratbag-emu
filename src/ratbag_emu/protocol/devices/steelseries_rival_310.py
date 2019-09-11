@@ -1,7 +1,7 @@
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 class SteelseriesRival310Device(SteelseriesDevice):
-    def __init__(self):
+    def __init__(self, id=None):
         self.name = 'Steelseries Rival 310'
         self.shortname = 'steelseries-rival310'
         self.info = (0x03, 0x1038, 0x1720)
@@ -97,6 +97,7 @@ class SteelseriesRival310Device(SteelseriesDevice):
                  0xc0,                          # End Collection                      75
             ]
         ]
+        self.id = id
 
         # Steelseries specific settings
         self.protocol_version = 2

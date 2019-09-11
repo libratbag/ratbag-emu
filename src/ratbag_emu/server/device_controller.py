@@ -53,11 +53,11 @@ def add_device():
         if not DeviceList.exists(shortname):
             return json.dumps(f"Unknown device '{shortname}'"), 404
 
-        DeviceHandler.append_device(DeviceList.get(shortname)())
+        DeviceHandler.append_device(DeviceList.get(shortname)(DeviceHandler.cur_id+1))
 
     # Generic Device
     elif hw_settings:
-        DeviceHandler.append_device(BaseDevice(hw_settings))
+        DeviceHandler.append_device(BaseDevice(hw_settings, id=DeviceHandler.cur_id+1))
 
     id = DeviceHandler.cur_id
     DeviceHandler.wait_for_device_nodes(id)

@@ -1,7 +1,7 @@
 from ratbag_emu.protocol.hidpp20 import HIDPP20Device, HIDPP20Errors, HIDPP20Features, HIDPP20Report, HIDPP20ReportType
 
 class LogitechGProWirelessDevice(HIDPP20Device):
-    def __init__(self):
+    def __init__(self, id=None):
         self.name = 'Logitech G Pro Wireless'
         self.shortname = 'logitech-g-pro-wireless'
         self.info = (0x03, 0x046d, 0x4079)
@@ -123,6 +123,7 @@ class LogitechGProWirelessDevice(HIDPP20Device):
                 0xc0,                          # End Collection                      233
             ]
         ]
+        self.id = id
 
         # HID++ 2.0 specific settings
         self.feature_table = [

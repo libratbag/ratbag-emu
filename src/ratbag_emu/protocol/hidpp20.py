@@ -54,7 +54,7 @@ class HIDPP20Device(BaseDevice):
     '''
     def __init__(self):
         assert hasattr(self, 'feature_table'), 'Feature table missing'
-        super().__init__({}, self.name, self.info, self.rdescs, self.shortname)
+        super().__init__({}, self.name, self.info, self.rdescs, self.shortname, id=self.id)
 
         # Protocol declarations
         self.Report         = HIDPP20Report

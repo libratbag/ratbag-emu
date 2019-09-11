@@ -31,7 +31,7 @@ class SteelseriesDevice(BaseDevice):
     def __init__(self):
         assert hasattr(self, 'protocol_version'), 'Protocol version is missing'
         assert hasattr(self, 'hw_settings'), 'Hardware settings are missing'
-        super().__init__(self.hw_settings, self.name, self.info, self.rdescs, self.shortname)
+        super().__init__(self.hw_settings, self.name, self.info, self.rdescs, self.shortname, id=self.id)
 
         self.Commands = None
         if self.protocol_version == 1:

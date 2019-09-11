@@ -30,7 +30,12 @@ class Endpoint(UHIDDevice):
 
         self._info = owner.info
         self.rdesc = rdesc
-        self.name = f'ratbag-emu test device ({owner.name}, {hex(self.vid)}:{hex(self.pid)})'
+
+        id = ''
+        if owner.id is not None:
+            id = f'#{owner.id} '
+
+        self.name = f'ratbag-emu test device {id}({owner.name}, {hex(self.vid)}:{hex(self.pid)})'
 
         self.hw_settings = None
 
@@ -241,11 +246,12 @@ class BaseDevice(object):
                 0xc0,        # ..End Collection                     53
                 0xc0,        # .End Collection                      54
             ]
-        ], shortname='custom-generic-device'):
+        ], shortname='custom-generic-device', id=None):
         self.name = name
         self.shortname = shortname
         self.info = info
         self.rdescs = rdescs
+        self.id = id
 
         self.endpoints = []
 
