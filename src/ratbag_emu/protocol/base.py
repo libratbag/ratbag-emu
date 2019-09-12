@@ -67,7 +67,6 @@ class Endpoint(UHIDDevice):
 
         self._owner.protocol_receive(data, size, rtype)
 
-
     def _send_raw(self, data):
         '''
         Internal routine used to send raw output reports
@@ -103,7 +102,6 @@ class Endpoint(UHIDDevice):
             return
 
         return super().create_report(data, type)
-
 
     def simulate_action(self, actions):
         '''

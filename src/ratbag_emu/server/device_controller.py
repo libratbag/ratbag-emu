@@ -128,7 +128,6 @@ def get_led(device_id, led_id):
         return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
 
 
-
 def set_led(device_id, led_id):
     if not connexion.request.is_json:
         return json.dumps('The request is not valid JSON.'), 400
