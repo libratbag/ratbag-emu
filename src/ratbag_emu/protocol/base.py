@@ -242,12 +242,12 @@ class BaseDevice(object):
                          0xc0,        # ..End Collection                     53
                          0xc0,        # .End Collection                      54
                      ]],
-                 shortname='custom-generic-device', id=None):
+                 shortname='custom-generic-device'):
         self.name = name
         self.shortname = shortname
         self.info = info
         self.rdescs = rdescs
-        self.id = id
+        self.id = None
 
         self.endpoints = []
 

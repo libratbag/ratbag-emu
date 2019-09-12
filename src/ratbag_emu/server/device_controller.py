@@ -43,28 +43,28 @@ def add_device():
     shortname = connexion.request.json.get('shortname')
     hw_settings = connexion.request.json.get('hw_settings')
 
+    device = None
+
     # Normal Device
     if shortname:
         if not DeviceList.exists(shortname):
             return json.dumps(f"Unknown device '{shortname}'"), 404
 
-        device = DeviceList.get(shortname)(DeviceHandler.cur_id + 1)
-
-        DeviceHandler.append_device(device)
+        device = DeviceList.get(shortname)()
 
     # Generic Device
     elif hw_settings is not None:
-        DeviceHandler.append_device(BaseDevice(hw_settings,
-                                               id=DeviceHandler.cur_id + 1))
+        device = BaseDevice(hw_settings)
     else:
         return json.dumps(f'Missing hw_settings parameter'), 404
 
-    id = DeviceHandler.cur_id
-    DeviceHandler.wait_for_device_nodes(id)
+    DeviceHandler.append_device(device)
+
+    DeviceHandler.wait_for_device_nodes(device.id)
 
     sleep(0.1)
 
-    return DeviceHandler.get_device(id), 201
+    return DeviceHandler.get_device(device.id), 201
 
 
 def delete_device(device_id):

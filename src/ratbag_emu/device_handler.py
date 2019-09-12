@@ -13,7 +13,9 @@ class DeviceHandler(object):
     def append_device(device):
         DeviceHandler.lock.acquire()
         DeviceHandler.cur_id += 1
-        DeviceHandler.devices[DeviceHandler.cur_id] = device
+        # TODO: ensure we do not overwrite a previous ID set in device
+        device.id = DeviceHandler.cur_id
+        DeviceHandler.devices[device.id] = device
         DeviceHandler.lock.release()
 
     @staticmethod
