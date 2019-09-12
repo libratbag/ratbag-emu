@@ -1,5 +1,7 @@
-from .logitech_g_pro_wireless import *
-from .steelseries_rival_310 import *
+from .logitech_g_pro_wireless import LogitechGProWirelessDevice
+from .steelseries_rival_310 import SteelseriesRival310Device
+
+__all__ = ['DeviceList']
 
 
 class DeviceList(object):
