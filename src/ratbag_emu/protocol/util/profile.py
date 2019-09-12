@@ -29,9 +29,9 @@ class Profile(object):
         resolutions = obj.get('resolutions', {})
         for i, dpi in enumerate(resolutions):
             self.dpi.append(dpi['xres'])
-            if dpi.get('is_active') == True:
+            if dpi.get('is_active') is True:
                 self.active_dpi = i
-            if dpi.get('is_default') == True:
+            if dpi.get('is_default') is True:
                 self.default_dpi = i
             if dpi.get('dpi_step'):
                 self.dpi_step = dpi.get('dpi_step')
