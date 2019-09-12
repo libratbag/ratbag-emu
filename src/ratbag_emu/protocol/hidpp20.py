@@ -92,8 +92,7 @@ class HIDPP20Device(BaseDevice):
         super().send_raw(data)
 
     def protocol_reply(self, data, args):
-        assert len(data) >= self.Report.Arguments + len(args), \
-               'Report too small to send the arguments'
+        assert len(data) >= self.Report.Arguments + len(args), 'Report too small to send the arguments'
 
         for i in range(len(args)):
             data[self.Report.Arguments + i] = args[i]

@@ -59,43 +59,43 @@ class SteelseriesRival310Device(SteelseriesDevice):
                 0xc0,                          # End Collection                      97
             ],
             [
-                 0x05, 0x01,                    # Usage Page (Generic Desktop)        0
-                 0x09, 0x06,                    # Usage (Keyboard)                    2
-                 0xa1, 0x01,                    # Collection (Application)            4
-                 0x85, 0x01,                    # .Report ID (1)                      6
-                 0x05, 0x07,                    # .Usage Page (Keyboard)              8
-                 0x19, 0xe0,                    # .Usage Minimum (224)                10
-                 0x29, 0xe7,                    # .Usage Maximum (231)                12
-                 0x15, 0x00,                    # .Logical Minimum (0)                14
-                 0x25, 0x01,                    # .Logical Maximum (1)                16
-                 0x75, 0x01,                    # .Report Size (1)                    18
-                 0x95, 0x08,                    # .Report Count (8)                   20
-                 0x81, 0x02,                    # .Input (Data,Var,Abs)               22
-                 0x75, 0x08,                    # .Report Size (8)                    24
-                 0x95, 0x01,                    # .Report Count (1)                   26
-                 0x81, 0x01,                    # .Input (Cnst,Arr,Abs)               28
-                 0x05, 0x07,                    # .Usage Page (Keyboard)              30
-                 0x19, 0x00,                    # .Usage Minimum (0)                  32
-                 0x2a, 0xff, 0x00,              # .Usage Maximum (255)                34
-                 0x15, 0x00,                    # .Logical Minimum (0)                37
-                 0x26, 0xff, 0x00,              # .Logical Maximum (255)              39
-                 0x75, 0x08,                    # .Report Size (8)                    42
-                 0x95, 0x06,                    # .Report Count (6)                   44
-                 0x81, 0x00,                    # .Input (Data,Arr,Abs)               46
-                 0xc0,                          # End Collection                      48
-                 0x05, 0x0c,                    # Usage Page (Consumer Devices)       49
-                 0x09, 0x01,                    # Usage (Consumer Control)            51
-                 0xa1, 0x01,                    # Collection (Application)            53
-                 0x85, 0x02,                    # .Report ID (2)                      55
-                 0x05, 0x0c,                    # .Usage Page (Consumer Devices)      57
-                 0x19, 0x00,                    # .Usage Minimum (0)                  59
-                 0x2a, 0xff, 0x0f,              # .Usage Maximum (4095)               61
-                 0x15, 0x00,                    # .Logical Minimum (0)                64
-                 0x26, 0xff, 0x0f,              # .Logical Maximum (4095)             66
-                 0x75, 0x10,                    # .Report Size (16)                   69
-                 0x95, 0x02,                    # .Report Count (2)                   71
-                 0x81, 0x00,                    # .Input (Data,Arr,Abs)               73
-                 0xc0,                          # End Collection                      75
+                0x05, 0x01,                    # Usage Page (Generic Desktop)        0
+                0x09, 0x06,                    # Usage (Keyboard)                    2
+                0xa1, 0x01,                    # Collection (Application)            4
+                0x85, 0x01,                    # .Report ID (1)                      6
+                0x05, 0x07,                    # .Usage Page (Keyboard)              8
+                0x19, 0xe0,                    # .Usage Minimum (224)                10
+                0x29, 0xe7,                    # .Usage Maximum (231)                12
+                0x15, 0x00,                    # .Logical Minimum (0)                14
+                0x25, 0x01,                    # .Logical Maximum (1)                16
+                0x75, 0x01,                    # .Report Size (1)                    18
+                0x95, 0x08,                    # .Report Count (8)                   20
+                0x81, 0x02,                    # .Input (Data,Var,Abs)               22
+                0x75, 0x08,                    # .Report Size (8)                    24
+                0x95, 0x01,                    # .Report Count (1)                   26
+                0x81, 0x01,                    # .Input (Cnst,Arr,Abs)               28
+                0x05, 0x07,                    # .Usage Page (Keyboard)              30
+                0x19, 0x00,                    # .Usage Minimum (0)                  32
+                0x2a, 0xff, 0x00,              # .Usage Maximum (255)                34
+                0x15, 0x00,                    # .Logical Minimum (0)                37
+                0x26, 0xff, 0x00,              # .Logical Maximum (255)              39
+                0x75, 0x08,                    # .Report Size (8)                    42
+                0x95, 0x06,                    # .Report Count (6)                   44
+                0x81, 0x00,                    # .Input (Data,Arr,Abs)               46
+                0xc0,                          # End Collection                      48
+                0x05, 0x0c,                    # Usage Page (Consumer Devices)       49
+                0x09, 0x01,                    # Usage (Consumer Control)            51
+                0xa1, 0x01,                    # Collection (Application)            53
+                0x85, 0x02,                    # .Report ID (2)                      55
+                0x05, 0x0c,                    # .Usage Page (Consumer Devices)      57
+                0x19, 0x00,                    # .Usage Minimum (0)                  59
+                0x2a, 0xff, 0x0f,              # .Usage Maximum (4095)               61
+                0x15, 0x00,                    # .Logical Minimum (0)                64
+                0x26, 0xff, 0x0f,              # .Logical Maximum (4095)             66
+                0x75, 0x10,                    # .Report Size (16)                   69
+                0x95, 0x02,                    # .Report Count (2)                   71
+                0x81, 0x00,                    # .Input (Data,Arr,Abs)               73
+                0xc0,                          # End Collection                      75
             ]
         ]
         self.id = id
