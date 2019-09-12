@@ -148,8 +148,8 @@ class Endpoint(UHIDDevice):
                 for attr in ['x', 'y']:
                     # move_value * inch_to_mm * active_dpi
                     pixel_buffer[attr] = AbsInt((action['action'][attr] *
-                                         MM_TO_INCH *
-                                         self.hw_settings.get_dpi_value()))
+                                                 MM_TO_INCH *
+                                                 self.hw_settings.get_dpi_value()))
                     step[attr] = pixel_buffer[attr] / report_count
                 real_pixel_buffer = copy.deepcopy(pixel_buffer)
 
@@ -180,7 +180,7 @@ class Endpoint(UHIDDevice):
                     setattr(packets[i], f"b{action['action']['id']}", 1)
 
         sim_thread = threading.Thread(target=self._send_packets,
-                args=(packets, int(duration / 1000 * self.hw_settings.get_report_rate())))
+                                      args=(packets, int(duration / 1000 * self.hw_settings.get_report_rate())))
         sim_thread.start()
 
     def _send_packets(self, packets, total):

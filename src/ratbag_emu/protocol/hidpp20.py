@@ -155,7 +155,9 @@ class HIDPP20Device(BaseDevice):
         elif ase == 1:
             print(f'# DEBUG: getProtocolVersion() = {self.version_major}.{self.version_minor}')
             self.protocol_reply(data,
-                [self.version_major, self.version_minor, args[2]])
+                                [self.version_major,
+                                 self.version_minor,
+                                 args[2]])
 
     def IFeatureSet(self, data, ase, args):
         # count = getCount()
