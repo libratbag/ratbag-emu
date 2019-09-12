@@ -5,7 +5,6 @@ import traceback
 
 import connexion
 
-import ratbag_emu.server
 from ratbag_emu.device_handler import DeviceHandler
 
 

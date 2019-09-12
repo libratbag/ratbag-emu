@@ -1,9 +1,6 @@
 from time import time, sleep
 from threading import RLock
 
-from .protocol.hidpp20 import HIDPP20Device
-from .protocol.steelseries import SteelseriesDevice
-
 
 class DeviceHandler(object):
     devices = {}

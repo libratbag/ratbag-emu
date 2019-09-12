@@ -1,4 +1,4 @@
-from ratbag_emu.protocol.hidpp20 import HIDPP20Device, HIDPP20Errors, HIDPP20Features, HIDPP20Report, HIDPP20ReportType
+from ratbag_emu.protocol.hidpp20 import HIDPP20Device, HIDPP20Features
 
 class LogitechGProWirelessDevice(HIDPP20Device):
     def __init__(self, id=None):

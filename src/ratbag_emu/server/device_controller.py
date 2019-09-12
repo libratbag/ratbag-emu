@@ -2,15 +2,10 @@ import json
 from time import sleep
 
 import connexion
-from hidtools.hid import RangeError
 
-import ratbag_emu.protocol.devices
 from ratbag_emu.device_handler import DeviceHandler
-from ratbag_emu.protocol.base import BaseDevice, MouseData
+from ratbag_emu.protocol.base import BaseDevice
 from ratbag_emu.protocol.devices import DeviceList
-from ratbag_emu.protocol.hidpp20 import HIDPP20Device
-from ratbag_emu.protocol.hidpp20 import HIDPP20Features
-from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 
 #
