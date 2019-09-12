@@ -28,7 +28,8 @@ class SteelseriesDevice(BaseDevice):
     def __init__(self):
         assert hasattr(self, 'protocol_version'), 'Protocol version is missing'
         assert hasattr(self, 'hw_settings'), 'Hardware settings are missing'
-        super().__init__(self.hw_settings, self.name, self.info, self.rdescs, self.shortname, id=self.id)
+        super().__init__(self.hw_settings, self.name, self.info, self.rdescs,
+                         self.shortname, id=self.id)
 
         self.Commands = None
         if self.protocol_version == 1:
@@ -96,7 +97,8 @@ class SteelseriesDevice(BaseDevice):
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 
-        self.hw_settings.dpi[dpi_id - 1] = self.hw_settings.dpi_step * (dpi_steps + 1)
+        dpi = self.hw_settings.dpi_step * (dpi_steps + 1)
+        self.hw_settings.dpi[dpi_id - 1] = dpi
         return
 
     def change_leds(self, command, data, args):
@@ -109,8 +111,9 @@ class SteelseriesDevice(BaseDevice):
     def read_settings(self, command, data, args):
         data = [0]
         data.append(self.hw_settings.active_dpi)
+        dpi_step = self.hw_settings.dpi_step
         for dpi in self.hw_settings.dpi:
-            data.append(int((dpi - self.hw_settings.dpi_step) / self.hw_settings.dpi_step))
+            data.append(int((dpi - dpi_step) / dpi_step))
         for color in self.hw_settings.leds:
             data += color
         self.protocol_send(command, data)

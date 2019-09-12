@@ -48,11 +48,14 @@ def add_device():
         if not DeviceList.exists(shortname):
             return json.dumps(f"Unknown device '{shortname}'"), 404
 
-        DeviceHandler.append_device(DeviceList.get(shortname)(DeviceHandler.cur_id + 1))
+        device = DeviceList.get(shortname)(DeviceHandler.cur_id + 1)
+
+        DeviceHandler.append_device(device)
 
     # Generic Device
     elif hw_settings:
-        DeviceHandler.append_device(BaseDevice(hw_settings, id=DeviceHandler.cur_id + 1))
+        DeviceHandler.append_device(BaseDevice(hw_settings,
+                                               id=DeviceHandler.cur_id + 1))
 
     id = DeviceHandler.cur_id
     DeviceHandler.wait_for_device_nodes(id)
@@ -87,7 +90,8 @@ def get_dpi(device_id, dpi_id):
     try:
         return device.hw_settings.dpi[dpi_id], 200
     except IndexError:
-        return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
+        error = f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"
+        return json.dumps(error), 404
 
 
 def set_dpi(device_id, dpi_id):
@@ -110,7 +114,8 @@ def set_dpi(device_id, dpi_id):
         device.hw_settings.dpi[dpi_id] = value
         return json.dumps('Value updated'), 200
     except IndexError:
-        return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
+        error = f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"
+        return json.dumps(error), 404
 
 
 #
@@ -125,7 +130,8 @@ def get_led(device_id, led_id):
     try:
         return list(device.hw_settings.leds[led_id])
     except IndexError:
-        return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
+        error = f"LED '{device_id}' doesn't exist for device '{led_id}'"
+        return json.dumps(error), 404
 
 
 def set_led(device_id, led_id):
@@ -146,7 +152,8 @@ def set_led(device_id, led_id):
         device.hw_settings.leds[led_id] = device.hw_settings.Led(*value)
         return json.dumps('Value updated'), 200
     except IndexError:
-        return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
+        error = f"LED '{device_id}' doesn't exist for device '{led_id}'"
+        return json.dumps(error), 404
 
 
 #

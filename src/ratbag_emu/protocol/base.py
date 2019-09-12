@@ -52,12 +52,12 @@ class Endpoint(UHIDDevice):
         '''
         Output report callback
 
-        Is called when we receive a report. Logs the buffer to the console and calls
-        our own callback named protocol_receive().
+        Is called when we receive a report. Logs the buffer to the console
+        and calls our own callback named protocol_receive().
 
-        Classes built on top of BaseDevice should implement a protocol_receive()
-        function to be used as callback. They are not supposed to change
-        _output_report.
+        Classes built on top of BaseDevice should implement a
+        protocol_receive() function to be used as callback.
+        They are not supposed to change _output_report.
         '''
         data = [struct.unpack(">H", b'\x00' + data[i:i + 1])[0]
                 for i in range(0, size)]
@@ -109,10 +109,11 @@ class Endpoint(UHIDDevice):
         '''
         packets = {}
         duration = 0
+        report_rate = self.hw_settings.get_report_rate()
 
         for action in actions:
-            start_report = int(action['start'] / 1000 * self.hw_settings.get_report_rate())
-            end_report = int(action['end'] / 1000 * self.hw_settings.get_report_rate())
+            start_report = int(action['start'] / 1000 * report_rate)
+            end_report = int(action['end'] / 1000 * report_rate)
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -147,9 +148,9 @@ class Endpoint(UHIDDevice):
                 '''
                 for attr in ['x', 'y']:
                     # move_value * inch_to_mm * active_dpi
-                    pixel_buffer[attr] = AbsInt((action['action'][attr] *
-                                                 MM_TO_INCH *
-                                                 self.hw_settings.get_dpi_value()))
+                    dpi = self.hw_settings.get_dpi_value()
+                    inches = AbsInt(action['action'][attr] * MM_TO_INCH * dpi)
+                    pixel_buffer[attr] = inches
                     step[attr] = pixel_buffer[attr] / report_count
                 real_pixel_buffer = copy.deepcopy(pixel_buffer)
 
@@ -179,8 +180,9 @@ class Endpoint(UHIDDevice):
 
                     setattr(packets[i], f"b{action['action']['id']}", 1)
 
+        total_packets = int(duration / 1000 * report_rate)
         sim_thread = threading.Thread(target=self._send_packets,
-                                      args=(packets, int(duration / 1000 * self.hw_settings.get_report_rate())))
+                                      args=(packets, total_packets))
         sim_thread.start()
 
     def _send_packets(self, packets, total):

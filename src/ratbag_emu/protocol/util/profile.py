@@ -65,7 +65,8 @@ class Profile(object):
         buttons = obj.get('buttons', [])
         for btn in buttons:
             if btn['action_type'] != 'none':
-                self.buttons.append(self.Button(btn['action_type'], btn[btn['action_type']]))
+                self.buttons.append(self.Button(btn['action_type'],
+                                    btn[btn['action_type']]))
             else:
                 self.buttons.append(self.Button(btn['action_type']))
 
