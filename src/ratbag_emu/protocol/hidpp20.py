@@ -115,10 +115,8 @@ class HIDPP20Device(BaseDevice):
     #
     def protocol_receive(self, data, size, rtype):
         report_type = data[self.Report.ReportType]
-        device = data[self.Report.Device]
         feature = data[self.Report.Feature]
         ase = data[self.Report.ASE] >> 4
-        sw_id = data[self.Report.ASE] - ase
         args = data[self.Report.Arguments:]
 
         assert report_type in self.report_size, f'Invalid report type ({report_type:2x})'
