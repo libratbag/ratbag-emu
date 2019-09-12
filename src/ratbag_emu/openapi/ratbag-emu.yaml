@@ -60,7 +60,7 @@ paths:
                 - type: object
                   properties:
                     hw_settings:
-                      type: string
+                      type: object
                   required:
                     - hw_settings
       responses:

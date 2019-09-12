@@ -53,9 +53,11 @@ def add_device():
         DeviceHandler.append_device(device)
 
     # Generic Device
-    elif hw_settings:
+    elif hw_settings is not None:
         DeviceHandler.append_device(BaseDevice(hw_settings,
                                                id=DeviceHandler.cur_id + 1))
+    else:
+        return json.dumps(f'Missing hw_settings parameter'), 404
 
     id = DeviceHandler.cur_id
     DeviceHandler.wait_for_device_nodes(id)
