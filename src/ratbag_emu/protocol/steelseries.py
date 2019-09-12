@@ -118,4 +118,3 @@ class SteelseriesDevice(BaseDevice):
 
     def nop(self, commandb, data, args):
         pass
-

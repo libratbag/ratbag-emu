@@ -179,4 +179,3 @@ class HIDPP20Device(BaseDevice):
 
     def IFeatureInfo(self, data, ase, args):
         return
-

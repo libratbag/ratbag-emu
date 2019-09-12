@@ -171,4 +171,3 @@ def device_event(device_id):
         return json.dumps('Success'), 200
     except Exception as e:
         return json.dumps(str(e)), 400
-

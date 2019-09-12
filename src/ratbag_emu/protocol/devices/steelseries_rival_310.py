@@ -123,4 +123,3 @@ class SteelseriesRival310Device(SteelseriesDevice):
         }
 
         super().__init__()
-
