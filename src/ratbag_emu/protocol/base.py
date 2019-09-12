@@ -39,26 +39,26 @@ class Endpoint(UHIDDevice):
         self.create_kernel_device()
         self.start(None)
 
-    '''
-    Logs message to the console
-
-    Prints target message as well as the timestamp
-    '''
     def log(self, msg):
+        '''
+        Logs message to the console
+
+        Prints target message as well as the timestamp
+        '''
         if Endpoint.verbose:
             print('{:20}{}'.format(f'{time.time()}:', msg))
 
-    '''
-    Output report callback
-
-    Is called when we receive a report. Logs the buffer to the console and calls
-    our own callback named protocol_receive().
-
-    Classes built on top of BaseDevice should implement a protocol_receive()
-    function to be used as callback. They are not supposed to change
-    _output_report.
-    '''
     def _protocol_receive(self, data, size, rtype):
+        '''
+        Output report callback
+
+        Is called when we receive a report. Logs the buffer to the console and calls
+        our own callback named protocol_receive().
+
+        Classes built on top of BaseDevice should implement a protocol_receive()
+        function to be used as callback. They are not supposed to change
+        _output_report.
+        '''
         data = [struct.unpack(">H", b'\x00' + data[i:i+1])[0]
                 for i in range(0, size)]
 
@@ -68,12 +68,12 @@ class Endpoint(UHIDDevice):
         self._owner.protocol_receive(data, size, rtype)
 
 
-    '''
-    Internal routine used to send raw output reports
-
-    Logs the buffer to the console and send the packet trhough UHID
-    '''
     def _send_raw(self, data):
+        '''
+        Internal routine used to send raw output reports
+
+        Logs the buffer to the console and send the packet trhough UHID
+        '''
         if not data:
             return
 
@@ -81,18 +81,18 @@ class Endpoint(UHIDDevice):
 
         self.call_input_event(data)
 
-    '''
-    Routine used to send raw output reports
-    '''
     def send_raw(self, data):
+        '''
+        Routine used to send raw output reports
+        '''
         self._send_raw(data)
 
-    '''
-    Create report routine
-
-    We overwrite super's behavior to ignore empty reports
-    '''
     def create_report(self, data, type=None):
+        '''
+        Create report routine
+
+        We overwrite super's behavior to ignore empty reports
+        '''
         empty = True
         for attr in data.__dict__:
             if getattr(data, attr):
@@ -105,10 +105,10 @@ class Endpoint(UHIDDevice):
         return super().create_report(data, type)
 
 
-    '''
-    Simulates user actions
-    '''
     def simulate_action(self, actions):
+        '''
+        Simulates user actions
+        '''
         packets = {}
         duration = 0
 
@@ -185,11 +185,11 @@ class Endpoint(UHIDDevice):
                 args=(packets, int(duration / 1000 * self.hw_settings.get_report_rate())))
         sim_thread.start()
 
-    '''
-    Helper function: Send packets
-    '''
     def _send_packets(self, packets, total):
-        s = sched.scheduler(time.time, time.sleep)
+        '''
+        Helper function: Send packets
+        '''
+       s = sched.scheduler(time.time, time.sleep)
         next_time = 0
         for i in range(total):
             s.enter(next_time, 1, self.send_raw,
@@ -260,18 +260,18 @@ class BaseDevice(object):
             if not hasattr(self, attr):
                 setattr(self, attr, 0)
 
-    '''
-    Callback called upon receiving output reports from the kernel
-
-    Dummy protocol receiver implementation.
-    '''
     def protocol_receive(self, data, size, rtype):
+        '''
+        Callback called upon receiving output reports from the kernel
+
+        Dummy protocol receiver implementation.
+        '''
         return
 
-    '''
-    Pass to the correct endpoint
-    '''
     def create_report(self, data, type=None):
+        '''
+        Pass to the correct endpoint
+        '''
         self.endpoints[self.mouse_endpoint].create_report(data, type)
 
     def simulate_action(self, actions):

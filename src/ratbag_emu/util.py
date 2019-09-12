@@ -1,7 +1,8 @@
-'''
-Helper class to interact only with the absolute value of a number
-'''
 class Absolute(object):
+    '''
+    Helper class to interact only with the absolute value of a number
+    '''
+
     _multiplier = 0
     _abs = 0
 

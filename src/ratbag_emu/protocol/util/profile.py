@@ -1,10 +1,9 @@
 from collections import namedtuple
 
-
-'''
-Imeplemnts a profile with all the mouse settings
-'''
 class Profile(object):
+    '''
+    Implements a profile with all the mouse settings
+    '''
     Led = namedtuple('Led', ['red', 'green', 'blue'])
 
     class Button(object):
