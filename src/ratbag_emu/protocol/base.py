@@ -14,11 +14,6 @@ from ratbag_emu.protocol.util.profile import Profile
 class Endpoint(UHIDDevice):
     verbose = True
 
-    '''
-    Init procedure
-
-    Initializes the device attributes and creates the UHID device
-    '''
     def __init__(self, owner, rdesc):
         try:
             super().__init__()

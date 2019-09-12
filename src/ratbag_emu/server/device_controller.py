@@ -13,9 +13,9 @@ from ratbag_emu.protocol.hidpp20 import HIDPP20Features
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 
-'''
-Devices
-'''
+#
+# Devices
+#
 def list_devices():
     device_list = []
 
@@ -31,9 +31,9 @@ def list_devices():
     return device_list, 200
 
 
-'''
-Device
-'''
+#
+# Device
+#
 def get_device(device_id):
     try:
         return DeviceHandler.get_device(device_id), 200
@@ -74,9 +74,9 @@ def delete_device(device_id):
     except KeyError:
         return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
-'''
-DPI
-'''
+#
+# DPI
+#
 def get_dpi(device_id, dpi_id):
     try:
         device = DeviceHandler.devices[device_id]
@@ -117,9 +117,9 @@ def set_dpi(device_id, dpi_id):
         return json.dumps(f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"), 404
 
 
-'''
-LEDs
-'''
+#
+# LEDs
+#
 def get_led(device_id, led_id):
     try:
         device = DeviceHandler.devices[device_id]
@@ -154,9 +154,9 @@ def set_led(device_id, led_id):
         return json.dumps(f"LED '{device_id}' doesn't exist for device '{led_id}'"), 404
 
 
-'''
-Event
-'''
+#
+# Event
+#
 def device_event(device_id):
     if not connexion.request.is_json:
         return json.dumps('The request is not valid JSON.'), 400

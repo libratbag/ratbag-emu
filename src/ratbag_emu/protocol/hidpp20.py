@@ -45,13 +45,8 @@ class HIDPP20Errors():
 
 
 class HIDPP20Device(BaseDevice):
-    '''
-    Internal variables
-    '''
+    # Internal variables
 
-    '''
-    Init routine
-    '''
     def __init__(self):
         assert hasattr(self, 'feature_table'), 'Feature table missing'
         super().__init__({}, self.name, self.info, self.rdescs, self.shortname, id=self.id)
@@ -82,9 +77,9 @@ class HIDPP20Device(BaseDevice):
 
         self.expecting_reply = False
 
-    '''
-    Interface functions
-    '''
+    #
+    # Interface functions
+    #
     def protocol_send(self, report_type, device, feature, ase, sw_id, args):
         data = [0] * self.report_size[report_type]
         data[self.Report.ReportType]    = report_type
@@ -116,9 +111,9 @@ class HIDPP20Device(BaseDevice):
             0
         ])
 
-    '''
-    Logic definition
-    '''
+    #
+    # Logic definition
+    #
     def protocol_receive(self, data, size, rtype):
         report_type = data[self.Report.ReportType]
         device      = data[self.Report.Device]
@@ -140,13 +135,13 @@ class HIDPP20Device(BaseDevice):
             print(f'# DEBUG: Got feature {feature}, ASE {ase}')
             self.features[feature](data, ase, args)
 
-    '''
-    Event definitions
-    '''
+    #
+    # Event definitions
+    #
 
-    '''
-    Feature definitions
-    '''
+    #
+    # Feature definitions
+    #
     def IRoot(self, data, ase, args):
         # featIndex, featType, featVer = getFeature(featId)
         if ase == 0:

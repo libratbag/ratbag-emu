@@ -25,9 +25,6 @@ class Steelseries2Commands():
 
 
 class SteelseriesDevice(BaseDevice):
-    '''
-    Init routine
-    '''
     def __init__(self):
         assert hasattr(self, 'protocol_version'), 'Protocol version is missing'
         assert hasattr(self, 'hw_settings'), 'Hardware settings are missing'
@@ -68,9 +65,9 @@ class SteelseriesDevice(BaseDevice):
             self.Commands.ReadSettings:         self.read_settings
         }
 
-    '''
-    Interface functions
-    '''
+    #
+    # Interface functions
+    #
     def protocol_send(self, command, data):
         buf = [0] * self.report_size[command]
         buf[self.Report.Command] = command
@@ -79,9 +76,9 @@ class SteelseriesDevice(BaseDevice):
 
         super().send_raw(buf)
 
-    '''
-    Logic definition
-    '''
+    #
+    # Logic definition
+    #
     def protocol_receive(self, data, size, rtype):
         command     = data[self.Report.Command]
         args        = data[self.Report.Arguments:]
@@ -90,9 +87,9 @@ class SteelseriesDevice(BaseDevice):
 
         self.commands[command](command, data, args)
 
-    '''
-    Command definitions
-    '''
+    #
+    # Command definitions
+    #
     def change_dpi(self, command, data, args):
         dpi_id      = args[self.Report.DpiId]
         dpi_steps   = args[self.Report.DpiSteps]
