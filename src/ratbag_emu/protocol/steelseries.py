@@ -48,21 +48,21 @@ class SteelseriesDevice(BaseDevice):
         self.ReportType = SteelseriesReportType
 
         self.report_size = {
-            self.Commands.Dpi:                  self.ReportType.ShortSize,
-            self.Commands.ReportRate:           self.ReportType.ShortSize,
-            self.Commands.Save:                 self.ReportType.ShortSize,
-            self.Commands.LEDs:                 self.ReportType.LongSize,
-            self.Commands.ReadFirmware:         self.ReportType.ShortSize,
-            self.Commands.ReadSettings:         self.ReportType.ShortSize
+            self.Commands.Dpi: self.ReportType.ShortSize,
+            self.Commands.ReportRate: self.ReportType.ShortSize,
+            self.Commands.Save: self.ReportType.ShortSize,
+            self.Commands.LEDs: self.ReportType.LongSize,
+            self.Commands.ReadFirmware: self.ReportType.ShortSize,
+            self.Commands.ReadSettings: self.ReportType.ShortSize
         }
 
         self.commands = {
-            self.Commands.Dpi:                  self.change_dpi,
-            self.Commands.ReportRate:           self.nop,
-            self.Commands.Save:                 self.nop,
-            self.Commands.LEDs:                 self.change_leds,
-            self.Commands.ReadFirmware:         self.read_firmware,
-            self.Commands.ReadSettings:         self.read_settings
+            self.Commands.Dpi: self.change_dpi,
+            self.Commands.ReportRate: self.nop,
+            self.Commands.Save: self.nop,
+            self.Commands.LEDs: self.change_leds,
+            self.Commands.ReadFirmware: self.read_firmware,
+            self.Commands.ReadSettings: self.read_settings
         }
 
     #

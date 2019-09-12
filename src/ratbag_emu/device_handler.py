@@ -29,10 +29,10 @@ class DeviceHandler(object):
     def get_device(device_id):
         DeviceHandler.lock.acquire()
         ret = {
-            'id':           device_id,
-            'name':         DeviceHandler.devices[device_id].name,
-            'shortname':    DeviceHandler.devices[device_id].shortname,
-            'input_nodes':  DeviceHandler.devices[device_id].device_nodes
+            'id': device_id,
+            'name': DeviceHandler.devices[device_id].name,
+            'shortname': DeviceHandler.devices[device_id].shortname,
+            'input_nodes': DeviceHandler.devices[device_id].device_nodes
         }
         DeviceHandler.lock.release()
         return ret

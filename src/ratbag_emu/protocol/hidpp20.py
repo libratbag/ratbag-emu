@@ -58,15 +58,15 @@ class HIDPP20Device(BaseDevice):
         self.Errors = HIDPP20Errors
 
         self.report_size = {
-            self.ReportType.Short:              self.ReportType.ShortSize,
-            self.ReportType.Long:               self.ReportType.LongSize
+            self.ReportType.Short: self.ReportType.ShortSize,
+            self.ReportType.Long: self.ReportType.LongSize
         }
 
         # Function mapping
         self.features = {
-            self.Features.IRoot:                self.IRoot,
-            self.Features.IFeatureSet:          self.IFeatureSet,
-            self.Features.IFeatureInfo:         self.IFeatureInfo
+            self.Features.IRoot: self.IRoot,
+            self.Features.IFeatureSet: self.IFeatureSet,
+            self.Features.IFeatureInfo: self.IFeatureInfo
         }
 
         self.events = {}
