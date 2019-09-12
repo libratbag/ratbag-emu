@@ -1,5 +1,6 @@
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
+
 class SteelseriesRival310Device(SteelseriesDevice):
     def __init__(self, id=None):
         self.name = 'Steelseries Rival 310'

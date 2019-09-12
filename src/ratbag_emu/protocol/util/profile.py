@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+
 class Profile(object):
     '''
     Implements a profile with all the mouse settings

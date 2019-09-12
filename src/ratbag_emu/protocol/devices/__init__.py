@@ -1,6 +1,7 @@
 from .logitech_g_pro_wireless import *
 from .steelseries_rival_310 import *
 
+
 class DeviceList(object):
     device_list = {
         # Logitech

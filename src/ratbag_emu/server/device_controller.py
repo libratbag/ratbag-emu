@@ -69,6 +69,7 @@ def delete_device(device_id):
     except KeyError:
         return json.dumps(f"Device '{device_id}' doesn't exist"), 404
 
+
 #
 # DPI
 #
