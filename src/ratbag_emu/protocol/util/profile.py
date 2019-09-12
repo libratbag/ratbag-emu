@@ -42,7 +42,7 @@ class Profile(object):
 
         # Report Rates
         self.active_report_rate = 0
-        self.report_rates = obj.get('report_rates', []) # Hz
+        self.report_rates = obj.get('report_rates', [])  # Hz
 
         if not self.report_rates:
             self.report_rates.append(obj.get('rate', 1000))

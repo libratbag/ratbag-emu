@@ -11,7 +11,7 @@ class DeviceList(object):
     }
 
     @classmethod
-    def exists(cls,shortname):
+    def exists(cls, shortname):
         return shortname in cls.device_list
 
     @classmethod
