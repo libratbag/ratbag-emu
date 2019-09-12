@@ -281,10 +281,6 @@ class BaseDevice(object):
     def send_raw(self, data):
         self.endpoints[self.mouse_endpoint].send_raw(data)
 
-    def dispatch(self):
-        for endpoint in self.endpoints:
-            endpoint.dispatch()
-
     def destroy(self):
         for endpoint in self.endpoints:
             endpoint.destroy()

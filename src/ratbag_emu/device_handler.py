@@ -1,3 +1,4 @@
+import hidtools.uhid
 from time import time, sleep
 from threading import RLock
 
@@ -49,11 +50,6 @@ class DeviceHandler(object):
     @staticmethod
     def handle():
         while True:
-            DeviceHandler.lock.acquire()
-            devices = DeviceHandler.devices.copy()
-            DeviceHandler.lock.release()
-            for device in devices.values():
-                if device is not None:
-                    DeviceHandler.pool_lock.acquire()
-                    device.dispatch()
-                    DeviceHandler.pool_lock.release()
+            # TODO: we should ensure UHIDDevice deals with new devices as they
+            #       are added, instead of requiring us to interrupt the poll
+            hidtools.uhid.UHIDDevice.dispatch(timeout=0.5)
