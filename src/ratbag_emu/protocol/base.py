@@ -59,7 +59,7 @@ class Endpoint(UHIDDevice):
         function to be used as callback. They are not supposed to change
         _output_report.
         '''
-        data = [struct.unpack(">H", b'\x00' + data[i:i+1])[0]
+        data = [struct.unpack(">H", b'\x00' + data[i:i + 1])[0]
                 for i in range(0, size)]
 
         if size > 0:
