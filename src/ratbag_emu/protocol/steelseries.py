@@ -2,26 +2,26 @@ from .base import BaseDevice
 
 
 class SteelseriesReport():
-    Command                     = 0
-    Arguments                   = 2
+    Command = 0
+    Arguments = 2
 
     # Dpi
-    DpiId                       = 0
-    DpiSteps                    = 1
+    DpiId = 0
+    DpiSteps = 1
 
 
 class SteelseriesReportType():
-    ShortSize                   = 64
-    LongSize                    = 262
+    ShortSize = 64
+    LongSize = 262
 
 
 class Steelseries2Commands():
-    Dpi                         = 0x53
-    ReportRate                  = 0x54
-    Save                        = 0x59
-    LEDs                        = 0x5b
-    ReadFirmware                = 0x90
-    ReadSettings                = 0x92
+    Dpi = 0x53
+    ReportRate = 0x54
+    Save = 0x59
+    LEDs = 0x5b
+    ReadFirmware = 0x90
+    ReadSettings = 0x92
 
 
 class SteelseriesDevice(BaseDevice):
@@ -44,7 +44,7 @@ class SteelseriesDevice(BaseDevice):
 
         assert self.Commands, 'Steelseries protocol v{protocol_version} not implemented'
 
-        self.Report     = SteelseriesReport
+        self.Report = SteelseriesReport
         self.ReportType = SteelseriesReportType
 
         self.report_size = {
@@ -80,8 +80,8 @@ class SteelseriesDevice(BaseDevice):
     # Logic definition
     #
     def protocol_receive(self, data, size, rtype):
-        command     = data[self.Report.Command]
-        args        = data[self.Report.Arguments:]
+        command = data[self.Report.Command]
+        args = data[self.Report.Arguments:]
 
         assert len(data) == self.report_size[command], 'Wrong report size'
 
@@ -91,8 +91,8 @@ class SteelseriesDevice(BaseDevice):
     # Command definitions
     #
     def change_dpi(self, command, data, args):
-        dpi_id      = args[self.Report.DpiId]
-        dpi_steps   = args[self.Report.DpiSteps]
+        dpi_id = args[self.Report.DpiId]
+        dpi_steps = args[self.Report.DpiSteps]
 
         assert dpi_id == 1 or dpi_id == 2, 'Invalid DPI ID'
 

@@ -2,46 +2,46 @@ from .base import BaseDevice
 
 
 class HIDPP20Report():
-    ReportType                  = 0
-    Device                      = 1
-    Feature                     = 2
-    ASE                         = 3
-    Arguments                   = 4
+    ReportType = 0
+    Device = 1
+    Feature = 2
+    ASE = 3
+    Arguments = 4
 
 
 class HIDPP20ReportType():
-    Short                       = 0x10
-    Long                        = 0x11
-    ShortSize                   = 7
-    LongSize                    = 20
+    Short = 0x10
+    Long = 0x11
+    ShortSize = 7
+    LongSize = 20
 
 
 class HIDPP20Features():
-    IRoot                       = 0x0000
-    IFeatureSet                 = 0x0001
-    IFeatureInfo                = 0x0002
-    DeviceInformation           = 0x0003
-    DeviceNameAndType           = 0x0005
-    DeviceGroups                = 0x0006
-    ConfigChange                = 0x0020
-    UniqueIdentifier            = 0x0021
-    WirelessSignalStrength      = 0x0080
-    DFUControl0                 = 0x00c0
-    DFUControl1                 = 0x00c1
-    DFU                         = 0x00d0
+    IRoot = 0x0000
+    IFeatureSet = 0x0001
+    IFeatureInfo = 0x0002
+    DeviceInformation = 0x0003
+    DeviceNameAndType = 0x0005
+    DeviceGroups = 0x0006
+    ConfigChange = 0x0020
+    UniqueIdentifier = 0x0021
+    WirelessSignalStrength = 0x0080
+    DFUControl0 = 0x00c0
+    DFUControl1 = 0x00c1
+    DFU = 0x00d0
 
 
 class HIDPP20Errors():
-    NoError                     = 0
-    Unknown                     = 1
-    InvalidArgument             = 2
-    OutOfRange                  = 3
-    HWError                     = 4
-    LogitechInternal            = 5
-    INVALID_FEATURE_INDEX       = 6
-    INVALID_FUNCTION_ID         = 7
-    Busy                        = 8
-    Unsupported                 = 9
+    NoError = 0
+    Unknown = 1
+    InvalidArgument = 2
+    OutOfRange = 3
+    HWError = 4
+    LogitechInternal = 5
+    INVALID_FEATURE_INDEX = 6
+    INVALID_FUNCTION_ID = 7
+    Busy = 8
+    Unsupported = 9
 
 
 class HIDPP20Device(BaseDevice):
@@ -52,10 +52,10 @@ class HIDPP20Device(BaseDevice):
         super().__init__({}, self.name, self.info, self.rdescs, self.shortname, id=self.id)
 
         # Protocol declarations
-        self.Report         = HIDPP20Report
-        self.ReportType     = HIDPP20ReportType
-        self.Features       = HIDPP20Features
-        self.Errors         = HIDPP20Errors
+        self.Report = HIDPP20Report
+        self.ReportType = HIDPP20ReportType
+        self.Features = HIDPP20Features
+        self.Errors = HIDPP20Errors
 
         self.report_size = {
             self.ReportType.Short:              self.ReportType.ShortSize,
@@ -82,10 +82,10 @@ class HIDPP20Device(BaseDevice):
     #
     def protocol_send(self, report_type, device, feature, ase, sw_id, args):
         data = [0] * self.report_size[report_type]
-        data[self.Report.ReportType]    = report_type
-        data[self.Report.Device]        = device
-        data[self.Report.Feature]       = feature
-        data[self.Report.ASE]           = ase << 4 + sw_id
+        data[self.Report.ReportType] = report_type
+        data[self.Report.Device] = device
+        data[self.Report.Feature] = feature
+        data[self.Report.ASE] = ase << 4 + sw_id
         for i in range(len(args)):
             data[self.Report.Arguments + i] = args[i]
 
@@ -116,11 +116,11 @@ class HIDPP20Device(BaseDevice):
     #
     def protocol_receive(self, data, size, rtype):
         report_type = data[self.Report.ReportType]
-        device      = data[self.Report.Device]
-        feature     = data[self.Report.Feature]
-        ase         = data[self.Report.ASE] >> 4
-        sw_id       = data[self.Report.ASE] - ase
-        args        = data[self.Report.Arguments:]
+        device = data[self.Report.Device]
+        feature = data[self.Report.Feature]
+        ase = data[self.Report.ASE] >> 4
+        sw_id = data[self.Report.ASE] - ase
+        args = data[self.Report.Arguments:]
 
         assert report_type in self.report_size, f'Invalid report type ({report_type:2x})'
 
