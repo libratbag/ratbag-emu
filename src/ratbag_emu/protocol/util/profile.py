@@ -8,7 +8,7 @@ class Profile(object):
     Led = namedtuple('Led', ['red', 'green', 'blue'])
 
     class Button(object):
-        def __init__(action_type, val=None):
+        def __init__(self, action_type, val=None):
             self.action_type = action_type
             self.button = None
             self.special = None
