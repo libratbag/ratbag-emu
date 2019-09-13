@@ -58,7 +58,7 @@ class Endpoint(UHIDDevice):
                 for i in range(0, size)]
 
         if size > 0:
-            logger.debug('read ' + ''.join(f' {byte:02x}' for byte in data))
+            logger.debug(f'read {"".join(f" {byte:02x}" for byte in data)}')
 
         self._owner.protocol_receive(data, size, rtype)
 
@@ -71,7 +71,7 @@ class Endpoint(UHIDDevice):
         if not data:
             return
 
-        logger.debug('write' + ''.join(f' {byte:02x}' for byte in data))
+        logger.debug(f'write {"".join(f" {byte:02x}" for byte in data)}')
 
         self.call_input_event(data)
 
