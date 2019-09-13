@@ -69,6 +69,7 @@ class TestServer(object):
         assert response.status_code == 201
         return response.json()['id']
 
+    @pytest.mark.dependency(name='test_add_device')
     def test_add_device(self, client, name='steelseries-rival310'):
         data = {
             'shortname': 'logitech-g-pro-wireless'
@@ -82,14 +83,16 @@ class TestServer(object):
         assert 'input_nodes' in answer
         client.delete(f"/devices/{answer['id']}")
 
-    @pytest.mark.dependency(depends=['test_add_device'])
+    @pytest.mark.dependency(name='test_delete_device',
+                            depends=['test_add_device'])
     def test_delete_device(self, client):
         id = self.add_device(client)
 
         response = client.delete(f'/devices/{id}')
         assert response.status_code == 204
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    @pytest.mark.dependency(name='test_list_devices',
+                            depends=['test_add_device', 'test_delete_device'])
     def test_list_devices(self, client):
         response = client.get('/devices')
         assert response.status_code == 200
@@ -105,7 +108,8 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    @pytest.mark.dependency(name='test_get_device',
+                            depends=['test_add_device', 'test_delete_device'])
     def test_get_device(self, client):
         id = self.add_device(client)
 
@@ -119,7 +123,8 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    @pytest.mark.dependency(name='test_get_dpi',
+                            depends=['test_add_device', 'test_delete_device'])
     def test_get_dpi(self, client, dpi_id=0):
         dpi = 800
 
@@ -140,7 +145,8 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
+    @pytest.mark.dependency(name='test_set_dpi',
+                            depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
     def test_set_dpi(self, client, dpi_id=0):
         id = self.add_device(client, {
             'is_active': True,
@@ -164,15 +170,18 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
+    @pytest.mark.dependency(name='test_get_active_dpi',
+                            depends=['test_add_device', 'test_delete_device', 'test_get_dpi'])
     def test_get_active_dpi(self, client):
         self.test_get_dpi(client, 'active')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_set_dpi', 'test_get_active_dpi'])
+    @pytest.mark.dependency(name='test_set_active_dpi',
+                            depends=['test_add_device', 'test_delete_device', 'test_set_dpi', 'test_get_active_dpi'])
     def test_set_active_dpi(self, client):
         self.test_set_dpi(client, 'active')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    @pytest.mark.dependency(name='test_get_led',
+                            depends=['test_add_device', 'test_delete_device'])
     def test_get_led(self, client):
         led_id = 0
 
@@ -197,7 +206,8 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device', 'test_get_led'])
+    @pytest.mark.dependency(name='test_set_led',
+                            depends=['test_add_device', 'test_delete_device', 'test_get_led'])
     def test_set_led(self, client):
         led_id = 0
 
@@ -225,7 +235,8 @@ class TestServer(object):
 
         client.delete(f'/devices/{id}')
 
-    @pytest.mark.dependency(depends=['test_add_device', 'test_delete_device'])
+    @pytest.mark.dependency(name='test_device_event',
+                            depends=['test_add_device', 'test_delete_device'])
     def test_device_event(self, client):
         id = self.add_device(client, {
             'is_active': True,

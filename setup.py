@@ -45,7 +45,10 @@ setup(
         'ui': ['connexion[swagger-ui]'],
         'test': ['libevdev']
     },
-    test_requires=['pytest'],
+    test_requires=[
+        'pytest',
+        'pytest-dependency',
+    ],
     package_data={
         'ratbag_emu': ['openapi/ratbag-emu.yaml'],
     },
