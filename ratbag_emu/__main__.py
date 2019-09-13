@@ -4,6 +4,7 @@
 
 import argparse
 import logging
+import pkg_resources
 import sys
 import threading
 import traceback
@@ -26,7 +27,7 @@ def main():
 
     # Run server
     server = connexion.FlaskApp(__name__,
-                                specification_dir='ratbag_emu/openapi/',
+                                specification_dir=pkg_resources.resource_filename('ratbag_emu', 'openapi/'),
                                 debug=True)
     server.add_api('ratbag-emu.yaml',
                    options={"swagger_ui": True},
