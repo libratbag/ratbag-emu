@@ -23,6 +23,7 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(
 def main():
     # Start handling devices
     devices_thread = threading.Thread(target=DeviceHandler.handle)
+    devices_thread.setDaemon(True)
     devices_thread.start()
 
     # Run server
