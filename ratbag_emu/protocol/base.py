@@ -12,7 +12,7 @@ import time
 from hidtools.uhid import UHIDDevice
 
 from ratbag_emu.device_handler import DeviceHandler
-from ratbag_emu.util import AbsInt, MM_TO_INCH
+from ratbag_emu.util import AbsInt, MM_TO_INCH, ms2s
 from ratbag_emu.protocol.util.profile import Profile
 
 
@@ -104,8 +104,8 @@ class Endpoint(UHIDDevice):
         report_rate = self.hw_settings.get_report_rate()
 
         for action in actions:
-            start_report = int(action['start'] / 1000 * report_rate)
-            end_report = int(action['end'] / 1000 * report_rate)
+            start_report = int(ms2s(action['start']) * report_rate)
+            end_report = int(ms2s(action['end']) * report_rate)
             report_count = end_report - start_report
 
             if report_count == 0:
@@ -172,7 +172,7 @@ class Endpoint(UHIDDevice):
 
                     setattr(packets[i], f"b{action['action']['id']}", 1)
 
-        total_packets = int(duration / 1000 * report_rate)
+        total_packets = int(ms2s(duration) * report_rate)
         sim_thread = threading.Thread(target=self._send_packets,
                                       args=(packets, total_packets))
         sim_thread.start()

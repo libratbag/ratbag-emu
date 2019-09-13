@@ -3,6 +3,10 @@
 MM_TO_INCH = 0.0393700787
 
 
+def ms2s(ms):
+    return ms / 1000.0
+
+
 class Absolute(object):
     '''
     Helper class to interact only with the absolute value of a number
