@@ -11,7 +11,7 @@ Dependencies
 
 Run the server:
 ```
-sudo src/ratbag-emu.py
+sudo ratbag-emu.py
 ```
 
 If you have `swagger-ui` installed, you will be able to access the `/ui` page on the server where you will be presented with the auto generated openapi web interface. There you can find curl commands to interface with the API.

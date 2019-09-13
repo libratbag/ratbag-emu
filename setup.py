@@ -40,7 +40,6 @@ setup(
         'ratbag_emu.protocol.util',
         'ratbag_emu.server',
     ],
-    package_dir={'':'src'},
     install_requires=['hid-tools', 'connexion'],
     extras_require={
         'ui': ['connexion[swagger-ui]'],
