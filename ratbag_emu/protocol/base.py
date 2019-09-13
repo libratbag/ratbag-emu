@@ -138,9 +138,9 @@ class Endpoint(UHIDDevice):
                 difference) and update real_pixel_buffer to include this
                 changes.
                 '''
+                dpi = self.hw_settings.get_dpi_value()
                 for attr in ['x', 'y']:
                     # move_value * inch_to_mm * active_dpi
-                    dpi = self.hw_settings.get_dpi_value()
                     units = AbsInt(action['action'][attr] * MM_TO_INCH * dpi)
                     pixel_buffer[attr] = units
                     step[attr] = pixel_buffer[attr] / report_count
