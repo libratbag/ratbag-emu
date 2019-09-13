@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 import copy
+import logging
 import sched
 import struct
 import os
@@ -13,9 +14,10 @@ from ratbag_emu.util import AbsInt, MM_TO_INCH
 from ratbag_emu.protocol.util.profile import Profile
 
 
-class Endpoint(UHIDDevice):
-    verbose = True
+logger = logging.getLogger('ratbagemu.base')
 
+
+class Endpoint(UHIDDevice):
     def __init__(self, owner, rdesc):
         try:
             super().__init__()
@@ -41,15 +43,6 @@ class Endpoint(UHIDDevice):
         self.create_kernel_device()
         self.start(None)
 
-    def log(self, msg):
-        '''
-        Logs message to the console
-
-        Prints target message as well as the timestamp
-        '''
-        if Endpoint.verbose:
-            print('{:20}{}'.format(f'{time.time()}:', msg))
-
     def _protocol_receive(self, data, size, rtype):
         '''
         Output report callback
@@ -65,7 +58,7 @@ class Endpoint(UHIDDevice):
                 for i in range(0, size)]
 
         if size > 0:
-            self.log('read ' + ''.join(f' {byte:02x}' for byte in data))
+            logger.debug('read ' + ''.join(f' {byte:02x}' for byte in data))
 
         self._owner.protocol_receive(data, size, rtype)
 
@@ -78,7 +71,7 @@ class Endpoint(UHIDDevice):
         if not data:
             return
 
-        self.log('write' + ''.join(f' {byte:02x}' for byte in data))
+        logger.debug('write' + ''.join(f' {byte:02x}' for byte in data))
 
         self.call_input_event(data)
 
