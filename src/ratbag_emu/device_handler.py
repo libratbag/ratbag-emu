@@ -1,8 +1,12 @@
 # SPDX-License-Identifier: MIT
 
 import hidtools.uhid
+import logging
 from time import time, sleep
 from threading import RLock
+
+
+logger = logging.getLogger('ratbagemu.devicehandler')
 
 
 class DeviceHandler(object):
@@ -19,6 +23,7 @@ class DeviceHandler(object):
         # TODO: ensure we do not overwrite a previous ID set in device
         device.id = DeviceHandler.cur_id
         DeviceHandler.devices[device.id] = device
+        logger.debug(f'device {device.id}: added {device}')
         DeviceHandler.lock.release()
 
     @staticmethod
@@ -46,6 +51,8 @@ class DeviceHandler(object):
     def destroy_device(device_id):
         DeviceHandler.lock.acquire()
         DeviceHandler.devices[device_id].destroy()
+        device = DeviceHandler.devices[device_id]
+        logger.debug(f'device {device_id}: removed {device}')
         del DeviceHandler.devices[device_id]
         DeviceHandler.lock.release()
 
