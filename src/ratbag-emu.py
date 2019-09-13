@@ -29,6 +29,9 @@ def main():
 
 
 if __name__ == '__main__':
+    if sys.version_info < (3, 6):
+        sys.exit('Python 3.6 or later required')
+
     try:
         main()
     except KeyboardInterrupt:
