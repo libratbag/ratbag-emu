@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from .logitech_g_pro_wireless import LogitechGProWirelessDevice
 from .steelseries_rival_310 import SteelseriesRival310Device
 

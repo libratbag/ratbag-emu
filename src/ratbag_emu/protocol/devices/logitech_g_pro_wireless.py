@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from ratbag_emu.protocol.hidpp20 import HIDPP20Device, HIDPP20Features
 
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 import copy
 import sched
 import struct

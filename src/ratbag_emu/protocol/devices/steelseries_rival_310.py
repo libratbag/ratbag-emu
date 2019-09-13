@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from ratbag_emu.protocol.steelseries import SteelseriesDevice
 
 

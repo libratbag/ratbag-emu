@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 import os
 import sys
 f = os.readlink(__file__) if os.path.islink(__file__) else __file__

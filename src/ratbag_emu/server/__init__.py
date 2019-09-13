@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 from .device_controller import list_devices
 from .device_controller import add_device
 from .device_controller import get_device

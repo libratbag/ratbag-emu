@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+
 import hidtools.uhid
 from time import time, sleep
 from threading import RLock
