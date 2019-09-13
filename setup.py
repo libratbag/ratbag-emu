@@ -37,8 +37,8 @@ setup(
     packages=[
         'ratbag_emu',
         'ratbag_emu.protocol',
+        'ratbag_emu.protocol.devices',
         'ratbag_emu.protocol.util',
-        'ratbag_emu.server',
     ],
     install_requires=['hid-tools', 'connexion'],
     extras_require={
