@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import argparse
+import logging
 import sys
 import threading
 import traceback
@@ -9,6 +11,12 @@ import traceback
 import connexion
 
 from ratbag_emu.device_handler import DeviceHandler
+
+
+logger = logging.getLogger('ratbagemu')
+logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(message)s',
+                    level=logging.INFO,
+                    datefmt='%H:%M:%S')
 
 
 def main():
@@ -31,6 +39,18 @@ def main():
 if __name__ == '__main__':
     if sys.version_info < (3, 6):
         sys.exit('Python 3.6 or later required')
+
+    desc = 'ratbag-emu is a firmware emulator for gaming mice'
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-v', '--verbose',
+                        help='Show some debugging informations',
+                        action='store_true',
+                        default=False)
+    ns = parser.parse_args()
+    if ns.verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     try:
         main()
