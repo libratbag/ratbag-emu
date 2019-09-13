@@ -143,8 +143,8 @@ class Endpoint(UHIDDevice):
                 for attr in ['x', 'y']:
                     # move_value * inch_to_mm * active_dpi
                     dpi = self.hw_settings.get_dpi_value()
-                    inches = AbsInt(action['action'][attr] * MM_TO_INCH * dpi)
-                    pixel_buffer[attr] = inches
+                    units = AbsInt(action['action'][attr] * MM_TO_INCH * dpi)
+                    pixel_buffer[attr] = units
                     step[attr] = pixel_buffer[attr] / report_count
                 real_pixel_buffer = copy.deepcopy(pixel_buffer)
 
