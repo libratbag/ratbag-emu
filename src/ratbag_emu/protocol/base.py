@@ -305,6 +305,8 @@ class BaseDevice(object):
             for endpoint in self.endpoints:
                 endpoint.hw_settings = value
 
+    def __str__(self):
+        return f'{self.name} ("{self.shortname}", id {self.id})'
 
 class MouseData(object):
     '''
