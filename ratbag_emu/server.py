@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: MIT
+#
+# This file contains the entry point for the OpenAPI mapping
 
 import json
 from time import sleep
