@@ -47,6 +47,6 @@ setup(
     },
     test_requires=['pytest'],
     package_data={
-        'openapi': ['src/ratbag_emu/openapi/ratbag-emu.yaml'],
+        'ratbag_emu': ['openapi/ratbag-emu.yaml'],
     },
 )
