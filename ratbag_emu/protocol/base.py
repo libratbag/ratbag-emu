@@ -41,7 +41,6 @@ class Endpoint(UHIDDevice):
         self._output_report = self._protocol_receive
 
         self.create_kernel_device()
-        self.start(None)
 
     def _protocol_receive(self, data, size, rtype):
         '''
