@@ -2,6 +2,7 @@
 
 import copy
 import logging
+import random
 import sched
 import struct
 import os
@@ -10,6 +11,7 @@ import time
 
 from hidtools.uhid import UHIDDevice
 
+from ratbag_emu.device_handler import DeviceHandler
 from ratbag_emu.util import AbsInt, MM_TO_INCH
 from ratbag_emu.protocol.util.profile import Profile
 
@@ -30,11 +32,7 @@ class Endpoint(UHIDDevice):
         self._info = owner.info
         self.rdesc = rdesc
 
-        id = ''
-        if owner.id is not None:
-            id = f'#{owner.id} '
-
-        self.name = f'ratbag-emu test device {id}({owner.name}, {hex(self.vid)}:{hex(self.pid)})'
+        self.name = f'ratbag-emu {owner.id} ({owner.name}, {hex(self.vid)}:{hex(self.pid)})'
 
         self.hw_settings = None
 
@@ -236,12 +234,22 @@ class BaseDevice(object):
                          0xc0,        # ..End Collection                     53
                          0xc0,        # .End Collection                      54
                      ]],
-                 shortname='custom-generic-device'):
+                 shortname='custom-generic-device',
+                 device_list=DeviceHandler.devices):
         self.name = name
         self.shortname = shortname
         self.info = info
         self.rdescs = rdescs
-        self.id = None
+
+        unique = False
+        while not unique:
+            self.id = self.generate_name()
+            try:
+                for id in device_list:
+                    assert id != self.id
+                unique = True
+            except AssertionError:
+                pass
 
         self.endpoints = []
 
@@ -254,6 +262,34 @@ class BaseDevice(object):
         for attr in ['mouse_endpoint', 'keyboard_endpoint', 'media_endpoint']:
             if not hasattr(self, attr):
                 setattr(self, attr, 0)
+
+    @classmethod
+    def generate_name(cls):
+        device_names = [
+                'mara', 'capybara', 'porcupine', 'paca',
+                'vole', 'woodrat', 'gerbil', 'shrew',
+                'hutia', 'beaver', 'squirrel', 'chinchilla',
+                'rabbit', 'viscacha', 'hare', 'degu',
+                'gundi', 'acouchy', 'nutria', 'paca',
+                'hamster', 'zokor', 'chipmunk', 'gopher',
+                'marmot', 'groundhog', 'suslik', 'agouti',
+                'blesmol',
+        ]
+
+        device_attr = [
+                'sobbing', 'whooping', 'barking', 'yapping',
+                'howling', 'squawking', 'cheering', 'warbling',
+                'thundering', 'booming', 'blustering', 'humming',
+                'crying', 'bawling', 'roaring', 'raging',
+                'chanting', 'crooning', 'murmuring', 'bellowing',
+                'wailing', 'weeping', 'screaming', 'yelling',
+                'yodeling', 'singing', 'honking', 'hooting',
+                'whispering', 'hollering',
+        ]
+
+        name = device_names[random.randint(0, len(device_names)-1)]
+        attr = device_attr[random.randint(0, len(device_attr)-1)]
+        return '-'.join([attr, name])
 
     def protocol_receive(self, data, size, rtype):
         '''

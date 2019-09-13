@@ -11,7 +11,6 @@ logger = logging.getLogger('ratbagemu.devicehandler')
 
 class DeviceHandler(object):
     devices = {}
-    cur_id = -1
 
     lock = RLock()
     pool_lock = RLock()
@@ -19,9 +18,7 @@ class DeviceHandler(object):
     @staticmethod
     def append_device(device):
         DeviceHandler.lock.acquire()
-        DeviceHandler.cur_id += 1
         # TODO: ensure we do not overwrite a previous ID set in device
-        device.id = DeviceHandler.cur_id
         DeviceHandler.devices[device.id] = device
         logger.debug(f'device {device.id}: added {device}')
         DeviceHandler.lock.release()

@@ -84,8 +84,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         '200':
           description: OK
@@ -105,8 +104,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         '204':
           description: OK
@@ -124,8 +122,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       requestBody:
         description: Event data
         required: true
@@ -175,8 +172,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
         - name: dpi_id
           in: path
           required: true
@@ -202,8 +198,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
         - name: dpi_id
           in: path
           required: true
@@ -225,8 +220,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
         - name: led_id
           in: path
           required: true
@@ -257,8 +251,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
         - name: led_id
           in: path
           required: true
@@ -290,8 +283,7 @@ components:
         - shortname
       properties:
         id:
-          type: integer
-          format: int32
+          type: string
         shortname:
           type: string
         name:
