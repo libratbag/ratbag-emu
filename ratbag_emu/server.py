@@ -2,6 +2,7 @@
 #
 # This file contains the entry point for the OpenAPI mapping
 
+import logging
 import json
 from time import sleep
 
@@ -10,6 +11,19 @@ import connexion
 from ratbag_emu.device_handler import DeviceHandler
 from ratbag_emu.protocol.base import BaseDevice
 from ratbag_emu.protocol.devices import DeviceList
+
+
+logger = logging.getLogger('ratbagemu.server')
+
+
+def _error(message, code):
+    logger.debug(f'error {code}: {message}')
+    return json.dumps(message), code
+
+
+def _success(message, code):
+    logger.debug(f'success {code}: {message}')
+    return json.dumps(message), code
 
 
 #
@@ -37,12 +51,12 @@ def get_device(device_id):
     try:
         return DeviceHandler.get_device(device_id), 200
     except KeyError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
 
 def add_device():
     if not connexion.request.is_json:
-        return json.dumps('The request is not valid JSON.'), 400
+        return _error('The request is not valid JSON.', 400)
 
     shortname = connexion.request.json.get('shortname')
     hw_settings = connexion.request.json.get('hw_settings')
@@ -52,7 +66,7 @@ def add_device():
     # Normal Device
     if shortname:
         if not DeviceList.exists(shortname):
-            return json.dumps(f"Unknown device '{shortname}'"), 404
+            return _error(f"Unknown device '{shortname}'", 404)
 
         device = DeviceList.get(shortname)()
 
@@ -60,7 +74,8 @@ def add_device():
     elif hw_settings is not None:
         device = BaseDevice(hw_settings)
     else:
-        return json.dumps(f'Missing hw_settings parameter'), 404
+        # should never happen, OpenAPI prevents us to be there
+        return _error(f'Missing hw_settings parameter', 404)
 
     DeviceHandler.append_device(device)
 
@@ -74,9 +89,9 @@ def add_device():
 def delete_device(device_id):
     try:
         DeviceHandler.destroy_device(device_id)
-        return json.dumps('Device deleted'), 204
+        return _success('Device deleted', 204)
     except KeyError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
 
 #
@@ -86,7 +101,7 @@ def get_dpi(device_id, dpi_id):
     try:
         device = DeviceHandler.devices[device_id]
     except KeyError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
     if dpi_id == 'active':
         dpi_id = device.hw_settings.active_dpi
@@ -97,19 +112,19 @@ def get_dpi(device_id, dpi_id):
         return device.hw_settings.dpi[dpi_id], 200
     except IndexError:
         error = f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"
-        return json.dumps(error), 404
+        return _error(error, 404)
 
 
 def set_dpi(device_id, dpi_id):
     if not connexion.request.is_json:
-        return json.dumps('The request is not valid JSON.'), 400
+        return _error('The request is not valid JSON.', 400)
 
     value = connexion.request.json
 
     try:
         device = DeviceHandler.devices[device_id]
     except KeyError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
     if dpi_id == 'active':
         dpi_id = device.hw_settings.active_dpi
@@ -118,10 +133,10 @@ def set_dpi(device_id, dpi_id):
 
     try:
         device.hw_settings.dpi[dpi_id] = value
-        return json.dumps('Value updated'), 200
+        return _success('Value updated', 200)
     except IndexError:
         error = f"DPI '{dpi_id}' doesn't exist for device '{device_id}'"
-        return json.dumps(error), 404
+        return _error(error, 404)
 
 
 #
@@ -131,35 +146,35 @@ def get_led(device_id, led_id):
     try:
         device = DeviceHandler.devices[device_id]
     except IndexError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
     try:
         return list(device.hw_settings.leds[led_id])
     except IndexError:
         error = f"LED '{device_id}' doesn't exist for device '{led_id}'"
-        return json.dumps(error), 404
+        return _error(error, 404)
 
 
 def set_led(device_id, led_id):
     if not connexion.request.is_json:
-        return json.dumps('The request is not valid JSON.'), 400
+        return _error('The request is not valid JSON.', 400)
 
     value = connexion.request.json
 
     try:
         device = DeviceHandler.devices[device_id]
     except IndexError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
     if len(value) != 3:
-        return json.dumps('Invalid value'), 400
+        return _error('Invalid value', 400)
 
     try:
         device.hw_settings.leds[led_id] = device.hw_settings.Led(*value)
-        return json.dumps('Value updated'), 200
+        return _success('Value updated', 200)
     except IndexError:
         error = f"LED '{device_id}' doesn't exist for device '{led_id}'"
-        return json.dumps(error), 404
+        return _error(error, 404)
 
 
 #
@@ -167,20 +182,20 @@ def set_led(device_id, led_id):
 #
 def device_event(device_id):
     if not connexion.request.is_json:
-        return json.dumps('The request is not valid JSON.'), 400
+        return _error('The request is not valid JSON.', 400)
 
     actions = connexion.request.json
 
     try:
         device = DeviceHandler.devices[device_id]
     except IndexError:
-        return json.dumps(f"Device '{device_id}' doesn't exist"), 404
+        return _error(f"Device '{device_id}' doesn't exist", 404)
 
     if actions is None:
-        return json.dumps('Invalid value'), 400
+        return _error('Invalid value', 400)
 
     try:
         device.simulate_action(actions)
-        return json.dumps('Success'), 200
+        return _success('Success', 200)
     except Exception as e:
-        return json.dumps(str(e)), 400
+        return _error(str(e), 400)
