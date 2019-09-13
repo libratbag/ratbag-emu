@@ -65,7 +65,7 @@ class Endpoint(UHIDDevice):
         '''
         Internal routine used to send raw output reports
 
-        Logs the buffer to the console and send the packet trhough UHID
+        Logs the buffer to the console and send the packet through UHID
         '''
         if not data:
             return
@@ -126,7 +126,7 @@ class Endpoint(UHIDDevice):
                 Initialize pixel_buffer, real_pixel_buffer and step for X and Y
 
                 pixel_buffer holds the ammount of pixels left to send (kinda,
-                read bellow).
+                read below).
 
                 We actually have two variables for this, real_pixel_buffer and
                 pixel_buffer. pixel_buffer mimics the user movement and
