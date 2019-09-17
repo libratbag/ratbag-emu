@@ -63,6 +63,8 @@ def add_device():
 
     device = None
 
+    DeviceHandler.lock.acquire()
+
     # Normal Device
     if shortname:
         if not DeviceList.exists(shortname):
@@ -78,6 +80,7 @@ def add_device():
         return _error(f'Missing hw_settings parameter', 404)
 
     DeviceHandler.append_device(device)
+    DeviceHandler.lock.release()
 
     DeviceHandler.wait_for_device_nodes(device.id)
 

@@ -17,11 +17,9 @@ class DeviceHandler(object):
 
     @staticmethod
     def append_device(device):
-        DeviceHandler.lock.acquire()
         # TODO: ensure we do not overwrite a previous ID set in device
         DeviceHandler.devices[device.id] = device
         logger.debug(f'device {device.id}: added {device}')
-        DeviceHandler.lock.release()
 
     @staticmethod
     def wait_for_device_nodes(device_id, timeout=3):
