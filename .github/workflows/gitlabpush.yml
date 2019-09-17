@@ -1,0 +1,24 @@
+name: Push to Gitlab CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Trigger gitlab pipeline
+      env:
+        GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+      run: |
+        curl -X POST \
+             -F token=$GITLAB_TOKEN \
+             -F "ref=master" \
+             -F "variables[DIST_SHA1]=$GITHUB_SHA" \
+             -F "variables[DIST_BRANCH]=$GITHUB_REF" \
+             -F "variables[DIST_REPOSITORY]=$GITHUB_REPOSITORY" \
+             -F "variables[DIST_REF]=$GITHUB_REF" \
+             -F "variables[DIST_HEAD_REF]=$GITHUB_HEAD_REF" \
+             -F "variables[DIST_BASE_REF]=$GITHUB_BASE_REF" \
+             https://gitlab.freedesktop.org/api/v4/projects/4303/trigger/pipeline
