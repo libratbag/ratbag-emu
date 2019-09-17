@@ -11,7 +11,7 @@ import pytest
 import requests
 import libevdev
 
-from time import time, sleep
+from time import time, sleep, strftime
 from pathlib import Path
 
 from ratbag_emu.util import MM_TO_INCH
@@ -57,7 +57,23 @@ class TestServer(object):
             rules.unlink()
             self.reload_udev_rules()
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture(autouse=True, scope='session')
+    def server(self):
+        p = None
+        logs = f'ratbag-emu-log-{strftime("%Y-%m-%d_%H-%M")}'
+        with open(f'{logs}-stdout.txt', 'w') as stdout, \
+             open(f'{logs}-stderr.txt', 'w') as stderr:
+            try:
+                args = ['/usr/bin/env', 'python3', '-m', 'ratbag_emu']
+                p = subprocess.Popen(args, stdout=stdout, stderr=stderr)
+                sleep(2)
+                yield
+            finally:
+                if p:
+                    p.kill()
+
+    @pytest.fixture(autouse=True, scope='session')
+    @pytest.mark.usesfixtures('server')
     def client(self):
         yield Client()
 
