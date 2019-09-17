@@ -17,7 +17,8 @@ class DeviceHandler(object):
 
     @staticmethod
     def append_device(device):
-        # TODO: ensure we do not overwrite a previous ID set in device
+        for id in DeviceHandler.devices:
+            assert device.id != id
         DeviceHandler.devices[device.id] = device
         logger.debug(f'device {device.id}: added {device}')
 
