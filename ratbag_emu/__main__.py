@@ -20,7 +20,7 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(
                     datefmt='%H:%M:%S')
 
 
-def main():
+def main(port):
     # Start handling devices
     devices_thread = threading.Thread(target=DeviceHandler.handle)
     devices_thread.setDaemon(True)
@@ -35,7 +35,7 @@ def main():
                    arguments={'title': 'ratbag-emu'},
                    strict_validation=True,
                    validate_responses=True)
-    server.run(port=8080)
+    server.run(port=port)
 
 
 if __name__ == '__main__':
@@ -48,6 +48,10 @@ if __name__ == '__main__':
                         help='Show some debugging informations',
                         action='store_true',
                         default=False)
+    parser.add_argument('-p', '--port',
+                        help='Webserver port',
+                        type=int,
+                        default=8080)
     ns = parser.parse_args()
     if ns.verbose:
         logger.setLevel(logging.DEBUG)
@@ -55,7 +59,7 @@ if __name__ == '__main__':
         logger.setLevel(logging.INFO)
 
     try:
-        main()
+        main(ns.port)
     except KeyboardInterrupt:
         pass
     except Exception:
