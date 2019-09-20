@@ -39,6 +39,21 @@ class Client(object):
                             json=json)
 
 
+class MouseData(object):
+    '''
+    Holds event data
+    '''
+
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    @staticmethod
+    def from_mm(dpi, x=0, y=0):
+        return MouseData(x=int(x * MM_TO_INCH * dpi),
+                         y=int(y * MM_TO_INCH * dpi))
+
+
 class TestServer(object):
     def reload_udev_rules(self):
         subprocess.run('udevadm control --reload-rules'.split())
@@ -324,9 +339,7 @@ class TestServer(object):
 
         dpi = client.get(f'/devices/{id}/phys_props/dpi/active').json()
 
-        expected = MouseData()
-        expected.x = int(x * MM_TO_INCH * dpi)
-        expected.y = int(y * MM_TO_INCH * dpi)
+        expected = MouseData.from_mm(dpi, x=x, y=y)
 
         assert expected.x - 1 <= received.x <= expected.x + 1
         assert expected.y - 1 <= received.y <= expected.y + 1
