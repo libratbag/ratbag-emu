@@ -64,3 +64,4 @@ if __name__ == '__main__':
         pass
     except Exception:
         traceback.print_exc(file=sys.stdout)
+        exit(1)
