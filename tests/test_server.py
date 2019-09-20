@@ -60,16 +60,20 @@ class TestServer(object):
 
     @pytest.fixture(scope='session', autouse=True)
     def udev_rules(self):
+        rules_file = '61-ratbag-emu-ignore-test-devices.rules'
         rules_dir = Path('/run/udev/rules.d')
+
+        rules_src = Path('rules.d') / rules_file
+        rules_dest = rules_dir / rules_file
+
         rules_dir.mkdir(exist_ok=True)
-        shutil.copyfile('rules.d/61-ratbag-emu-ignore-test-devices.rules', '/run/udev/rules.d/61-ratbag-emu-ignore-test-devices.rules')
+        shutil.copyfile(rules_src, rules_dest)
         self.reload_udev_rules()
 
         yield
 
-        rules = rules_dir.joinpath('61-ratbag-emu-ignore-test-devices.rules')
-        if rules.is_file():
-            rules.unlink()
+        if rules_dest.is_file():
+            rules_dest.unlink()
             self.reload_udev_rules()
 
     @pytest.fixture(autouse=True, scope='session')
