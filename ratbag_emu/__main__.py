@@ -29,7 +29,7 @@ def main():
     # Run server
     server = connexion.FlaskApp(__name__,
                                 specification_dir=pkg_resources.resource_filename('ratbag_emu', 'openapi/'),
-                                debug=True)
+                                debug=False)
     server.add_api('ratbag-emu.yaml',
                    options={"swagger_ui": True},
                    arguments={'title': 'ratbag-emu'},
