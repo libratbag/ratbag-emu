@@ -96,6 +96,49 @@ class TestServer(object):
     def client(self):
         yield Client()
 
+    def simulate(self, client, id, data):
+        response = client.get(f'/devices/{id}')
+        assert response.status_code == 200
+
+        input_nodes = response.json().get('input_nodes', {})
+
+        # Open the event nodes
+        event_nodes = []
+        for node in set(input_nodes):
+            fd = open(node, 'rb')
+            fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
+            event_nodes.append(libevdev.Device(fd))
+
+        events = []
+        def collect_events(stop):
+            nonlocal events
+            while not stop.is_set():
+                for node in event_nodes:
+                    events += list(node.events())
+
+        stop_event_thread = threading.Event()
+        event_thread = threading.Thread(target=collect_events, args=(stop_event_thread,))
+        event_thread.start()
+
+        response = client.post(f'/devices/{id}/event', json=data)
+        assert response.status_code == 200
+
+        sleep(1)
+        stop_event_thread.set()
+        event_thread.join()
+
+        for node in event_nodes:
+            node.fd.close()
+
+        received = MouseData()
+        for e in events:
+            if e.matches(libevdev.EV_REL.REL_X):
+                received.x += e.value
+            elif e.matches(libevdev.EV_REL.REL_Y):
+                received.y += e.value
+
+        return received
+
     def add_device(self, client, hw_settings={}):
         data = {
             'hw_settings': hw_settings
@@ -283,33 +326,6 @@ class TestServer(object):
                 }
             ]
         })
-        input_nodes = []
-
-        start = time()
-        while len(input_nodes) == 0:
-            input_nodes = client.get(f'/devices/{id}').json()['input_nodes']
-            sleep(0.1)
-            if time() > start + 3:
-                break
-
-        # Claim the event nodes
-        event_nodes = []
-        for node in set(input_nodes):
-            fd = open(node, 'rb')
-            fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
-            event_nodes.append(libevdev.Device(fd))
-
-        # make this exit on a timeout
-        events = []
-        def collect_events(stop):
-            nonlocal events
-            while not stop.is_set():
-                for node in event_nodes:
-                    events += list(node.events())
-
-        stop_event_thread = threading.Event()
-        event_thread = threading.Thread(target=collect_events, args=(stop_event_thread,))
-        event_thread.start()
 
         # Send event
         x = y = 5
@@ -324,22 +340,7 @@ class TestServer(object):
                 }
             }
         ]
-        response = client.post(f'/devices/{id}/event', json=data)
-        assert response.status_code == 200
-
-        sleep(1)
-        stop_event_thread.set()
-        event_thread.join()
-
-        for node in event_nodes:
-            node.fd.close()
-
-        received = MouseData()
-        for e in events:
-            if e.matches(libevdev.EV_REL.REL_X):
-                received.x += e.value
-            elif e.matches(libevdev.EV_REL.REL_Y):
-                received.y += e.value
+        received = self.simulate(client, id, data)
 
         dpi = client.get(f'/devices/{id}/phys_props/dpi/active').json()
 
