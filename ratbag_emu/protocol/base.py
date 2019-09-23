@@ -291,6 +291,30 @@ class BaseDevice(object):
         attr = device_attr[random.randint(0, len(device_attr)-1)]
         return '-'.join([attr, name])
 
+    def set_state(self, state):
+        dpi = state.get('dpi', self.profile.dpi)
+        default_dpi = state.get('default_dpi', self.profile.default_dpi)
+        active_dpi = state.get('active_dpi', self.profile.active_dpi)
+        report_rates = state.get('report_rates', self.profile.report_rates)
+        active_report_rate = state.get('active_report_rate', self.profile.active_report_rate)
+        leds = state.get('leds', self.profile.leds)
+        buttons = state.get('buttons', self.profile.buttons)
+
+        assert len(dpi) == len(self.profile.dpi)
+        assert len(report_rates) == len(self.profile.report_rates)
+        assert len(leds) == len(self.profile.leds)
+        assert len(buttons) == len(self.profile.buttons)
+
+        self.profile.dpi = dpi
+        self.profile.default_dpi = default_dpi
+        self.profile.active_dpi = active_dpi
+
+        self.profile.report_rates = report_rates
+        self.profile.active_report_rate = active_report_rate
+
+        self.profile.leds = leds
+        self.profile.buttons = buttons
+
     def protocol_receive(self, data, size, rtype):
         '''
         Callback called upon receiving output reports from the kernel

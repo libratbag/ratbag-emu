@@ -55,6 +55,8 @@ paths:
                   properties:
                     shortname:
                       type: string
+                    initial_state:
+                      type: object
                   required:
                     - shortname
                 - type: object

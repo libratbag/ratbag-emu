@@ -59,6 +59,8 @@ def add_device():
         return _error('The request is not valid JSON.', 400)
 
     shortname = connexion.request.json.get('shortname')
+    initial_state = connexion.request.json.get('initial_state')
+
     hw_settings = connexion.request.json.get('hw_settings')
 
     device = None
@@ -71,6 +73,10 @@ def add_device():
             return _error(f"Unknown device '{shortname}'", 404)
 
         device = DeviceList.get(shortname)()
+        try:
+            device.set_state(initial_state)
+        except AttributeError:
+            pass
 
     # Generic Device
     elif hw_settings is not None:
