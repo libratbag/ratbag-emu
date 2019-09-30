@@ -20,23 +20,26 @@ logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(
                     datefmt='%H:%M:%S')
 
 
-def main(port):
-    # Start handling devices
-    devices_thread = threading.Thread(target=DeviceHandler.handle)
-    devices_thread.setDaemon(True)
-    devices_thread.start()
-
-    # Run server
+def create_server():
     server = connexion.FlaskApp(__name__,
                                 specification_dir=pkg_resources.resource_filename('ratbag_emu', 'openapi/'),
                                 debug=False)
     server.add_api('ratbag-emu.yaml',
-                   options={"swagger_ui": True},
-                   arguments={'title': 'ratbag-emu'},
-                   strict_validation=True,
-                   validate_responses=True)
-    server.run(port=port)
+                    options={"swagger_ui": True},
+                    arguments={'title': 'ratbag-emu'},
+                    strict_validation=True,
+                    validate_responses=True)
+    return server
 
+
+# Start handling devices
+devices_thread = threading.Thread(target=DeviceHandler.handle)
+devices_thread.setDaemon(True)
+devices_thread.start()
+
+# Export server for uwsgi
+server = create_server()
+application = server.app
 
 if __name__ == '__main__':
     if sys.version_info < (3, 6):
@@ -59,7 +62,7 @@ if __name__ == '__main__':
         logger.setLevel(logging.INFO)
 
     try:
-        main(ns.port)
+        server.run(port=ns.port)
     except KeyboardInterrupt:
         pass
     except Exception:
