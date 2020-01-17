@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from os import path
 
 
@@ -13,7 +13,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setup(
     name='ratbag-emu',
     version='0.0.1',
-    description='Mouse emulation stack ',
+    description='HID emulation stack',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/libratbag/ratbag-emu',
@@ -36,20 +36,12 @@ setup(
 
     packages=[
         'ratbag_emu',
-        'ratbag_emu.protocol',
-        'ratbag_emu.protocol.devices',
-        'ratbag_emu.protocol.util',
+        'ratbag_emu.actuators',
     ],
-    install_requires=['hid-tools', 'connexion'],
-    extras_require={
-        'ui': ['connexion[swagger-ui]'],
-        'test': ['libevdev']
-    },
-    test_requires=[
+    install_requires=['hid-tools'],
+    tests_require=[
         'pytest',
-        'pytest-dependency',
+        'libevdev',
+        'pyudev'
     ],
-    package_data={
-        'ratbag_emu': ['openapi/ratbag-emu.yaml'],
-    },
 )
