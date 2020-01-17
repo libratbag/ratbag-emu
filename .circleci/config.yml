@@ -40,6 +40,15 @@ jobs:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+      # run mympy
+      - run:
+          name: run mypy
+          command: |
+            . venv/bin/activate
+            pip install mypy
+            # run static analysis
+            mypy --ignore-missing-imports -p ratbag_emu
+
       # run flake8
       - run:
           name: run flake8
