@@ -10,7 +10,7 @@ from ratbag_emu.util import EventData
 from tests import TestBase
 
 
-class TestDevice(TestBase):
+class TestDeviceBase(TestBase):
     name = 'Test Device'
     vid = pid = 0x9999
 
@@ -22,6 +22,8 @@ class TestDevice(TestBase):
 
         d.destroy()
 
+
+class TestDevice(TestDeviceBase):
     def test_create(self, device):
         '''
         Make sure the correct device is created
