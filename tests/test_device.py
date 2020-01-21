@@ -3,9 +3,9 @@
 import pyudev
 import pytest
 
-from ratbag_emu.device import Device
+from ratbag_emu import Device
+from ratbag_emu.actuators import SensorActuator
 from ratbag_emu.util import EventData
-from ratbag_emu.actuators.sensor import SensorActuator
 
 from tests import TestBase
 
