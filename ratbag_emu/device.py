@@ -82,7 +82,7 @@ class Device(object):
 
         self.report_rate = 100
         self.fw = Firmware(self)
-        self.hw: List[HWComponent] = []
+        self.hw: Dict[str, HWComponent] = {}
         self.actuators: List[Actuator] = []
 
     @classmethod
