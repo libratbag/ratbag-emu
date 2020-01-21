@@ -16,7 +16,9 @@ class SensorActuator(Actuator):
         self.dpi = dpi
 
     def transform(self, action):
+        hid_action = action.copy()
+
         for key in self._keys:
-            if key in action:
-                action[key] = int(round(mm2inch(action[key]) * self.dpi))
-        return action
+            if key in hid_action:
+                hid_action[key] = int(round(mm2inch(action[key]) * self.dpi))
+        return hid_action
