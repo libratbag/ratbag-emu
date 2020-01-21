@@ -16,11 +16,11 @@ class EventData(object):
 
     @staticmethod
     def from_mm(dpi, x=0, y=0):
-        return EventData(x=int(mm2inch(x) * dpi),
-                         y=int(mm2inch(y) * dpi))
+        return EventData(x=int(round(mm2inch(x) * dpi)),
+                         y=int(round(mm2inch(y) * dpi)))
 
     @staticmethod
     def from_action(dpi, action: dict):
         assert action['type'] == 'xy'
-        return EventData(x=int(mm2inch(action['data']['x']) * dpi),
-                         y=int(mm2inch(action['data']['y']) * dpi))
+        return EventData(x=int(round(mm2inch(action['data']['x']) * dpi)),
+                         y=int(round(mm2inch(action['data']['y']) * dpi)))
