@@ -13,8 +13,7 @@ class HWComponent(object):
     '''
     Represents a physical hardware component
 
-    This is the "brain" of the device, it is here where we custom logic is
-    implemented.
+    This is the "brain" of the device. The custom logic is implemented here.
     '''
     def __init__(self, owner: 'Device', state: Any = None):
         self.__logger = logging.getLogger('ratbag-emu.hw_component')
