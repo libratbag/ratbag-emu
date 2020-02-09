@@ -4,15 +4,15 @@ import logging
 import struct
 import typing
 
-from typing import List
+import hidtools.uhid
 
-from hidtools.uhid import UHIDDevice
+from typing import List
 
 if typing.TYPE_CHECKING:
     from ratbag_emu.device import Device  # pragma: no cover
 
 
-class Endpoint(UHIDDevice):
+class Endpoint(hidtools.uhid.UHIDDevice):
     '''
     Represents a device endpoint
 
