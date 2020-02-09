@@ -178,6 +178,10 @@ class Device(object):
             endpoint.send(endpoint.create_report(action))
 
     def _simulate_action_xy(self, action: Dict[str, Any], packets: Dict[int, EventData], report_count: int):
+        # FIXME: Read max size from the report descriptor
+        axis_max = 127
+        axis_min = -127
+
         # We assume a linear motion
         dot_buffer = {}
         step = {}
@@ -203,7 +207,7 @@ class Device(object):
         dot_buffer = self.transform_action(action['data'])
 
         for attr in ['x', 'y']:
-            assert dot_buffer[attr] <= 127 * report_count
+            assert dot_buffer[attr] <= axis_max * report_count
             step[attr] = dot_buffer[attr] / report_count
 
         real_dot_buffer = copy.deepcopy(dot_buffer)
@@ -216,15 +220,14 @@ class Device(object):
             for attr in ['x', 'y']:
                 dot_buffer[attr] -= step[attr]
                 diff = int(round(real_dot_buffer[attr] - dot_buffer[attr]))
-                # FIXME: Read max size from the report descriptor
                 '''
                 The max is 127, if this happens we need to leave the
                 excess in the buffer for it to be sent in the next
                 report
                 '''
                 if abs(diff) >= 1:
-                    if abs(diff) > 127:
-                        diff = 127 if diff > 0 else -127
+                    if abs(diff) > axis_max:
+                        diff = axis_max if diff > 0 else axis_min
                     setattr(packets[i], attr, diff)
                     real_dot_buffer[attr] -= diff
             i += 1
