@@ -13,7 +13,7 @@ from ratbag_emu.actuator import Actuator
 from ratbag_emu.endpoint import Endpoint
 from ratbag_emu.firmware import Firmware
 from ratbag_emu.hw_component import HWComponent
-from ratbag_emu.util import EventData, ms2s
+from ratbag_emu.util import ActionType, EventData, ms2s
 
 
 class Device(object):
@@ -177,7 +177,7 @@ class Device(object):
         for endpoint in self.endpoints:
             endpoint.send(endpoint.create_report(action))
 
-    def simulate_action(self, action: Dict[str, Any], type: int = None):
+    def simulate_action(self, action: Dict[ActionType, Any], type: int = None):
         '''
         Simulates action
 
@@ -196,7 +196,7 @@ class Device(object):
             report_count = 1
 
         # XY movement
-        if action['type'] == 'xy':
+        if action['type'] == ActionType.XY:
             # We assume a linear motion
             dot_buffer = {}
             step = {}
@@ -250,7 +250,7 @@ class Device(object):
                 i += 1
 
         # Button
-        elif action['type'] == 'button':
+        elif action['type'] == ActionType.BUTTON:
             for i in range(report_count):
                 if i not in packets:
                     packets[i] = EventData()

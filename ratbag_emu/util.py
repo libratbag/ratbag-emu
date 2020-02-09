@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: MIT
 
+from enum import Enum
+
 
 def mm2inch(mm):
     return mm * 0.0393700787
@@ -21,6 +23,11 @@ class EventData(object):
 
     @staticmethod
     def from_action(dpi, action: dict):
-        assert action['type'] == 'xy'
+        assert action['type'] == ActionType.XY
         return EventData(x=int(round(mm2inch(action['data']['x']) * dpi)),
                          y=int(round(mm2inch(action['data']['y']) * dpi)))
+
+
+class ActionType(Enum):
+    XY = 1
+    BUTTON = 2
