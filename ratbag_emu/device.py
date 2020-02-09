@@ -177,7 +177,66 @@ class Device(object):
         for endpoint in self.endpoints:
             endpoint.send(endpoint.create_report(action))
 
-    def simulate_action(self, action: Dict[ActionType, Any], type: int = None):
+    def _simulate_action_xy(self, action: Dict[str, Any], packets: Dict[int, EventData], report_count: int):
+        # We assume a linear motion
+        dot_buffer = {}
+        step = {}
+
+        '''
+        Initialize dot_buffer, real_dot_buffer and step for X and Y
+
+        dot_buffer holds the ammount of dots left to send (kinda,
+        read below).
+
+        We actually have two variables for this, real_dot_buffer and
+        dot_buffer. dot_buffer mimics the user movement and
+        real_dot_buffer holds true number of dots left to send.
+        When using high report rates (ex. 1000Hz) we usually don't
+        have a full dot to send, that's why we need two variables. We
+        subtract the step to dot_buffer at each iteration, when the
+        difference between dot_buffer and real_dot_buffer is equal
+        or higher than 1 dot we then send a HID report to the device
+        with that difference (int! we send the int part of the
+        difference) and update real_dot_buffer to include this
+        changes.
+        '''
+        dot_buffer = self.transform_action(action['data'])
+
+        for attr in ['x', 'y']:
+            assert dot_buffer[attr] <= 127 * report_count
+            step[attr] = dot_buffer[attr] / report_count
+
+        real_dot_buffer = copy.deepcopy(dot_buffer)
+
+        i = 0
+        while real_dot_buffer['x'] != 0:
+            if i not in packets:
+                packets[i] = EventData()
+
+            for attr in ['x', 'y']:
+                dot_buffer[attr] -= step[attr]
+                diff = int(round(real_dot_buffer[attr] - dot_buffer[attr]))
+                # FIXME: Read max size from the report descriptor
+                '''
+                The max is 127, if this happens we need to leave the
+                excess in the buffer for it to be sent in the next
+                report
+                '''
+                if abs(diff) >= 1:
+                    if abs(diff) > 127:
+                        diff = 127 if diff > 0 else -127
+                    setattr(packets[i], attr, diff)
+                    real_dot_buffer[attr] -= diff
+            i += 1
+
+    def _simulate_action_button(self, action: Dict[str, Any], packets: Dict[int, EventData], report_count: int):
+        for i in range(report_count):
+            if i not in packets:
+                packets[i] = EventData()
+
+            setattr(packets[i], 'b{}'.format(action['data']['id']), 1)
+
+    def simulate_action(self, action: Dict[str, Any], type: int = None):
         '''
         Simulates action
 
@@ -195,67 +254,10 @@ class Device(object):
         if not report_count:
             report_count = 1
 
-        # XY movement
         if action['type'] == ActionType.XY:
-            # We assume a linear motion
-            dot_buffer = {}
-            step = {}
-
-            '''
-            Initialize dot_buffer, real_dot_buffer and step for X and Y
-
-            dot_buffer holds the ammount of dots left to send (kinda,
-            read below).
-
-            We actually have two variables for this, real_dot_buffer and
-            dot_buffer. dot_buffer mimics the user movement and
-            real_dot_buffer holds true number of dots left to send.
-            When using high report rates (ex. 1000Hz) we usually don't
-            have a full dot to send, that's why we need two variables. We
-            subtract the step to dot_buffer at each iteration, when the
-            difference between dot_buffer and real_dot_buffer is equal
-            or higher than 1 dot we then send a HID report to the device
-            with that difference (int! we send the int part of the
-            difference) and update real_dot_buffer to include this
-            changes.
-            '''
-            dot_buffer = self.transform_action(action['data'])
-
-            for attr in ['x', 'y']:
-                assert dot_buffer[attr] <= 127 * report_count
-                step[attr] = dot_buffer[attr] / report_count
-
-            real_dot_buffer = copy.deepcopy(dot_buffer)
-
-            i = 0
-            while real_dot_buffer['x'] != 0:
-                if i not in packets:
-                    packets[i] = EventData()
-
-                for attr in ['x', 'y']:
-                    dot_buffer[attr] -= step[attr]
-                    diff = int(round(real_dot_buffer[attr] -
-                               dot_buffer[attr]))
-                    # FIXME: Read max size from the report descriptor
-                    '''
-                    The max is 127, if this happens we need to leave the
-                    excess in the buffer for it to be sent in the next
-                    report
-                    '''
-                    if abs(diff) >= 1:
-                        if abs(diff) > 127:
-                            diff = 127 if diff > 0 else -127
-                        setattr(packets[i], attr, diff)
-                        real_dot_buffer[attr] -= diff
-                i += 1
-
-        # Button
+            self._simulate_action_xy(action, packets, report_count)
         elif action['type'] == ActionType.BUTTON:
-            for i in range(report_count):
-                if i not in packets:
-                    packets[i] = EventData()
-
-                setattr(packets[i], 'b{}'.format(action['data']['id']), 1)
+            self._simulate_action_xy(action, packets, report_count)
 
         def send_packets():
             nonlocal packets
