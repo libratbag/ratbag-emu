@@ -177,7 +177,7 @@ class Device(object):
         for endpoint in self.endpoints:
             endpoint.send(endpoint.create_report(action))
 
-    def _simulate_action_xy(self, action: Dict[str, Any], packets: Dict[int, EventData], report_count: int):
+    def _simulate_action_xy(self, action: Dict[str, Any], packets: List[EventData], report_count: int):
         # FIXME: Read max size from the report descriptor
         axis_max = 127
         axis_min = -127
@@ -212,10 +212,9 @@ class Device(object):
 
         real_dot_buffer = copy.deepcopy(dot_buffer)
 
-        i = 0
-        while real_dot_buffer['x'] != 0:
-            if i not in packets:
-                packets[i] = EventData()
+        for packet in packets:
+            if not real_dot_buffer['x']:
+                break
 
             for attr in ['x', 'y']:
                 dot_buffer[attr] -= step[attr]
@@ -228,16 +227,12 @@ class Device(object):
                 if abs(diff) >= 1:
                     if abs(diff) > axis_max:
                         diff = axis_max if diff > 0 else axis_min
-                    setattr(packets[i], attr, diff)
+                    setattr(packet, attr, diff)
                     real_dot_buffer[attr] -= diff
-            i += 1
 
-    def _simulate_action_button(self, action: Dict[str, Any], packets: Dict[int, EventData], report_count: int):
-        for i in range(report_count):
-            if i not in packets:
-                packets[i] = EventData()
-
-            setattr(packets[i], 'b{}'.format(action['data']['id']), 1)
+    def _simulate_action_button(self, action: Dict[str, Any], packets: List[EventData]):
+        for packet in packets:
+            setattr(packet, 'b{}'.format(action['data']['id']), 1)
 
     def simulate_action(self, action: Dict[str, Any], type: int = None):
         '''
@@ -250,12 +245,15 @@ class Device(object):
         :param type:    HID report type
         '''
 
-        packets: Dict[int, EventData] = {}
+        packets: List[EventData] = []
 
         report_count = int(round(ms2s(action['duration']) * self.report_rate))
 
         if not report_count:
             report_count = 1
+
+        for i in range(report_count):
+            packets.append(EventData())
 
         if action['type'] == ActionType.XY:
             self._simulate_action_xy(action, packets, report_count)
@@ -266,11 +264,12 @@ class Device(object):
             nonlocal packets
             s = sched.scheduler(time.time, time.sleep)
             next_time = 0
-            for i in range(len(packets)):
+            for packet in packets:
                 s.enter(next_time, 1, self.send_hid_action,
-                        kwargs={'action': packets[i]})
+                        kwargs={'action': packet})
                 next_time += 1 / self.report_rate
             s.run()
 
         sim_thread = threading.Thread(target=send_packets)
         sim_thread.start()
+        print(packets)
