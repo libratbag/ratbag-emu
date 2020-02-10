@@ -19,5 +19,5 @@ class TestSensorActuator(TestDeviceBase):
 
         hid_data = actuator.transform(data)
 
-        assert hid_data['x'] == int(round(mm2inch(data['x']) * dpi))
-        assert hid_data['y'] == int(round(mm2inch(data['y']) * dpi))
+        assert hid_data['x'] == 197
+        assert hid_data['y'] == 118
