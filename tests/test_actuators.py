@@ -10,7 +10,7 @@ class TestSensorActuator(TestDeviceBase):
     def test_transform(self):
         dpi = 1000
 
-        actuator = SensorActuator(None, dpi)
+        actuator = SensorActuator(dpi)
 
         data = {
             'x': 5,

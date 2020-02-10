@@ -7,6 +7,6 @@ class LedComponent(HWComponent):
     '''
     Represents a simple led (on/off)
     '''
-    def __init__(self, owner, state=True):
-        super().__init__(owner)
+    def __init__(self, state=True):
+        super().__init__()
         self.state: bool = state

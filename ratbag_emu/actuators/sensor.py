@@ -10,8 +10,8 @@ class SensorActuator(Actuator):
 
     Transform x and y values based on the DPI value.
     '''
-    def __init__(self, owner, dpi):
-        super().__init__(owner)
+    def __init__(self, dpi):
+        super().__init__()
         self._keys = ['x', 'y']
         self.dpi = dpi
 

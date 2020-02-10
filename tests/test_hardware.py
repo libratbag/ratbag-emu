@@ -7,7 +7,7 @@ from tests.test_device import TestDeviceBase
 
 class TestHardware(TestDeviceBase):
     def test_led(self, device):
-        device.hw['led1'] = LedComponent(device, state=True)
+        device.hw['led1'] = LedComponent(state=True)
         assert device.hw['led1'].state
 
         device.hw['led1'].state = False

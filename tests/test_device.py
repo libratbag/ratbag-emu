@@ -70,8 +70,8 @@ class TestDevice(TestDeviceBase):
         '''
         with pytest.raises(AssertionError):
             device.actuators += [
-                SensorActuator(device, dpi=1000),
-                SensorActuator(device, dpi=1000)
+                SensorActuator(dpi=1000),
+                SensorActuator(dpi=1000)
             ]
 
     def test_mouse_report(self, device, events):
@@ -98,7 +98,7 @@ class TestDevice(TestDeviceBase):
         dpi = 1000
 
         device.actuators += [
-            SensorActuator(device, dpi)
+            SensorActuator(dpi)
         ]
 
         action = {
@@ -123,7 +123,7 @@ class TestDevice(TestDeviceBase):
         '''
         device.report_rate = 1000
         device.actuators += [
-            SensorActuator(device, dpi=1000)
+            SensorActuator(dpi=1000)
         ]
 
         action = {
