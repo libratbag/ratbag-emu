@@ -240,4 +240,3 @@ class Device(object):
 
         sim_thread = threading.Thread(target=send_packets)
         sim_thread.start()
-        print(packets)
