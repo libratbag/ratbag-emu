@@ -12,6 +12,7 @@ jobs:
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        EVENT_NUMBER: ${{ github.event.number }}
       run: |
         result=$(curl -X POST \
                       -F token=$GITLAB_TOKEN \
@@ -22,6 +23,7 @@ jobs:
                       -F "variables[DIST_REF]=$GITHUB_REF" \
                       -F "variables[DIST_HEAD_REF]=$GITHUB_HEAD_REF" \
                       -F "variables[DIST_BASE_REF]=$GITHUB_BASE_REF" \
+                      -F "variables[DIST_EVENT_NUMBER]=$EVENT_NUMBER" \
                       https://gitlab.freedesktop.org/api/v4/projects/4303/trigger/pipeline)
         PIPELINE_URL=$(echo $result | jq .web_url)
         curl -X POST \
