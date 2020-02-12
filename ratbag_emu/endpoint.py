@@ -2,6 +2,7 @@
 
 import logging
 import struct
+import time
 import typing
 
 import hidtools.uhid
@@ -41,7 +42,14 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         self.create_kernel_device()
 
+        now = time.time()
+        while not self.uhid_dev_is_ready() and time.time() - now < 5:
+            self.dispatch(10)
+
         self.__logger.debug(f'created endpoint {self.number} ({self.name})')
+
+    def uhid_dev_is_ready(self):
+        return self.udev_device is not None
 
     def _receive(self, data: List[int], size: int, rtype: int):
         '''
