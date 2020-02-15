@@ -76,15 +76,11 @@ class Device(object):
         return '-'.join([attr, name])
 
     def _generate_unique_name(self) -> None:
-        unique = False
-        while not unique:
+        while True:
             self.id = self.generate_name()
-            try:
-                for id in self.device_list:
-                    assert id != self.id  # pragma: no cover
-                unique = True
-            except AssertionError:  # pragma: no cover
-                pass  # pragma: no cover
+            if self.id not in self.device_list:
+                self.device_list.append(self.id)
+                break
 
     @property
     def name(self) -> str:
