@@ -44,7 +44,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         now = time.time()
         while not self.uhid_dev_is_ready() and time.time() - now < 5:
-            self.dispatch(10)
+            self.dispatch(10)  # pragma: no cover
 
         self.__logger.debug(f'created endpoint {self.number} ({self.name})')
 
