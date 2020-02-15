@@ -85,25 +85,25 @@ class Device(object):
         return '-'.join([attr, name])
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def info(self):
+    def info(self) -> Tuple[int, int, int]:
         return self._info
 
     @property
-    def rdescs(self):
+    def rdescs(self) -> List[List[int]]:
         return self._rdescs
 
     @property
-    def actuators(self):
+    def actuators(self) -> List[Actuator]:
         return self._actuators
 
     @actuators.setter
-    def actuators(self, val):
+    def actuators(self, val: List[Actuator]) -> None:
         # Make sure we don't have actuators which will act on the same keys
-        seen = []
+        seen: List[str] = []
         for keys in [a.keys for a in val]:
             for el in keys:
                 assert el not in seen
@@ -111,11 +111,11 @@ class Device(object):
 
         self._actuators = val
 
-    def destroy(self):
+    def destroy(self) -> None:
         for endpoint in self.endpoints:
             endpoint.destroy()
 
-    def transform_action(self, data: Dict[str, Any]):
+    def transform_action(self, data: Dict[str, Any]) -> Dict[str, Any]:
         '''
         Transforms high-level action according to the actuators
 
@@ -132,7 +132,7 @@ class Device(object):
 
         return hid_data
 
-    def send_hid_action(self, action: object):
+    def send_hid_action(self, action: object) -> None:
         '''
         Sends a HID action
 
@@ -145,7 +145,7 @@ class Device(object):
         for endpoint in self.endpoints:
             endpoint.send(endpoint.create_report(action))
 
-    def _simulate_action_xy(self, action: Dict[str, Any], packets: List[EventData], report_count: int):
+    def _simulate_action_xy(self, action: Dict[str, Any], packets: List[EventData], report_count: int) -> None:
         # FIXME: Read max size from the report descriptor
         axis_max = 127
         axis_min = -127
@@ -198,11 +198,11 @@ class Device(object):
                     setattr(packet, attr, diff)
                     real_dot_buffer[attr] -= diff
 
-    def _simulate_action_button(self, action: Dict[str, Any], packets: List[EventData]):
+    def _simulate_action_button(self, action: Dict[str, Any], packets: List[EventData]) -> None:
         for packet in packets:
             setattr(packet, 'b{}'.format(action['data']['id']), 1)
 
-    def simulate_action(self, action: Dict[str, Any], type: int = None):
+    def simulate_action(self, action: Dict[str, Any], type: int = None) -> None:
         '''
         Simulates action
 
@@ -228,10 +228,10 @@ class Device(object):
         elif action['type'] == ActionType.BUTTON:
             self._simulate_action_xy(action, packets, report_count)
 
-        def send_packets():
+        def send_packets() -> None:
             nonlocal packets
             s = sched.scheduler(time.time, time.sleep)
-            next_time = 0
+            next_time = 0.0
             for packet in packets:
                 s.enter(next_time, 1, self.send_hid_action,
                         kwargs={'action': packet})

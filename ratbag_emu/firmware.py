@@ -21,8 +21,7 @@ class Firmware(object):
 
         self._owner = owner
 
-    def hid_receive(self, data: List[int], size: int, rtype: int,
-                    endpoint: int):
+    def hid_receive(self, data: List[int], size: int, rtype: int, endpoint: int) -> List[int]:
         '''
         Receive data
 
@@ -33,9 +32,9 @@ class Firmware(object):
         :param rtype:       Report type
         :param endpoint:    Endpoint number
         '''
-        return
+        return []
 
-    def hid_send(self, data: List[int], endpoint: int):
+    def hid_send(self, data: List[int], endpoint: int) -> None:
         '''
         Send data to endpoint
 

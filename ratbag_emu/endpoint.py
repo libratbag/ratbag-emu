@@ -47,10 +47,10 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         self.__logger.debug(f'created endpoint {self.number} ({self.name})')
 
-    def uhid_dev_is_ready(self):
+    def uhid_dev_is_ready(self) -> bool:
         return self.udev_device is not None
 
-    def _receive(self, data: List[int], size: int, rtype: int):
+    def _receive(self, data: List[int], size: int, rtype: int) -> None:
         '''
         Receive data
 
@@ -69,7 +69,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         self._owner.fw.hid_receive(data, size, rtype, self.number)
 
-    def send(self, data: List[int]):
+    def send(self, data: List[int]) -> None:
         '''
         Send data
 
@@ -84,8 +84,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         self.call_input_event(data)
 
-    def create_report(self, action: object, global_data: int = None,
-                      skip_empty: bool = True):
+    def create_report(self, action: object, global_data: int = None, skip_empty: bool = True) -> List[int]:
         '''
         Converts action into HID report
 
@@ -103,6 +102,6 @@ class Endpoint(hidtools.uhid.UHIDDevice):
                 break
 
         if empty and skip_empty:
-            return
+            return []
 
         return super().create_report(action, global_data)
