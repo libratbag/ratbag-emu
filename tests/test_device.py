@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: MIT
 
+import random
+
 import pyudev
 import pytest
 
@@ -139,3 +141,15 @@ class TestDevice(TestDeviceBase):
 
         with pytest.raises(AssertionError):
             self.simulate(device, events, action)
+
+    def test_duplicated_id(self):
+        random.seed(0)
+        device1 = Device(name='Test Device 1', info=self.info, rdescs=self.rdescs)
+
+        random.seed(0)
+        device2 = Device(name='Test Device 2', info=self.info, rdescs=self.rdescs)
+
+        assert device1.id != device2.id
+
+        device1.destroy()
+        device2.destroy()
