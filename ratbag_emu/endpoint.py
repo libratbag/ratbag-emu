@@ -35,8 +35,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
         self._info = owner.info
         self.rdesc = rdesc
         self.number = number
-        self.name = f'ratbag-emu {owner.id} ({owner.name}, ' \
-                    f'{self.vid:04x}:{self.pid:04x}, {self.number})'
+        self.name = f'ratbag-emu {owner.id} ({owner.name}, {self.vid:04x}:{self.pid:04x}, {self.number})'
 
         self._output_report = self._receive
 
@@ -66,8 +65,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
                 for i in range(0, size)]
 
         if size > 0:
-            self.logger.debug('read  {}'.format(' '.join(f' {byte:02x}'
-                                                         for byte in data)))
+            self.logger.debug('read  {}'.format(' '.join(f' {byte:02x}' for byte in data)))
 
         self._owner.fw.hid_receive(data, size, rtype, self.number)
 
@@ -82,8 +80,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
         if not data:
             return
 
-        self.__logger.debug('write {}'.format(' '.join(f'{byte:02x}'
-                                                       for byte in data)))
+        self.__logger.debug('write {}'.format(' '.join(f'{byte:02x}' for byte in data)))
 
         self.call_input_event(data)
 

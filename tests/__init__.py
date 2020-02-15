@@ -52,8 +52,7 @@ class TestBase(object):
     def events(self, device, endpoint=0):
         events = []
         for d in pyudev.Context().list_devices(subsystem='input'):
-            if 'NAME' in list(d.properties) and \
-               d.properties['NAME'].startswith(f'"ratbag-emu {device.id}'):
+            if 'NAME' in list(d.properties) and d.properties['NAME'].startswith(f'"ratbag-emu {device.id}'):
                 for c in d.children:
                     if c.properties['DEVNAME'].startswith('/dev/input/event'):
                         events.append(c.properties['DEVNAME'])
@@ -102,5 +101,4 @@ class TestBase(object):
             nonlocal action
             device.simulate_action(action)
 
-        return self.catch_events(device, events, callback,
-                                 wait=action['duration']/1000 + 0.5)
+        return self.catch_events(device, events, callback, wait=action['duration']/1000 + 0.5)
