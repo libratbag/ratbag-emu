@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: MIT
 
 from ratbag_emu.actuators import SensorActuator
-from ratbag_emu.util import mm2inch
 
 from tests.test_device import TestDeviceBase
 
