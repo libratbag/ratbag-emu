@@ -33,16 +33,7 @@ class Device(object):
         self._info = info
         self._rdescs = rdescs
 
-        # Find a unique ID for this device
-        unique = False
-        while not unique:
-            self.id = self.generate_name()
-            try:
-                for id in self.device_list:
-                    assert id != self.id
-                unique = True
-            except AssertionError:
-                pass
+        self._generate_unique_name()
 
         self.endpoints = []
         for i, r in enumerate(rdescs):
@@ -83,6 +74,17 @@ class Device(object):
         name = device_names[random.randint(0, len(device_names)-1)]
         attr = device_attr[random.randint(0, len(device_attr)-1)]
         return '-'.join([attr, name])
+
+    def _generate_unique_name(self) -> None:
+        unique = False
+        while not unique:
+            self.id = self.generate_name()
+            try:
+                for id in self.device_list:
+                    assert id != self.id  # pragma: no cover
+                unique = True
+            except AssertionError:  # pragma: no cover
+                pass  # pragma: no cover
 
     @property
     def name(self) -> str:
