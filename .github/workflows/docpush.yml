@@ -1,0 +1,29 @@
+name: Push documentation
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+
+    - name: Generate docs
+      run: |
+        pip install hid-tools sphinx sphinx_autodoc_typehints pallets_sphinx_themes recommonmark
+        cd docs
+        make
+        touch build/html/.nojekyll
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs/build/html
