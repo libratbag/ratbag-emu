@@ -5,6 +5,12 @@ ratbag-emu - HID device emulator
    :maxdepth: 2
    :caption: Contents:
 
+   Readme <README.md>
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
    API Documentation <modules>
 
 

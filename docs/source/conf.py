@@ -40,6 +40,8 @@ extensions = [
     'recommonmark',
 ]
 
+# TODO: Use m2r to include the README.md instead of recommonmark. Currently waiting for a m2r release.
+
 intersphinx_mapping = {'hid-tools': ('https://pkgbuild.com/~ffy00/documentation/hid-tools/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
