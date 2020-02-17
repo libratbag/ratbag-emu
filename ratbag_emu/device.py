@@ -112,6 +112,7 @@ class Device(object):
     def destroy(self) -> None:
         for endpoint in self.endpoints:
             endpoint.destroy()
+        self.device_list.remove(self.id)
 
     def transform_action(self, data: Dict[str, Any]) -> Dict[str, Any]:
         '''
