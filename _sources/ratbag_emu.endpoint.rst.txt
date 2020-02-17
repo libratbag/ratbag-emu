@@ -1,0 +1,7 @@
+ratbag\_emu.endpoint module
+===========================
+
+.. automodule:: ratbag_emu.endpoint
+   :members:
+   :undoc-members:
+   :show-inheritance:

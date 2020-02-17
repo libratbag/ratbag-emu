@@ -1,0 +1,7 @@
+ratbag\_emu.device module
+=========================
+
+.. automodule:: ratbag_emu.device
+   :members:
+   :undoc-members:
+   :show-inheritance:

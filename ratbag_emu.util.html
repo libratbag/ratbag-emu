@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ratbag_emu.util module &#8212; ratbag-emu  documentation</title>
+    <link rel="stylesheet" href="_static/flask.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="ratbag_emu.hw_component module" href="ratbag_emu.hw_component.html" />
+  <script>DOCUMENTATION_OPTIONS.URL_ROOT = './';</script>
+   
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ratbag_emu.hw_component.html" title="ratbag_emu.hw_component module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ratbag-emu  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >ratbag_emu</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="ratbag_emu.html" accesskey="U">ratbag_emu package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-ratbag_emu.util">
+<span id="ratbag-emu-util-module"></span><h1>ratbag_emu.util module<a class="headerlink" href="#module-ratbag_emu.util" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ratbag_emu.util.ActionType">
+<em class="property">class </em><code class="sig-prename descclassname">ratbag_emu.util.</code><code class="sig-name descname">ActionType</code><a class="headerlink" href="#ratbag_emu.util.ActionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="ratbag_emu.util.ActionType.BUTTON">
+<code class="sig-name descname">BUTTON</code><em class="property"> = 2</em><a class="headerlink" href="#ratbag_emu.util.ActionType.BUTTON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ratbag_emu.util.ActionType.XY">
+<code class="sig-name descname">XY</code><em class="property"> = 1</em><a class="headerlink" href="#ratbag_emu.util.ActionType.XY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ratbag_emu.util.EventData">
+<em class="property">class </em><code class="sig-prename descclassname">ratbag_emu.util.</code><code class="sig-name descname">EventData</code><span class="sig-paren">(</span><em class="sig-param">x=0</em>, <em class="sig-param">y=0</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.util.EventData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ratbag_emu.util.EventData.from_action">
+<em class="property">static </em><code class="sig-name descname">from_action</code><span class="sig-paren">(</span><em class="sig-param">dpi</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.util.EventData.from_action" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ratbag_emu.util.EventData" title="ratbag_emu.util.EventData"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventData</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ratbag_emu.util.EventData.from_mm">
+<em class="property">static </em><code class="sig-name descname">from_mm</code><span class="sig-paren">(</span><em class="sig-param">dpi</em>, <em class="sig-param">x=0</em>, <em class="sig-param">y=0</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.util.EventData.from_mm" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ratbag_emu.util.EventData" title="ratbag_emu.util.EventData"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventData</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ratbag_emu.util.mm2inch">
+<code class="sig-prename descclassname">ratbag_emu.util.</code><code class="sig-name descname">mm2inch</code><span class="sig-paren">(</span><em class="sig-param">mm</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.util.mm2inch" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ratbag_emu.util.ms2s">
+<code class="sig-prename descclassname">ratbag_emu.util.</code><code class="sig-name descname">ms2s</code><span class="sig-paren">(</span><em class="sig-param">ms</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.util.ms2s" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+  <span id="sidebar-top"></span>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  
+    
+  
+<h3>Navigation</h3>
+<ul>
+  <li><a href="index.html">Overview</a>
+    <ul>
+      <li><a href="modules.html">ratbag_emu</a>
+        <ul>
+      <li><a href="ratbag_emu.html">ratbag_emu package</a>
+        <ul>
+          <li>Previous: <a href="ratbag_emu.hw_component.html" title="previous chapter">ratbag_emu.hw_component module</a>
+          </ul>
+      </li></ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Filipe Laíns.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.
+    </div>
+  <script src="_static/version_warning_offset.js"></script>
+
+  </body>
+</html>

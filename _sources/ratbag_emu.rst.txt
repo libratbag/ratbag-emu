@@ -1,0 +1,30 @@
+ratbag\_emu package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+
+   ratbag_emu.actuators
+   ratbag_emu.hardware
+
+Submodules
+----------
+
+.. toctree::
+
+   ratbag_emu.actuator
+   ratbag_emu.device
+   ratbag_emu.endpoint
+   ratbag_emu.firmware
+   ratbag_emu.hw_component
+   ratbag_emu.util
+
+Module contents
+---------------
+
+.. automodule:: ratbag_emu
+   :members:
+   :undoc-members:
+   :show-inheritance:

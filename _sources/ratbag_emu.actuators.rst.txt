@@ -1,0 +1,17 @@
+ratbag\_emu.actuators package
+=============================
+
+Submodules
+----------
+
+.. toctree::
+
+   ratbag_emu.actuators.sensor
+
+Module contents
+---------------
+
+.. automodule:: ratbag_emu.actuators
+   :members:
+   :undoc-members:
+   :show-inheritance:

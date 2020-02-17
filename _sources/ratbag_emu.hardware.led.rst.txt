@@ -1,0 +1,7 @@
+ratbag\_emu.hardware.led module
+===============================
+
+.. automodule:: ratbag_emu.hardware.led
+   :members:
+   :undoc-members:
+   :show-inheritance:

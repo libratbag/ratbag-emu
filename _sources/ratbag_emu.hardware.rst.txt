@@ -1,0 +1,17 @@
+ratbag\_emu.hardware package
+============================
+
+Submodules
+----------
+
+.. toctree::
+
+   ratbag_emu.hardware.led
+
+Module contents
+---------------
+
+.. automodule:: ratbag_emu.hardware
+   :members:
+   :undoc-members:
+   :show-inheritance:

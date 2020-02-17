@@ -1,0 +1,7 @@
+ratbag\_emu.firmware module
+===========================
+
+.. automodule:: ratbag_emu.firmware
+   :members:
+   :undoc-members:
+   :show-inheritance:

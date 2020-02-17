@@ -1,0 +1,7 @@
+ratbag\_emu.actuator module
+===========================
+
+.. automodule:: ratbag_emu.actuator
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+ratbag\_emu.actuators.sensor module
+===================================
+
+.. automodule:: ratbag_emu.actuators.sensor
+   :members:
+   :undoc-members:
+   :show-inheritance:

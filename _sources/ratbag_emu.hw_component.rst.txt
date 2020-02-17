@@ -1,0 +1,7 @@
+ratbag\_emu.hw\_component module
+================================
+
+.. automodule:: ratbag_emu.hw_component
+   :members:
+   :undoc-members:
+   :show-inheritance:

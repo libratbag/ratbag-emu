@@ -1,0 +1,7 @@
+ratbag\_emu.util module
+=======================
+
+.. automodule:: ratbag_emu.util
+   :members:
+   :undoc-members:
+   :show-inheritance:
