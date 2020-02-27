@@ -90,7 +90,7 @@ class TestDevice(TestDeviceBase):
             nonlocal expected
             device.send_hid_action(expected)
 
-        received = self.catch_events(device, events, callback)
+        received = self.catch_evdev_events(device, events, callback)
 
         assert expected.x <= received.x <= expected.x
         assert expected.y <= received.y <= expected.y

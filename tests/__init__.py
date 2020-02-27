@@ -59,19 +59,19 @@ class TestBase(object):
 
         return events
 
-    def catch_events(self, device, events, callback, wait=1):
-        devices = []
+    def catch_evdev_events(self, device, events, callback, wait=1):
+        evdev_devices = []
         for node in events:
             fd = open(node, 'rb')
             fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
-            devices.append(libevdev.Device(fd))
+            evdev_devices.append(libevdev.Device(fd))
 
         evs = []
         def collect_events(stop):  # noqa: 306
             nonlocal evs
             while not stop.is_set():
-                for device in devices:
-                    evs += list(device.events())
+                for evdev_device in evdev_devices:
+                    evs += list(evdev_device.events())
 
         stop_event_thread = threading.Event()
         event_thread = threading.Thread(target=collect_events,
@@ -84,8 +84,8 @@ class TestBase(object):
         stop_event_thread.set()
         event_thread.join()
 
-        for device in devices:
-            device.fd.close()
+        for evdev_device in evdev_devices:
+            evdev_device.fd.close()
 
         received = EventData()
         for e in evs:
@@ -101,4 +101,4 @@ class TestBase(object):
             nonlocal action
             device.simulate_action(action)
 
-        return self.catch_events(device, events, callback, wait=action['duration']/1000 + 0.5)
+        return self.catch_evdev_events(device, events, callback, wait=action['duration']/1000 + 0.5)
