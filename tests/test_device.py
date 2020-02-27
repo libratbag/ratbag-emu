@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 import random
+import time
 
 import pyudev
 import pytest
@@ -78,7 +79,7 @@ class TestDevice(TestDeviceBase):
                 SensorActuator(dpi=1000)
             ]
 
-    def test_mouse_report(self, device, libevdev_event_nodes):
+    def test_mouse_report(self, device, event_data):
         '''
         Test single HID report
         '''
@@ -86,16 +87,13 @@ class TestDevice(TestDeviceBase):
 
         expected = EventData(x, y)
 
-        def callback(device):
-            nonlocal expected
-            device.send_hid_action(expected)
+        device.send_hid_action(expected)
+        time.sleep(0.1)  # give time for the kernel to proccess all events
 
-        received = self.catch_evdev_events(device, libevdev_event_nodes, callback)
+        assert expected.x <= event_data.x <= expected.x
+        assert expected.y <= event_data.y <= expected.y
 
-        assert expected.x <= received.x <= expected.x
-        assert expected.y <= received.y <= expected.y
-
-    def test_movement(self, device, libevdev_event_nodes):
+    def test_movement(self, device, event_data):
         '''
         Test normal mouse movement
         '''
@@ -114,14 +112,15 @@ class TestDevice(TestDeviceBase):
             }
         }
 
-        received = self.simulate(device, libevdev_event_nodes, action)
+        device.simulate_action(action)
+        time.sleep(0.1)  # give time for the kernel to proccess all events
 
         expected = EventData.from_action(dpi, action)
 
-        assert received.x == expected.x
-        assert received.y == expected.y
+        assert event_data.x == expected.x
+        assert event_data.y == expected.y
 
-    def test_movement_max(self, device, libevdev_event_nodes):
+    def test_movement_max(self, device):
         '''
         Make sure we raise an error when we try to move more than possible
         '''
@@ -140,7 +139,7 @@ class TestDevice(TestDeviceBase):
         }
 
         with pytest.raises(AssertionError):
-            self.simulate(device, libevdev_event_nodes, action)
+            device.simulate_action(action)
 
     def test_duplicated_id(self):
         random.seed(0)

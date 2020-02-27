@@ -72,13 +72,18 @@ class TestBase(object):
 
         return devices
 
-    def catch_evdev_events(self, device, evdev_devices, callback, wait=1):
-        evs = []
+    @pytest.fixture()
+    def event_data(self, libevdev_event_nodes):
+        received = EventData()
         def collect_events(stop):  # noqa: 306
-            nonlocal evs
+            nonlocal received
             while not stop.is_set():
-                for evdev_device in evdev_devices:
-                    evs += list(evdev_device.events())
+                for evdev_device in libevdev_event_nodes:
+                    for e in evdev_device.events():
+                        if e.matches(libevdev.EV_REL.REL_X):
+                            received.x += e.value
+                        elif e.matches(libevdev.EV_REL.REL_Y):
+                            received.y += e.value
                 sleep(0.001)
 
         stop_event_thread = threading.Event()
@@ -86,20 +91,10 @@ class TestBase(object):
                                         args=(stop_event_thread,))
         event_thread.start()
 
-        callback(device)
+        yield received
 
-        sleep(wait)
         stop_event_thread.set()
         event_thread.join()
-
-        received = EventData()
-        for e in evs:
-            if e.matches(libevdev.EV_REL.REL_X):
-                received.x += e.value
-            elif e.matches(libevdev.EV_REL.REL_Y):
-                received.y += e.value
-
-        return received
 
     def simulate(self, device, events, action):
         def callback(device):
