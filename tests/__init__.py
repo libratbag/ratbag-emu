@@ -49,23 +49,30 @@ class TestBase(object):
             self.reload_udev_rules()
 
     @pytest.fixture()
-    def events(self, device, endpoint=0):
-        events = []
+    def fd_event_nodes(self, device, endpoint=0):
+        fds = []
         for d in pyudev.Context().list_devices(subsystem='input'):
             if 'NAME' in list(d.properties) and d.properties['NAME'].startswith(f'"ratbag-emu {device.id}'):
                 for c in d.children:
                     if c.properties['DEVNAME'].startswith('/dev/input/event'):
-                        events.append(c.properties['DEVNAME'])
+                        fd = open(c.properties['DEVNAME'], 'rb')
+                        fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
+                        fds.append(fd)
 
-        return events
+        yield fds
 
-    def catch_evdev_events(self, device, events, callback, wait=1):
-        evdev_devices = []
-        for node in events:
-            fd = open(node, 'rb')
-            fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
-            evdev_devices.append(libevdev.Device(fd))
+        for fd in fds:
+            fd.close()
 
+    @pytest.fixture()
+    def libevdev_event_nodes(self, fd_event_nodes):
+        devices = []
+        for fd in fd_event_nodes:
+            devices.append(libevdev.Device(fd))
+
+        return devices
+
+    def catch_evdev_events(self, device, evdev_devices, callback, wait=1):
         evs = []
         def collect_events(stop):  # noqa: 306
             nonlocal evs
@@ -83,9 +90,6 @@ class TestBase(object):
         sleep(wait)
         stop_event_thread.set()
         event_thread.join()
-
-        for evdev_device in evdev_devices:
-            evdev_device.fd.close()
 
         received = EventData()
         for e in evs:
