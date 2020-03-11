@@ -227,15 +227,10 @@ class Device(object):
         elif action['type'] == ActionType.BUTTON:
             self._simulate_action_xy(action, packets, report_count)
 
-        def send_packets() -> None:
-            nonlocal packets
-            s = sched.scheduler(time.time, time.sleep)
-            next_time = 0.0
-            for packet in packets:
-                s.enter(next_time, 1, self.send_hid_action,
-                        kwargs={'action': packet})
-                next_time += 1 / self.report_rate
-            s.run()
-
-        sim_thread = threading.Thread(target=send_packets)
-        sim_thread.start()
+        s = sched.scheduler(time.time, time.sleep)
+        next_time = 0.0
+        for packet in packets:
+            s.enter(next_time, 1, self.send_hid_action,
+                    kwargs={'action': packet})
+            next_time += 1 / self.report_rate
+        s.run()
