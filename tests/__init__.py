@@ -79,6 +79,7 @@ class TestBase(object):
             while not stop.is_set():
                 for evdev_device in evdev_devices:
                     evs += list(evdev_device.events())
+                sleep(0.001)
 
         stop_event_thread = threading.Event()
         event_thread = threading.Thread(target=collect_events,
