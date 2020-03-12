@@ -4,7 +4,6 @@ import copy
 import logging
 import sched
 import time
-import threading
 
 from typing import Any, ClassVar, Dict, List, Tuple
 
