@@ -2,7 +2,6 @@
 
 import copy
 import logging
-import random
 import sched
 import time
 import threading
@@ -33,8 +32,6 @@ class Device(object):
         self._info = info
         self._rdescs = rdescs
 
-        self._generate_unique_name()
-
         self.endpoints = []
         for i, r in enumerate(rdescs):
             self.endpoints.append(Endpoint(self, r, i))
@@ -43,44 +40,6 @@ class Device(object):
         self.fw = Firmware(self)
         self.hw: Dict[str, HWComponent] = {}
         self.actuators: List[Actuator] = []
-
-    @classmethod
-    def generate_name(cls) -> str:
-        '''
-        Generates a random name
-        '''
-        device_names = [
-                'mara', 'capybara', 'porcupine', 'paca',
-                'vole', 'woodrat', 'gerbil', 'shrew',
-                'hutia', 'beaver', 'squirrel', 'chinchilla',
-                'rabbit', 'viscacha', 'hare', 'degu',
-                'gundi', 'acouchy', 'nutria', 'paca',
-                'hamster', 'zokor', 'chipmunk', 'gopher',
-                'marmot', 'groundhog', 'suslik', 'agouti',
-                'blesmol',
-        ]
-
-        device_attr = [
-                'sobbing', 'whooping', 'barking', 'yapping',
-                'howling', 'squawking', 'cheering', 'warbling',
-                'thundering', 'booming', 'blustering', 'humming',
-                'crying', 'bawling', 'roaring', 'raging',
-                'chanting', 'crooning', 'murmuring', 'bellowing',
-                'wailing', 'weeping', 'screaming', 'yelling',
-                'yodeling', 'singing', 'honking', 'hooting',
-                'whispering', 'hollering',
-        ]
-
-        name = device_names[random.randint(0, len(device_names)-1)]
-        attr = device_attr[random.randint(0, len(device_attr)-1)]
-        return '-'.join([attr, name])
-
-    def _generate_unique_name(self) -> None:
-        while True:
-            self.id = self.generate_name()
-            if self.id not in self.device_list:
-                self.device_list.append(self.id)
-                break
 
     @property
     def name(self) -> str:
@@ -120,7 +79,6 @@ class Device(object):
     def destroy(self) -> None:
         for endpoint in self.endpoints:
             endpoint.destroy()
-        self.device_list.remove(self.id)
 
     def transform_action(self, data: Dict[str, Any]) -> Dict[str, Any]:
         '''

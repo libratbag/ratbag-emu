@@ -35,7 +35,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
         self._info = owner.info
         self.rdesc = rdesc
         self.number = number
-        self.name = f'ratbag-emu {owner.id} ({owner.name}, {self.vid:04x}:{self.pid:04x}, {self.number})'
+        self.name = f'ratbag-emu {owner.name} ({self.vid:04x}:{self.pid:04x}, {self.number})'
 
         self._output_report = self._receive
 

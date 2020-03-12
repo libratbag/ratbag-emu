@@ -64,10 +64,8 @@ class TestDevice(TestDeviceBase):
         '''
         Make sure the correct device is created
         '''
-        name = f'ratbag-emu {device.id} ({self.name}, {self.vid:04x}:' \
-               f'{self.pid:04x}, 0)'
-        assert list(pyudev.Context().list_devices(subsystem='hid',
-                                                  HID_NAME=name))
+        name = f'ratbag-emu {device.name} ({self.vid:04x}:{self.pid:04x}, 0)'
+        assert list(pyudev.Context().list_devices(subsystem='hid', HID_NAME=name))
 
     def test_duplicated_actuators(self, device):
         '''
@@ -140,15 +138,3 @@ class TestDevice(TestDeviceBase):
 
         with pytest.raises(AssertionError):
             device.simulate_action(action)
-
-    def test_duplicated_id(self):
-        random.seed(0)
-        device1 = Device(name='Test Device 1', info=self.info, rdescs=self.rdescs)
-
-        random.seed(0)
-        device2 = Device(name='Test Device 2', info=self.info, rdescs=self.rdescs)
-
-        assert device1.id != device2.id
-
-        device1.destroy()
-        device2.destroy()
