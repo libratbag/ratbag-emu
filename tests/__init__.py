@@ -12,7 +12,6 @@ import fcntl  # noqa: 402
 import threading  # noqa: 402
 
 import libevdev  # noqa: 402
-import pyudev  # noqa: 402
 
 import ratbag_emu  # noqa: 402
 
@@ -51,13 +50,10 @@ class TestBase(object):
     @pytest.fixture()
     def fd_event_nodes(self, device, endpoint=0):
         fds = []
-        for d in pyudev.Context().list_devices(subsystem='input'):
-            if 'NAME' in list(d.properties) and d.properties['NAME'].startswith(f'"ratbag-emu {device.id}'):
-                for c in d.children:
-                    if c.properties['DEVNAME'].startswith('/dev/input/event'):
-                        fd = open(c.properties['DEVNAME'], 'rb')
-                        fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
-                        fds.append(fd)
+        for node in device.event_nodes:
+            fd = open(node, 'rb')
+            fcntl.fcntl(fd, fcntl.F_SETFL, os.O_NONBLOCK)
+            fds.append(fd)
 
         yield fds
 
