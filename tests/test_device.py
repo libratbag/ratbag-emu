@@ -9,7 +9,7 @@ from ratbag_emu import Device
 from ratbag_emu.actuators import SensorActuator
 from ratbag_emu.util import ActionType, EventData
 
-from tests import TestBase
+from tests.base import TestBase
 
 
 class TestDeviceBase(TestBase):
