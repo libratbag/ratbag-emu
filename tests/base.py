@@ -82,10 +82,3 @@ class TestBase(object):
 
         stop_event_thread.set()
         event_thread.join()
-
-    def simulate(self, device, events, action):
-        def callback(device):
-            nonlocal action
-            device.simulate_action(action)
-
-        return self.catch_evdev_events(device, events, callback, wait=action['duration']/1000 + 0.5)
