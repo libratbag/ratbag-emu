@@ -42,11 +42,12 @@ class Endpoint(hidtools.uhid.UHIDDevice):
         self.create_kernel_device()
 
         end = time.time() + 5
-        while (not self.uhid_dev_is_ready() or not self.device_nodes or not self.hidraw_nodes) and time.time() <= end:
+        while (not self.uhid_dev_is_ready or not self.device_nodes or not self.hidraw_nodes) and time.time() <= end:
             self.dispatch(10)  # pragma: no cover
 
         self.__logger.debug(f'created endpoint {self.number} ({self.name})')
 
+    @property
     def uhid_dev_is_ready(self) -> bool:
         return self.udev_device is not None
 
