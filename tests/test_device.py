@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: MIT
 
-import random
 import time
 
 import pyudev
