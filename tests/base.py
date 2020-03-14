@@ -4,8 +4,6 @@ import threading
 
 import libevdev
 
-import ratbag_emu
-
 import pytest
 import shutil
 import subprocess
