@@ -7,13 +7,13 @@ import typing
 
 import hidtools.uhid
 
-from typing import List
+from typing import List, Optional
 
 if typing.TYPE_CHECKING:
     from ratbag_emu.device import Device  # pragma: no cover
 
 
-class Endpoint(hidtools.uhid.UHIDDevice):
+class Endpoint(hidtools.uhid.UHIDDevice):  # type: ignore
     '''
     Represents a device endpoint
 
@@ -85,7 +85,7 @@ class Endpoint(hidtools.uhid.UHIDDevice):
 
         self.call_input_event(data)
 
-    def create_report(self, action: object, global_data: int = None, skip_empty: bool = True) -> List[int]:
+    def create_report(self, action: object, global_data: Optional[int] = None, skip_empty: bool = True) -> List[int]:
         '''
         Converts action into HID report
 
@@ -105,4 +105,4 @@ class Endpoint(hidtools.uhid.UHIDDevice):
         if empty and skip_empty:
             return []
 
-        return super().create_report(action, global_data)
+        return super().create_report(action, global_data)  # type: ignore

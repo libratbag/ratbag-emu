@@ -166,7 +166,7 @@ class Device(object):
         for packet in packets:
             setattr(packet, 'b{}'.format(action['data']['id']), 1)
 
-    def simulate_action(self, action: Dict[str, Any], type: int = None) -> None:
+    def simulate_action(self, action: Dict[str, Any]) -> None:
         '''
         Simulates action
 
