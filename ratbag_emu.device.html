@@ -156,7 +156,7 @@ endpoint will only act on the action if it supports it.</p>
 
 <dl class="method">
 <dt id="ratbag_emu.device.Device.simulate_action">
-<code class="sig-name descname">simulate_action</code><span class="sig-paren">(</span><em class="sig-param">action</em>, <em class="sig-param">type=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.device.Device.simulate_action" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">simulate_action</code><span class="sig-paren">(</span><em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#ratbag_emu.device.Device.simulate_action" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulates action</p>
 <p>Translates physical values according to the device properties and
 converts action into HID reports.</p>
@@ -164,7 +164,7 @@ converts action into HID reports.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>action</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]) – high-level action</p></li>
-<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – HID report type</p></li>
+<li><p><strong>type</strong> – HID report type</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
