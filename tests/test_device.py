@@ -87,8 +87,8 @@ class TestDevice(TestDeviceBase):
         device.send_hid_action(expected)
         time.sleep(0.1)  # give time for the kernel to proccess all events
 
-        assert expected.x <= event_data.x <= expected.x
-        assert expected.y <= event_data.y <= expected.y
+        assert event_data.x == expected.x
+        assert event_data.y == expected.y
 
     def test_movement(self, device, event_data):
         '''
